@@ -12,7 +12,7 @@ import pandas as pd
 # Get label information
 def read_label():
     column = []
-    label_file = "sample_data/Data_Label.csv" # TODO: for testing
+    label_file = "Metal Detection Sensor Array/Data_Label.csv" # TODO: for testing
 
     with open(label_file) as label_csv:
         csvReader = csv.reader(label_csv)
@@ -22,10 +22,16 @@ def read_label():
             return print("Invalid label file!")
 
         return column
-
-def main():
-    column = read_label()
-    print(column)
+def read_data():
+        df = pd.read_csv("Metal Detection Sensor Array/Measurement1.csv") # TODO: for testing
+        return df
+        
+def main(): 
+    label = read_label()
+    data = read_data()
+    data.columns  = [label]
+    # df = pd.DataFrame(data, columns = label)
+    print(data)
     # TODO: testing
     # df = pd.DataFrame(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]), columns=['a', 'b', 'c'])
     # print(df)
