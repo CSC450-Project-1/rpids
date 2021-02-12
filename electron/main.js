@@ -19,17 +19,17 @@ function createWindow() {
         height: 500,
         resizable: true,
         webPreferences: {
-            preload: path.join(__dirname, 'gui_example.js'),
-            contextIsolation: true
-                // nodeIntegration: true
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: false,
+            nodeIntegration: false
         }
     })
 
     // and load the index.html of the app.
-    mainWindow.loadFile('./electron/gui_example.html');
+    mainWindow.loadFile('./electron/index.html');
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished

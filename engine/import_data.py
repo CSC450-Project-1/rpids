@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import pandas as pd
+import sys
 
 # TODO
 # Able to change delimter
@@ -9,10 +10,12 @@ import pandas as pd
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
 
+label_file = sys.argv[1]
+data_file = sys.argv[2]
+
 # Get label information
 def read_label():
     column = []
-    label_file = "sample_data/Data_Label.csv" # TODO: for testing
 
     with open(label_file) as file:
         reader = csv.reader(file)
@@ -24,14 +27,17 @@ def read_label():
         return column
 
 def read_data():
-        df = pd.read_csv("sample_data/Measurement1.csv") # TODO: for testing
-        return df
+    df = pd.read_csv(data_file)
+    return df
         
 def main(): 
     label = read_label()
-    data = read_data()
-    data.columns  = [label]
-    print(data)
+    df = read_data()
+    df.columns = [label]
+
+    df.to_json(os.path.abspath('temp/data.json'))
+    # print(df)
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     main()

@@ -2,6 +2,9 @@ const ipc = require('electron').ipcRenderer;
 // const exec = require('child_process').exec;
 const exec = require('child_process').exec;
 
+let {PythonShell} = require('python-shell')
+var path = require("path")
+
 var nodeConsole = require('console');
 var my_console = new nodeConsole.Console(process.stdout, process.stderr);
 var child;
@@ -54,9 +57,24 @@ function open_file_function(evt) {
     ipc.send('open_json_file');
 }
 
+function importLabel() {
+    var label_path = document.getElementById("label").files[0].path;
+    var data_path = document.getElementById("data").files[0].path;
+
+    var options = {
+        scriptPath: path.join(__dirname, '/../engine/'),
+        args: [label_path, data_path]
+    };
+
+    PythonShell.run('import_data.py', options, function (message) {
+        alert(message);
+    })
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("start_code").addEventListener("click", start_code_function);
-    document.getElementById("send_code").addEventListener("click", send_code_function);
-    document.getElementById("stop_code").addEventListener("click", stop_code_function);
-    document.getElementById("open_file").addEventListener("click", open_file_function);
+    // document.getElementById("start_code").addEventListener("click", start_code_function);
+    // document.getElementById("send_code").addEventListener("click", send_code_function);
+    // document.getElementById("stop_code").addEventListener("click", stop_code_function);
+    // document.getElementById("open_file").addEventListener("click", open_file_function);
+    document.getElementById("import_label").addEventListener("click", importLabel);
 });
