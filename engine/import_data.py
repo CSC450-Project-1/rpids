@@ -1,7 +1,8 @@
-import csv
+import csv, json, os, sys
 import numpy as np
 import pandas as pd
-import sys
+
+# glob and os
 
 # TODO
 # Able to change delimter
@@ -11,15 +12,15 @@ import sys
 # Make sure label info num of lines == 1
 
 label_file = sys.argv[1]
-data_file = sys.argv[2]
+data_files = json.loads(sys.argv[2])
 
 # Get label information
 def read_label():
     column = []
 
-    with open(label_file) as file:
-        reader = csv.reader(file)
-        for row in reader:
+    with open(label_file) as label_csv:
+        csvReader = csv.reader(label_csv)
+        for row in csvReader:
             column = row
         if len(column) == 0:
             return print("Invalid label file!")
@@ -27,16 +28,16 @@ def read_label():
         return column
 
 def read_data():
-    df = pd.read_csv(data_file)
-    return df
+    df_from_each_file = (pd.read_csv(f) for f in data_files)
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+    return concatenated_df 
         
 def main(): 
     label = read_label()
-    df = read_data()
-    df.columns = [label]
-
-    df.to_json(os.path.abspath('temp/data.json'))
-    # print(df)
+    data = read_data()
+    # data.columns = [label]
+    df = pd.DataFrame(data, columns = label)
+    df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
     sys.stdout.flush()
 
 if __name__ == "__main__":

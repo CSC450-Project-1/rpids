@@ -59,16 +59,23 @@ function open_file_function(evt) {
 
 function importLabel() {
     var label_path = document.getElementById("label").files[0].path;
-    var data_path = document.getElementById("data").files[0].path;
+    var data_paths = [];
+
+    let files = document.getElementById("data").files
+
+    for(let i = 0; i < files.length; i++){
+        data_paths.push(files[i].path);
+    }
 
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),
-        args: [label_path, data_path]
+        args: [label_path, JSON.stringify(data_paths)]
     };
 
-    PythonShell.run('import_data.py', options, function (message) {
-        alert(message);
-    })
+    PythonShell.run('import_data.py', options, function (err, results) {
+        if (err) throw err;
+        console.log('results: %j', results);
+      });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
