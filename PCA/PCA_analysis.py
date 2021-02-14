@@ -48,13 +48,11 @@ classifier.fit(x_train, y_train)
 y_pred = classifier.predict(x_test)
 
 print("accuracy score:", accuracy_score(y_test,y_pred))
+
+
 #visualising the Training set results
 
-
-
-X_set, y set = x_test, y_test
-
-
+X_set, y_set = x_test, y_test
 
 X1, x2 = np.meshgrid(np.arange(start = X_set[:, 0].min()- 1 ,
 
@@ -74,7 +72,7 @@ plt.contourf(x1, x2, classifier.predict
 
     (np. array([X1.ravel(), X2.ravel()].T).reshape(X1.shape),
 
-     alpha = 0.75, Cmap = ListedColormap(('red', 'green')))
+     alpha = 0.75, Cmap = ListedColormap(('red', 'green'))))
 
 plt.xlim(X1.min(), X1.max())
 
