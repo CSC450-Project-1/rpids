@@ -1,7 +1,7 @@
-import sysplt.show()
-from sklearn.linear_model import LogisticRegression
-from sklearn.decomposition import PCA
-from sklearn.model_selection import train_test_split
+#import sysplt.show
+#from sklearn.linear_model import LogisticRegression
+#from sklearn.decomposition import PCA
+#from sklearn.model_selection import train_test_split
 import csv
 import json
 import os
