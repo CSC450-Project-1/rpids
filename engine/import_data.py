@@ -29,12 +29,12 @@ def read_label():
         
 def read_data():
     df_from_each_file = (pd.read_csv(f, names = read_label()) for f in data_files)
-    concatenated_df = pd.concat(df_from_each_file, ignore_index=False, sort = False)
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
     return concatenated_df
 
 def main(): 
     df = read_data()
-    #print(data)
+    # print(df)
     df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
     sys.stdout.flush()
 
