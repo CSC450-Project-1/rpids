@@ -10,9 +10,8 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-
-label_file = sys.argv[1]
-data_files = json.loads(sys.argv[2])
+label_file = sys.argv[1] #"sample_data\Data_Label.csv" #for testing
+data_files =  json.loads(sys.argv[2]) #["sample_data\Measurement1.csv", "sample_data\Measurement2.csv", "sample_data\Measurement3.csv", "sample_data\Measurement4.csv"] #for testing
 
 # Get label information
 def read_label():
@@ -27,16 +26,15 @@ def read_label():
 
         return column
 
-def read_data():
-    df_from_each_file = (pd.read_csv(f) for f in data_files)
-    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
-    return concatenated_df 
         
+def read_data():
+    df_from_each_file = (pd.read_csv(f, names = read_label()) for f in data_files)
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=False, sort = False)
+    return concatenated_df
+
 def main(): 
-    label = read_label()
-    data = read_data()
-    # data.columns = [label]
-    df = pd.DataFrame(data, columns = label)
+    df = read_data()
+    #print(data)
     df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
     sys.stdout.flush()
 
