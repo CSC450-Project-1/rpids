@@ -1,7 +1,8 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, Notification } = require("electron");
+const { app, BrowserWindow, ipcMain, Notification, dialog } = require("electron");
 const exec = require('child_process').exec;
 const path = require('path')
+const Swal = require("electron-alert");
 
 var nodeConsole = require('console');
 var my_console = new nodeConsole.Console(process.stdout, process.stderr);
@@ -52,6 +53,53 @@ app.on('window-all-closed', function() {
     if (process.platform !== 'darwin') app.quit();
 });
 
+// Show window for importing label file
+ipcMain.on('importLabel', (event, args) => {
+    dialog.showOpenDialog({
+        title: "Import Label File",
+        buttonLabel: "Import",
+        filters: [
+            { name: 'All Files', extensions: ['csv','txt','xlsx'] }
+        ],
+        properties: ['openFile']
+      }).then(result => {
+        if(!result.canceled){
+            event.sender.send('labelDone', result.filePaths[0]);
+        }
+      }).catch(err => {
+        console.error("Error in importing label: ", err);
+      });
+ });
+
+ // Show window for importing run data files
+ ipcMain.on('importRuns', (event, args) => {
+    dialog.showOpenDialog({
+        title: "Import Run Data Files",
+        buttonLabel: "Import",
+        filters: [
+            { name: 'All Files', extensions: ['csv','txt','xlsx'] }
+        ],
+        properties: ['openFile', 'multiSelections']
+      }).then(result => {
+        if(!result.canceled){
+            event.sender.send('runDone', result.filePaths);
+        }
+      }).catch(err => {
+        console.error("Error in importing runs: ", err);
+      });
+ });
+
+ ipcMain.on('showError', (event, args) => {
+    let alert = new Swal();
+    let swalOptions = {
+        title: args.title,
+        text: args.message,
+        type: "error",
+    };
+    
+    alert.fireFrameless(swalOptions, null, true, false);
+ })
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 ipcMain.on('execute', (command) => {
@@ -62,6 +110,7 @@ ipcMain.on('execute', (command) => {
         }
     });
 });
+
 
 ipcMain.on('open_json_file', () => {
     var fs = require('fs');
