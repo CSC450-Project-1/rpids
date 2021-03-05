@@ -44,6 +44,7 @@
         // document.getElementById("open_file").addEventListener("click", open_file_function);
         document.getElementById("import_label").addEventListener("click",  window.sysImportLabel);
         document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
+        document.getElementById("pca_analysis").addEventListener("click", window.sysPerformPCA);
     });
 // let button = document.getElementById('import_label');
 
