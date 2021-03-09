@@ -39,7 +39,8 @@ window.sysImportRuns = function() {
 function sendImportPaths() {
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),
-        args: [importPaths.label, JSON.stringify(importPaths.runs)]
+        args: [importPaths.label, JSON.stringify(importPaths.runs)],
+        pythonPath: 'python'
     };
     PythonShell.run('import_data.py', options, function (err, results) {
         if (err) throw err;
