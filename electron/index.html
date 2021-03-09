@@ -7,53 +7,48 @@
     <title>RPIDS</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/main.css">
     <style>
-      body,html {
-        overflow-x:hidden;
-        overflow-y:hidden;
-        height: 100vh;
-        width: 100%;
-      }
-      .sidebar {
-        height: 100vh;
-        background-color: rgb(29, 31, 32);
-      }
-      .window {
-        background-color:rgb(54, 58, 59);
-      }
-      .tab {
-
-      }
-      .nav {
-        
-      }
+      
     </style>
   </head>
 
   <body>
     <div class="container-fluid p-0 "> 
       <div class="row m-0 h-100 w-100">
-        <div class="col-lg-2 sidebar d-block">
-          <button type="button" class="mx-auto mt-3 btn btn-primary d-block" data-toggle="modal" data-target="#exampleModal">
-            Import
-          </button>
+        <div class="sidebar shadow d-flex flex-column">
+          <ul class="nav flex-column my-4 mx-4">
+            <li class="nav-item">
+              <a data-toggle="modal" data-target="#exampleModal">
+                <i class="fas fa-file-upload icon mr-2"></i>
+                <span class="mx-auto" >Import</span> 
+              </a>  
+            </li>
+          </ul>
+          <div class="logo mt-auto">
+            <img class="img-fluid" src="./assets/img/logo.png"/>
+          </div>
         </div>
-        <div class="window col-lg-10 h-100">
-          <ul class="nav nav-tabs w-100">
+        <div class="drawer ">
+          <h1 class="empty-drawer m-auto">
+            <span class="my-2"><i class="fas fa-file-upload icon mr-3"></i><span style="font-weight: normal;">Import</span></span> to begin
+          </h1>
+          <ul class="tabs">
+            <li class="tab active" data-tab-id="">
+              <span class="tab-label">some dumb long import name for some reason</span>
+              <span class="tab-close"><i class="fas fa-times"></i></span>
+            </li>
+            
+            
+
+          </ul>
+          <div class="tab-content">
+          </div>
+          <!-- <ul class="nav nav-tabs w-100">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Import_1</a>
             </li>
-          </ul>
-          <div></div>
-          <!-- <div class="d-flex bg-white overflow-hidden h-100 mt-5 mb-3">
-
-          </div> -->
-          <!-- <h5>Please import the appropriate files</h5>
-          <label>Label</label>
-          <input type="file" id="label">
-          <label>Data</label>
-          <input type="file" id="data" multiple> -->
-          
+          </ul> -->
         </div>
       </div>
     </div>
@@ -91,12 +86,17 @@
               <button class="btn btn-secondary" id="import_runs" disabled>Import Runs</button>
             </div>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="beginImport" data-toggle="modal" data-target="#exampleModal">Begin Import</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
   
-  <script type="text/javascript" src="index.js"></script>
   <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/81c2f06206.js" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="index.js"></script>
 </html>

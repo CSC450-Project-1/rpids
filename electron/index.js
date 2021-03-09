@@ -43,8 +43,32 @@
         // document.getElementById("open_file").addEventListener("click", open_file_function);
         document.getElementById("import_label").addEventListener("click",  window.sysImportLabel);
         document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
-        document.getElementById("import").addEventListener("click", window.sysImportRuns);
+       
     });
+
+    
+
+
+    $(document).ready(function(){
+        console.log("let's get cooking")
+
+        imports = []
+
+
+    })
+
+
+    $("#beginImport").on('click', function(){
+        console.log("yo what is up")
+
+        
+    })
+    
+    function updateTabs() {
+
+
+    }
+    
 // let button = document.getElementById('import_label');
 
 // button.addEventListener('click', (e) => {
