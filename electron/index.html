@@ -7,16 +7,55 @@
     <title>RPIDS</title>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+      body,html {
+        overflow-x:hidden;
+        overflow-y:hidden;
+        height: 100vh;
+        width: 100%;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: rgb(29, 31, 32);
+      }
+      .window {
+        background-color:rgb(54, 58, 59);
+      }
+      .tab {
+
+      }
+      .nav {
+        
+      }
+    </style>
   </head>
 
   <body>
-    <div>
-      <!-- <h5>Please import the appropriate files</h5> -->
-      <!-- <button class="btn btn-primary" id="import_label">Import Label</button> -->
-      <!-- <button class="btn btn-secondary" id="import_runs" disabled>Import Runs</button> -->
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-        Import
-      </button>
+    <div class="container-fluid p-0 "> 
+      <div class="row m-0 h-100 w-100">
+        <div class="col-lg-2 sidebar d-block">
+          <button type="button" class="mx-auto mt-3 btn btn-primary d-block" data-toggle="modal" data-target="#exampleModal">
+            Import
+          </button>
+        </div>
+        <div class="window col-lg-10 h-100">
+          <ul class="nav nav-tabs w-100">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Import_1</a>
+            </li>
+          </ul>
+          <div></div>
+          <!-- <div class="d-flex bg-white overflow-hidden h-100 mt-5 mb-3">
+
+          </div> -->
+          <!-- <h5>Please import the appropriate files</h5>
+          <label>Label</label>
+          <input type="file" id="label">
+          <label>Data</label>
+          <input type="file" id="data" multiple> -->
+          
+        </div>
+      </div>
     </div>
   </body>
 
