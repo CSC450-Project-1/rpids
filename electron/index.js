@@ -45,8 +45,8 @@
         document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
     });
 
-    // Resize iframe
-    $('.pca-3D').css('height', $(window).height()+'px');
+    // TODO: Resize iframe
+    $('.pca-3D').css('height', $(window).height()-120+'px');
 
     $(document).ready(function(){
         console.log("let's get cooking")
@@ -61,7 +61,8 @@
         console.log("yo what is up")
     })
 
-    $("#pca_analysis").on('click', window.sysPerformPCA)
+    $("#pca_3D").on('click', window.sysPerformPCA3D)
+    $("#pca_2D").on('click', window.sysPerformPCA2D)
     
     function updateTabs() {
 
