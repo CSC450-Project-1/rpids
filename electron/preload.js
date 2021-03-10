@@ -45,7 +45,7 @@ window.sysPerformPCA = function() {
     PythonShell.run('create_pca_plots.py', options, function (err, results) {
         if (err) throw err;
         console.log('results: ', results);
-        window.location.href='pca_analysis.html'
+        document.getElementById("pca-3D").src = "./iframe_figures/pca_3D.html"
     });
 }
 
