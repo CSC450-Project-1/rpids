@@ -46,7 +46,7 @@
     });
 
     // TODO: Resize iframe
-    $('.pca-3D').css('height', $(window).height()-120+'px');
+    //$('.pca-3D').css('height', $(window).height()-120+'px');
 
     $(document).ready(function(){
         console.log("let's get cooking")
