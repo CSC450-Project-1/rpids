@@ -43,7 +43,18 @@
           <div class="tab-content">
             <iframe id="pca-3D" width="100%" class="pca-3D">
             </iframe>
-            <button class="btn btn-dark" id="pca_analysis">PCA 3D</button>
+            <div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
+              <label for="pca-plot-group">PCA</label>
+              <div class="btn-group mr-2" id="pca-plot-group" role="group" >
+                <button type="button" class="btn btn-secondary" id="pca_2D">2D</button>
+                <button type="button" class="btn btn-secondary" id="pca_3D">3D</button>
+              </div>
+              <label>HCA</label>
+              <div class="btn-group mr-2" role="group">
+                <button type="button" class="btn btn-secondary" disabled>2D</button>
+                <button type="button" class="btn btn-secondary" disabled>Heat Map</button>
+              </div>
+            </div>
           </div>
           <!-- <ul class="nav nav-tabs w-100">
             <li class="nav-item">
