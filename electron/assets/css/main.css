@@ -44,6 +44,7 @@ body,html {
     flex-grow: 1;
     flex-basis: 5%;
     white-space: nowrap;
+    margin-right: 2px;
 }
 
 .tab.active {
@@ -62,6 +63,7 @@ height:95vh;
 width: 100%;
 background-color: white;
 z-index: 1;
+position: relative;
 }
 
 .tab-label {
@@ -110,7 +112,7 @@ z-index: 1;
     -moz-background-clip: text;
     background-clip: text;
     user-select: none;
-    z-index: -1;
+    z-index: 0;
     position:absolute;
     left:50%;
     transform: translate(-50%, -50%);
