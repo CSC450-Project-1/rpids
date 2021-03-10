@@ -36,6 +36,18 @@ window.sysImportRuns = function() {
      })
 }
 
+window.sysPerformPCA = function() {
+    // TODO: Pass PCA computed data here
+    var options = {
+        scriptPath: path.join(__dirname, '/../engine/')
+    };
+    PythonShell.run('create_pca_plots.py', options, function (err, results) {
+        if (err) throw err;
+        console.log('results: ', results);
+        window.location.href='pca_analysis.html'
+    });
+}
+
 function sendImportPaths() {
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),
