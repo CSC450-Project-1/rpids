@@ -39,7 +39,8 @@ window.sysImportRuns = function() {
 window.sysPerformPCA = function() {
     // TODO: Pass PCA computed data here
     var options = {
-        scriptPath: path.join(__dirname, '/../engine/')
+        scriptPath: path.join(__dirname, '/../engine/'),
+        pythonPath: 'python'
     };
     PythonShell.run('create_pca_plots.py', options, function (err, results) {
         if (err) throw err;

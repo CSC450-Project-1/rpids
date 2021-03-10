@@ -63,6 +63,12 @@
 
         
     })
+
+    $("#pca_analysis").on('click', function(){
+        console.log("yo what is up")
+
+        
+    })
     
     function updateTabs() {
 

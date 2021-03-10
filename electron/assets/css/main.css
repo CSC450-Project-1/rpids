@@ -23,7 +23,6 @@ body,html {
     height: 100vh;
     display: flex;
     font-size: 24px;
-    z-index: -100;
     flex-grow: 1;
     flex-basis: 0;
     display: block;
@@ -62,6 +61,7 @@ body,html {
 height:95vh;
 width: 100%;
 background-color: white;
+z-index: 1;
 }
 
 .tab-label {
