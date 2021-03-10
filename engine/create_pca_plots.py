@@ -4,6 +4,10 @@ import plotly.io as pio
 import os
 pio.renderers.default = "iframe"
 
+
+# TODO: SHOW IFRAME
+# TODO: READ FROM JSON
+
 df = px.data.iris()
 X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
 
