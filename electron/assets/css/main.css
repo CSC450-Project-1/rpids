@@ -31,6 +31,7 @@ body,html {
  flex: 0 1 60px;
  margin-bottom: 0;
  display: flex;
+ margin-top: 5px;
 }
 
 .tab {
@@ -58,11 +59,11 @@ body,html {
 
 
 .tab-content {
-flex: 1 1 auto;
-width: 100%;
-background-color: white;
-z-index: 1;
-position: relative;
+    flex: 1 1 auto;
+    width: 100%;
+    background-color: white;
+    z-index: 1;
+    position: relative;
 }
 
 .tab-label {
