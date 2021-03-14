@@ -63,6 +63,12 @@
     $("#pca_2D").on('click', function() {
         window.sysPerformAnalysis("pca_2D")
     });
+    $("#hca_dendrogram").on('click', function() {
+        window.sysPerformAnalysis("hca_dendrogram")
+    });
+    $("#hca_heatmap").on('click', function() {
+        window.sysPerformAnalysis("hca_heatmap")
+    });
     
     function updateTabs() {
     }
