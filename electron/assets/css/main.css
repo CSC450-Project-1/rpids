@@ -119,10 +119,6 @@ body,html {
 .loading-gif{
     height: 30%;
     position: absolute;
-    visibility: visible;
-}
-
-.plotly-frame{
     visibility: hidden;
 }
 

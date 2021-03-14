@@ -51,7 +51,6 @@
     //     $('#plotly-frame').css('visibility', 'hidden');
     //  })
 
-
     $("#beginImport").on('click', function(){
         console.log("Begin import clicked")
     })
@@ -59,11 +58,11 @@
     function updateTabs() {
     }
 
-    $("#plotly-frame").on('load', function() {
-        // Hide loading gif and show plotly plot
-        $('#loading-gif').css('visibility', 'hidden');
-        $('#plotly-frame').css('visibility', 'visible');
-    })
+    // $("#plotly-frame").on('load', function() {
+    //     // Hide loading gif and show plotly plot
+    //     $('#loading-gif').css('visibility', 'hidden');
+    //     $('#plotly-frame').css('visibility', 'visible');
+    // })
     
 // let button = document.getElementById('import_label');
 
