@@ -19,6 +19,7 @@ function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 820,
         height: 650,
+        icon: __dirname+'/logo.ico',
         resizable: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -34,7 +35,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools()
 
     var options = {
-        scriptPath: path.join(__dirname, '/../engine/create_plots/'),
+        scriptPath: path.join(__dirname, '/../engine/'),
         pythonPath: 'python'
     };
 
