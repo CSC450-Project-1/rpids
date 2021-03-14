@@ -45,12 +45,8 @@
         document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
     });
 
-    // TODO: Resize iframe
-    //$('.pca-3D').css('height', $(window).height()-120+'px');
 
     $(document).ready(function(){
-        console.log("let's get cooking")
-
         imports = []
 
 
@@ -58,16 +54,24 @@
 
 
     $("#beginImport").on('click', function(){
-        console.log("yo what is up")
+        console.log("Begin import clicked")
     })
 
-    $("#pca_3D").on('click', window.sysPerformPCA3D)
-    $("#pca_2D").on('click', window.sysPerformPCA2D)
+    $("#pca_3D").on('click', function() {
+        window.sysPerformAnalysis("pca_3D")
+    });
+    $("#pca_2D").on('click', function() {
+        window.sysPerformAnalysis("pca_2D")
+    });
     
     function updateTabs() {
-
-
     }
+
+    $("#plotly-frame").on('load', function() {
+        // Hide loading gif and show plotly plot
+        $('#loading-gif').css('visibility', 'hidden');
+        $('#plotly-frame').css('visibility', 'visible');
+    })
     
 // let button = document.getElementById('import_label');
 

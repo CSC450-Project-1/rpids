@@ -36,29 +36,22 @@ window.sysImportRuns = function() {
      })
 }
 
-window.sysPerformPCA2D = function() {
-    // TODO: Pass PCA computed data here
-    var options = {
-        scriptPath: path.join(__dirname, '/../engine/'),
-        pythonPath: 'python'
-    };
-    PythonShell.run('create_pca_2D.py', options, function (err, results) {
-        if (err) throw err;
-        console.log('results: ', results);
-        document.getElementById("pca-3D").src = "./iframe_figures/pca_2D.html"
-    });
-}
+window.sysPerformAnalysis = function(type) {
+    // Perform analysis and create and embed plotly iframe
 
-window.sysPerformPCA3D = function() {
-    // TODO: Pass PCA computed data here
+    // Hide iframe and show loading gif
+    $('#plotly-frame').css('visibility', 'hidden');
+    $('#loading-gif').css('visibility', 'visible');
+
     var options = {
-        scriptPath: path.join(__dirname, '/../engine/'),
+        scriptPath: path.join(__dirname, '/../engine/create_plots/'),
         pythonPath: 'python'
     };
-    PythonShell.run('create_pca_3D.py', options, function (err, results) {
-        if (err) throw err;
+
+    PythonShell.run(`${type}.py`, options, function (err, results) {
+        if (err) throw err; // TODO: Better handling of backend/Python errors
         console.log('results: ', results);
-        document.getElementById("pca-3D").src = "./iframe_figures/pca_3D.html"
+        document.getElementById('plotly-frame').src = `./iframe_figures/${type}.html`
     });
 }
 

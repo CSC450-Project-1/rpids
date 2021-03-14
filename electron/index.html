@@ -38,11 +38,15 @@
               <span class="tab-label">Tab 1</span>
               <span class="tab-close"><i class="fas fa-times"></i></span>
             </li>
-            
           </ul>
+  
+
           <div class="tab-content">
-            <iframe id="pca-3D" width="100%" height="100%" class="pca-3D" frameBorder="0">
-            </iframe>
+            <div class="plot-view">
+                <img class="loading-gif" id="loading-gif" src="assets/img/loading.gif">
+                <iframe id="plotly-frame" width="100%" height="100%" class="plotly-frame" frameBorder="0"></iframe>
+            </div>
+
             <div class="tools">
               <div class="btn-toolbar pull-right" role="toolbar" aria-label="Toolbar with button groups">
                 <label for="pca-plot-group">PCA</label>
