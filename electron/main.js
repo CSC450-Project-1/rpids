@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, Notification, dialog } = require("electron");
+const {PythonShell} = require('python-shell');
 const exec = require('child_process').exec;
 const path = require('path')
 const Swal = require("electron-alert");
@@ -31,6 +32,17 @@ function createWindow() {
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
+
+    var options = {
+        scriptPath: path.join(__dirname, '/../engine/create_plots/'),
+        pythonPath: 'python'
+    };
+
+    // Start Dash server
+    PythonShell.run('dash_server.py', options, function (err, results) {
+        if (err) throw err; // TODO: Better handling of backend/Python errors
+        console.log('results: ', results);
+    });
 }
 
 // This method will be called when Electron has finished

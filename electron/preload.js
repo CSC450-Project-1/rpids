@@ -36,25 +36,6 @@ window.sysImportRuns = function() {
      })
 }
 
-window.sysPerformAnalysis = function(type) {
-    // Perform analysis and create and embed plotly iframe
-
-    // Hide iframe and show loading gif
-    $('#plotly-frame').css('visibility', 'hidden');
-    $('#loading-gif').css('visibility', 'visible');
-
-    var options = {
-        scriptPath: path.join(__dirname, '/../engine/create_plots/'),
-        pythonPath: 'python'
-    };
-
-    PythonShell.run(`${type}.py`, options, function (err, results) {
-        if (err) throw err; // TODO: Better handling of backend/Python errors
-        console.log('results: ', results);
-        document.getElementById('plotly-frame').src = `./iframe_figures/${type}.html`
-    });
-}
-
 function sendImportPaths() {
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),

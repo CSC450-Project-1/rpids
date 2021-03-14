@@ -46,29 +46,15 @@
     });
 
 
-    $(document).ready(function(){
-        imports = []
-
-
-    })
+    // jQuery(function() {
+    //     $('#loading-gif').css('visibility', 'visible');
+    //     $('#plotly-frame').css('visibility', 'hidden');
+    //  })
 
 
     $("#beginImport").on('click', function(){
         console.log("Begin import clicked")
     })
-
-    $("#pca_3D").on('click', function() {
-        window.sysPerformAnalysis("pca_3D")
-    });
-    $("#pca_2D").on('click', function() {
-        window.sysPerformAnalysis("pca_2D")
-    });
-    $("#hca_dendrogram").on('click', function() {
-        window.sysPerformAnalysis("hca_dendrogram")
-    });
-    $("#hca_heatmap").on('click', function() {
-        window.sysPerformAnalysis("hca_heatmap")
-    });
     
     function updateTabs() {
     }
