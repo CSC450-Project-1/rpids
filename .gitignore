@@ -71,3 +71,4 @@ ts-gen
 patches/mtime-cache.json
 
 temp/*.json
+electron/iframe_figures/*.html

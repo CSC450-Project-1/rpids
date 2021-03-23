@@ -43,15 +43,10 @@
         // document.getElementById("open_file").addEventListener("click", open_file_function);
         document.getElementById("import_label").addEventListener("click",  window.sysImportLabel);
         document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
-        document.getElementById("pca_analysis").addEventListener("click", window.sysPerformPCA);
     });
-
-    
 
 
     $(document).ready(function(){
-        console.log("let's get cooking")
-
         imports = []
 
 
@@ -59,15 +54,30 @@
 
 
     $("#beginImport").on('click', function(){
-        console.log("yo what is up")
-
-        
+        console.log("Begin import clicked")
     })
+
+    $("#pca_3D").on('click', function() {
+        window.sysPerformAnalysis("pca_3D")
+    });
+    $("#pca_2D").on('click', function() {
+        window.sysPerformAnalysis("pca_2D")
+    });
+    $("#hca_dendrogram").on('click', function() {
+        window.sysPerformAnalysis("hca_dendrogram")
+    });
+    $("#hca_heatmap").on('click', function() {
+        window.sysPerformAnalysis("hca_heatmap")
+    });
     
     function updateTabs() {
-
-
     }
+
+    $("#plotly-frame").on('load', function() {
+        // Hide loading gif and show plotly plot
+        $('#loading-gif').css('visibility', 'hidden');
+        $('#plotly-frame').css('visibility', 'visible');
+    })
     
 // let button = document.getElementById('import_label');
 

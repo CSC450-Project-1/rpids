@@ -36,15 +36,22 @@ window.sysImportRuns = function() {
      })
 }
 
-window.sysPerformPCA = function() {
-    // TODO: Pass PCA computed data here
+window.sysPerformAnalysis = function(type) {
+    // Perform analysis and create and embed plotly iframe
+
+    // Hide iframe and show loading gif
+    $('#plotly-frame').css('visibility', 'hidden');
+    $('#loading-gif').css('visibility', 'visible');
+
     var options = {
-        scriptPath: path.join(__dirname, '/../engine/')
+        scriptPath: path.join(__dirname, '/../engine/create_plots/'),
+        pythonPath: 'python'
     };
-    PythonShell.run('create_pca_plots.py', options, function (err, results) {
-        if (err) throw err;
+
+    PythonShell.run(`${type}.py`, options, function (err, results) {
+        if (err) throw err; // TODO: Better handling of backend/Python errors
         console.log('results: ', results);
-        window.location.href='pca_analysis.html'
+        document.getElementById('plotly-frame').src = `./iframe_figures/${type}.html`
     });
 }
 

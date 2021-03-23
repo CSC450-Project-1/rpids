@@ -4,6 +4,8 @@ import plotly.io as pio
 import os
 pio.renderers.default = "iframe"
 
+# TODO: READ FROM JSON
+
 df = px.data.iris()
 X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
 
@@ -18,5 +20,5 @@ fig = px.scatter_3d(
     labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'}
 )
 
-path = os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'electron', 'iframe_figures')
+path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname( __file__ ))), 'electron', 'iframe_figures')
 fig.write_html(os.path.join(path, 'pca_3D.html'))

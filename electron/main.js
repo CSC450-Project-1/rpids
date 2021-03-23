@@ -16,8 +16,8 @@ function print_both(str) {
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        width: 620,
-        height: 500,
+        width: 820,
+        height: 650,
         resizable: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
