@@ -1,4 +1,4 @@
-import csv, json, os, sys, glob
+import csv, json, os, sys, glob, xlrd
 import numpy as np
 import pandas as pd
 
@@ -10,8 +10,8 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-data_files = [r"engine\sample_data\Measurement1.csv", r"engine\sample_data\Measurement2.csv", r"engine\sample_data\Measurement3.csv", r"engine\sample_data\Measurement4.csv"] #json.loads(sys.argv[2])  #for testing
-label_file = r"engine\sample_data\Data_Label.csv" 
+data_files = [r"C:\Users\kuhnb\Desktop\Large Dataset\Spectrum_Data-Polymer_Material_AnalBioanalChem_2018_410(21)_5131-5141 - Copy.xlsx"] #json.loads(sys.argv[2])  #for testing
+label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\Label-Polymer_Material_AnalBioanalChem_2018_410(21)_5131-5141.xlsx" 
 path = r"engine\sample_data"
 # label_file =  sys.argv[1]
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
@@ -28,9 +28,20 @@ def read_label():
             return print("Invalid label file!")
 
         return column
+def read_excel_label():
+    wb = xlrd.open_workbook(label_file)
+    sheet = wb.sheet_by_index(0)
+ 
+    sheet.cell_value(0, 0)
+    column = sheet.row_values(0)
 
+    return column
 
-
+def read_excel_file():
+    excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
+    if excel_ext:
+        df = pd.read_excel(data_files[0], names = read_excel_label())
+    return df
 
 def read_data():
     #find csv, excel, txt extension returns -1 if not found or the first index if found
@@ -83,7 +94,7 @@ def read_all_encompassing_file():
     return df_from_each_file
 
 def main(): 
-    df = read_all_files()
+    df = read_excel_file()
     # csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
     # txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
     # print("csv: ", csv_ext)
