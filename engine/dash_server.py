@@ -34,7 +34,7 @@ app.layout = html.Div([
                 {'label': 'HCA Dendrogram', 'value': 'hca_dendrogram'},
                 {'label': 'HCA Heatmap', 'value': 'hca_heatmap'}
             ],
-            value='none',
+            value='pca_2D', #TODO
             clearable=False
         )]),
     html.Div(
@@ -48,8 +48,27 @@ app.layout = html.Div([
                 ],
                 value='horizontal',
                 clearable=False
-            )),
-    dcc.Graph(id='plot'),
+    )),
+    html.Div(
+        id='marker-customize',
+        children=
+            dcc.Slider(
+                id='marker-slider',
+                min=1,
+                max=10,
+                marks={i: format(i) for i in range(1, 11)},
+                value=5,
+            )
+    ),
+    dcc.Graph(id='plot',
+              config={
+                'modeBarButtonsToRemove': ['pan2d', 'lasso2d'], # TODO: Need to ask Yoshimatsu what he wants
+                'displaylogo': False,
+                'toImageButtonOptions': {
+                    'format': 'svg',
+                    'filename': 'plotly_graph' # TODO: Can customize filename
+                }
+    }),
     dcc.Loading(
         id="loading-1",
         type="default",
@@ -65,7 +84,7 @@ def show_loading(value):
     return
 
 # Show/hide HCA dropdown
-@app.callback(Output('hca-orientation', 'style'),Input('analysis-type', 'value'))
+@app.callback(Output('hca-orientation', 'style'), Input('analysis-type', 'value'))
 def show_hca_dropdown(analysis_type):
     if analysis_type == 'hca_dendrogram':
         return {'visibility': 'visible'}
@@ -73,14 +92,13 @@ def show_hca_dropdown(analysis_type):
         return {'visibility': 'hidden'} 
 
 # Return selected plot type
-@app.callback(Output('plot', 'figure'), Input('analysis-type', 'value'), Input('hca-dropdown', 'value'))
-def update_plot(analysis_type, hca_orientation):
-    layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)')#, plot_bgcolor='rgba(0,0,0,0)')
+@app.callback(Output('plot', 'figure'), Input('analysis-type', 'value'), Input('hca-dropdown', 'value'), Input('marker-slider', 'value'))
+def update_plot(analysis_type, hca_orientation, marker_size):
+
+    layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
 
     if analysis_type == 'none' or analysis_type == 'hca_heatmp':
         fig = go.Figure()
-        fig.update_layout(layout)
-        return fig
 
     elif analysis_type == 'pca_2D':
         # TODO: Replace example data
@@ -91,17 +109,6 @@ def update_plot(analysis_type, hca_orientation):
         components = pca.fit_transform(X)
 
         fig = px.scatter(components, x=0, y=1, color=df['species'])
-        fig.update_layout(layout)
-        fig.update_traces(marker = dict(
-                                        color = 'rgb(17, 157, 255)',
-                                        size = 20,
-                                        line = dict(
-                                            color = 'rgb(231, 99, 250)',
-                                            width = 2
-                                        )
-                                    )
-                         )
-        return fig
     
     elif analysis_type == 'pca_3D':
         # TODO: Replace example data
@@ -118,8 +125,6 @@ def update_plot(analysis_type, hca_orientation):
             title=f'Total Explained Variance: {total_var:.2f}%',
             labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'}
         )
-        fig.update_layout(layout)
-        return fig
     
     elif analysis_type == 'hca_dendrogram':
         X = np.random.rand(15, 12) # 15 samples, with 12 dimensions each
@@ -127,8 +132,6 @@ def update_plot(analysis_type, hca_orientation):
             fig = ff.create_dendrogram(X, orientation='right')
         elif hca_orientation == 'vertical':
             fig = ff.create_dendrogram(X)
-        fig.update_layout(layout)
-        return fig
     
     # elif analysis_type == 'hca_heatmap':
         # TODO: Replace example data
@@ -216,6 +219,17 @@ def update_plot(analysis_type, hca_orientation):
         #                                 'showticklabels': False,
         #                                 'ticks':""})
         # return fig
+
+    # Customize marker size
+    fig.update_traces(marker = dict(
+                                    size = marker_size
+                                )
+                        )
+
+    fig.update_layout(layout)
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightGray', zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGray', zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+    return fig
 
 
 if __name__ == '__main__':
