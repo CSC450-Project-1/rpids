@@ -10,13 +10,14 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-data_files = [r"C:\Users\kuhnb\Desktop\Large Dataset\Spectrum_Data-Polymer_Material_AnalBioanalChem_2018_410(21)_5131-5141 - Copy.xlsx"] #json.loads(sys.argv[2])  #for testing
-label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\Label-Polymer_Material_AnalBioanalChem_2018_410(21)_5131-5141.xlsx" 
+data_files = json.loads(sys.argv[2])  #for testing [r"C:\Users\kuhnb\Desktop\Large Dataset\very_large.xlsx"] 
 path = r"engine\sample_data"
-# label_file =  sys.argv[1]
-#json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
-#for testing data_files =  [r"sample_data\Book2.xlsx"]
+label_file =  sys.argv[1]
+#for testing label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\very_large_label.xlsx"
 # Get label information
+csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
+txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
+excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
 def read_label():
     column = []
 
@@ -38,21 +39,21 @@ def read_excel_label():
     return column
 
 def read_excel_file():
-    excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
-    if excel_ext:
-        df = pd.read_excel(data_files[0], names = read_excel_label())
+    df = pd.read_excel(data_files[0], names = read_excel_label())
     return df
+
+def read_csv_file():
+    df = pd.read_csv(data_files[0], names = read_label())
+    return df
+
 
 def read_data():
     #find csv, excel, txt extension returns -1 if not found or the first index if found
-    csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
-    txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
-    excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
     #if excel extension and not csv, use read_excel to import data
-    if excel_ext and csv_ext == -1:
+    if excel_ext > 1 and csv_ext == -1:
          df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
     #if csv or text files use read_csv to import data
-    elif csv_ext or txt_ext and excel_ext == -1:
+    elif excel_ext == -1:
         df_from_each_file = (pd.read_csv(f, names = read_label()) for f in data_files)
     #concatenate each dataframe
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
@@ -67,38 +68,23 @@ def read_all_files():
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
     return concatenated_df
 
-
-
-
-
-
-
-
 def read_all_encompassing_file():
-    f = data_files
-    csv_ext= data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
-    txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
-    excel_ext= data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
-    # if excel_ext and csv_ext == -1:
-    #      df_from_each_file = pd.read_excel(f)
-    #      names = df_from_each_file.index[0]
-    #      df_from_each_file.drop(names)
-    #      df_from_each_file.columns(names)
-    #if csv or text files use read_csv to import data
-    # elif csv_ext or txt_ext and excel_ext == -1:
-    df_from_each_file = pd.read_csv(f)
-    names = df_from_each_file.index[0]
-    df_from_each_file.drop(names)
-    df_from_each_file.columns(names)
+    if excel_ext > 1 and csv_ext == -1:
+        df_from_each_file = (pd.read_excel(f) for f in data_files)
+    elif (csv_ext > 1 or txt_ext > 1) and excel_ext == -1:
+        df_from_each_file = (pd.read_csv(f)for f in data_files)
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+    return concatenated_df
 
-    return df_from_each_file
-
-def main(): 
-    df = read_excel_file()
-    # csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
-    # txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
-    # print("csv: ", csv_ext)
-    # print("csv: ", txt_ext)
+def main():
+    if(len(data_files) > 1 and label_file != ""):
+        df = read_data()
+    elif label_file == "":
+        df = read_all_encompassing_file()
+    elif excel_ext > 1 and label_file != "" and len(data_files) == 1:
+        df = read_excel_file()
+    elif csv_ext > 1 and label_file != "" and len(data_files) == 1:
+        df = read_csv_file()
     print(df)
     #df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
     #sys.stdout.flush()
