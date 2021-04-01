@@ -10,10 +10,10 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-data_files = json.loads(sys.argv[2])  #for testing [r"C:\Users\kuhnb\Desktop\Large Dataset\very_large.xlsx"] 
+data_files = [r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement1.csv", r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement2.csv", r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement3.csv"]  #for testing json.loads(sys.argv[2])
 path = r"engine\sample_data"
-label_file =  sys.argv[1]
-#for testing label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\very_large_label.xlsx"
+#for testing label_file =  sys.argv[1]
+label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\Data_Label.csv"
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
 txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
