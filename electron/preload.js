@@ -4,6 +4,7 @@ const ipc = require('electron').ipcRenderer;
 const path = require('path');
 
 window.importPaths = [];
+window.paths = [];
 
 window.sysImportLabel = function() {
     ipc.send('importLabel');
@@ -16,30 +17,37 @@ window.sysImportLabel = function() {
 window.sysImportRuns = function() {
     ipc.send('importRuns');
     ipc.on('runDone', (event, paths) => { 
-        importPaths['runs'] = paths;
-        // Check consistency of file types
-        var re = /(?:\.([^.]+))?$/; // Regex for file type
-        var ext = re.exec(paths[0])[1];
-        var is_consistent = true;
-
-        if (paths.length>1) {
-            for (let i = 1; i < paths.length; i++) {
-                if (re.exec(paths[i])[1] != ext) {
-                    is_consistent = false;
-                    break;
-                }
-                
-            }
-        }
-
-        is_consistent ? sendImportPaths() : showErrorMessage("Inconsistency Detected", "Please try again with consistent file types");
+        importPaths['runs'] = paths;    
      })
 }
 
-function sendImportPaths() {
+window.sysProcessImport = function(importFormData) {
+    console.log(importFormData)
+
+    // Check consistency of file types
+    var re = /(?:\.([^.]+))?$/; // Regex for file type
+    var ext = re.exec(paths[0])[1];
+    var is_consistent = true;
+
+    if (paths.length>1) {
+        for (let i = 1; i < paths.length; i++) {
+            if (re.exec(paths[i])[1] != ext) {
+                is_consistent = false;
+                break;
+            }
+            
+        }
+    }
+
+    is_consistent ? sendImportPaths(importFormData) : showErrorMessage("Inconsistency Detected", "Please try again with consistent file types");
+    paths = [];
+}
+
+
+function sendImportPaths(importFormData) {
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),
-        args: [importPaths.label, JSON.stringify(importPaths.runs)],
+        args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
         pythonPath: 'python'
     };
     PythonShell.run('import_data.py', options, function (err, results) {

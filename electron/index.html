@@ -38,10 +38,6 @@
               <span class="tab-label">Tab 1</span>
               <span class="tab-close"><i class="fas fa-times"></i></span>
             </li>
-            <li class="tab" data-tab-id="">
-              <span class="tab-label">Inactive_Tab_With_Long_Name</span>
-              <span class="tab-close"><i class="fas fa-times"></i></span>
-            </li>
            
           </ul>
   
@@ -66,36 +62,55 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Import</h5>
+          <h5 class="modal-title" id="exampleModalLabel">New Import</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-goup">
-            <h5>Please import the label file</h5>
-            <button class="btn btn-primary" id="import_label">Import Label</button>
-          </div>
-          <hr>
-          <div class="form-group">
-            <h5>Please import file(s) containing run data</h5>
+          <form id="import_form" enctype="multipart/form-data"> 
             <div class="form-group">
-              <label for="inlineRadio1">Data Format</label>
+              <h5 for="inlineRadio1">Import Name</h5>
+              <input type="text" class="form-control" name="name" id="importName">
+            </div>
+            <div class="form-group">
+              <h5 for="inlineRadio1" data-toggle="tooltip" title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
+              <div class="form-check " >
+                <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows" checked>
+                <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Rows</label>
+              </div>
               <div class="form-check ">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
+                <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns">
                 <label class="form-check-label" for="inlineRadio1">Columns</label>
               </div>
-              <div class="form-check ">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                <label class="form-check-label" for="inlineRadio2">Rows</label>
+            </div>
+            <div class="form-group">
+              <h5 for="inlineRadio1">Analysis Type</h5>
+              <select required class="form-control" id="analType" name="analType">
+                <option selected>Please select an analysis type</option>
+                <option value="pca">PCA</option>
+                <option value="hca">HCA</option>
+              </select>
+            </div>
+            <!-- maybe it would be cool to use a file field?
+            <div class="form-goup">
+              <h5>Please import the label file</h5>
+              <input type="file" class="form-control-file" id="labelFile" name="labelFile">
+            </div> -->
+            <div class="form-goup">
+              <h5>Please import the label file</h5>
+              <a class="btn btn-primary" id="import_label">Import Label</a>
+            </div>
+            <hr>
+            <div class="form-group">
+              <h5>Please import file(s) containing run data</h5>
+              <div>
+                <a class="btn btn-secondary" id="import_runs" disabled>Import Runs</a>
               </div>
             </div>
-            <div>
-              <button class="btn btn-secondary" id="import_runs" disabled>Import Runs</button>
-            </div>
-          </div>
+          </form>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="beginImport" data-toggle="modal" data-target="#exampleModal">Begin Import</button>
+            <button type="button" class="btn btn-primary" id="import_submit" data-toggle="modal" data-target="#exampleModal">Begin Import</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>

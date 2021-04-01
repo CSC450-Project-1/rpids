@@ -17,8 +17,8 @@ function print_both(str) {
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        width: 820,
-        height: 650,
+        width: 1600,
+        height: 900,
         icon: __dirname+'/logo.ico',
         resizable: true,
         webPreferences: {

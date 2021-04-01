@@ -36,14 +36,15 @@
     
         // window.pyImportLabel(options);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // document.getElementById("start_code").addEventListener("click", start_code_function);
-        // document.getElementById("send_code").addEventListener("click", send_code_function);
-        // document.getElementById("stop_code").addEventListener("click", stop_code_function);
-        // document.getElementById("open_file").addEventListener("click", open_file_function);
-        document.getElementById("import_label").addEventListener("click",  window.sysImportLabel);
-        document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
-    });
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     // document.getElementById("start_code").addEventListener("click", start_code_function);
+    //     // document.getElementById("send_code").addEventListener("click", send_code_function);
+    //     // document.getElementById("stop_code").addEventListener("click", stop_code_function);
+    //     // document.getElementById("open_file").addEventListener("click", open_file_function);
+    //     document.getElementById("import_label").addEventListener("click",  window.sysImportLabel);
+    //     document.getElementById("import_runs").addEventListener("click", window.sysImportRuns);
+    //     document.getElementById("import_submit").addEventListener("click", window.sysProcessImport);
+    // });
 
 
     // jQuery(function() {
@@ -51,12 +52,56 @@
     //     $('#plotly-frame').css('visibility', 'hidden');
     //  })
 
-    $("#beginImport").on('click', function(){
-        console.log("Begin import clicked")
-    })
+    //Add additional handlers here
     
-    function updateTabs() {
+
+    function clearForm(){
+        //TODO wipes out from selections on new import
     }
+
+    function importSubmit() {
+
+        form = $("#import_form")
+
+        formData = {
+            name: form.find("[name='name']").val(),
+            dataFormat: form.find("[name='dataFormat']").val(),
+            analType: form.find("[name='analType']").val()
+        }
+        
+        if(validateInputs()){
+            window.sysProcessImport(formData)
+        }
+
+    }
+
+    function validateInputs(){
+        //TODO
+        console.log("inputs 100% validate, probably")
+        return true
+    }
+
+    
+    $("#import_label").on('click', window.sysImportLabel)
+    $("#import_runs").on('click', window.sysImportRuns)
+    $("#import_submit").on('click', importSubmit)
+
+    function attachHandlers() {
+       
+       
+    }
+
+   $(function main() {
+        console.log("document loaded")
+        
+        attachHandlers()
+
+     
+
+
+
+    })
+
 
     // $("#plotly-frame").on('load', function() {
     //     // Hide loading gif and show plotly plot
