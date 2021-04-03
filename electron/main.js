@@ -148,15 +148,15 @@ ipcMain.on('open_json_file', () => {
 });
 
 ipcMain.on('exportData', (event, args)=> {
-    dialog.showOpenDialog({
+    dialog.showSaveDialog({
         title: "Export Data Files",
         buttonLabel: "Export",
         filters: [
-            { name: 'All Files', extensions: ['csv'] }
+            { name: '.csv', extensions: ['csv'] }
         ],
-        properties: ['promptToCreate']
+        // properties: ['openDirectory']
       }).then(result => {
-            event.sender.send('exportDone', result.filePaths[0]);
+            event.sender.send('exportDone', result.filePath);
       }).catch(err => {
         console.error("Error in exporting data: ", err);
       });

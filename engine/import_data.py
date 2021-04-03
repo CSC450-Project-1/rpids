@@ -60,14 +60,14 @@ def read_data():
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
     return concatenated_df
 
-def read_all_files():
-    df_from_each_file = []
-    for filename in glob.glob(os.path.join(path, '*.csv')):
-        with open(os.path.join(os.getcwd(), filename), 'r') as f:
-            df_from_each_file.append((pd.read_csv(f, names = read_label())))
-    df_from_each_file.pop(0)   
-    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
-    return concatenated_df
+# def read_all_files():
+#     df_from_each_file = []
+#     for filename in glob.glob(os.path.join(path, '*.csv')):
+#         with open(os.path.join(os.getcwd(), filename), 'r') as f:
+#             df_from_each_file.append((pd.read_csv(f, names = read_label())))
+#     df_from_each_file.pop(0)   
+#     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+#     return concatenated_df
 
 def read_all_encompassing_file():
     if excel_ext > 1 and csv_ext == -1:
@@ -87,8 +87,8 @@ def main():
     elif csv_ext > 1 and label_file != "" and len(data_files) == 1:
         df = read_csv_file()
     print(df)
-    #df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
-    #sys.stdout.flush()
+    df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     main()

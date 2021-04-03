@@ -7,10 +7,9 @@ import pandas as pd
 local_path = sys.argv[1]
 
 def main():
-    data_file = pd.read_csv(local_path)
-    data_file.to_csv(local_path)
-    print(data_file[0])
-    data_file.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+    data_file = pd.read_csv(os.path.abspath('temp/data.json'))
+    data_file.to_csv(local_path + '.csv')
+    print(data_file)
     sys.stdout.flush()
 
 if __name__ == "__main__":
