@@ -146,3 +146,19 @@ ipcMain.on('open_json_file', () => {
     print_both('Data from config.json:\nA_MODE = ' + json.A_MODE + '\nB_MODE = ' + json.B_MODE +
         '\nC_MODE = ' + json.C_MODE + '\nD_MODE = ' + json.D_MODE);
 });
+
+ipcMain.on('exportData', (event, args)=> {
+    dialog.showOpenDialog({
+        title: "Export Data Files",
+        buttonLabel: "Export",
+        filters: [
+            { name: 'All Files', extensions: ['csv'] }
+        ],
+        properties: ['promptToCreate']
+      }).then(result => {
+            event.sender.send('exportDone', result.filePaths[0]);
+      }).catch(err => {
+        console.error("Error in exporting data: ", err);
+      });
+    console.log("Hello friend");
+ });

@@ -13,7 +13,7 @@ import pandas as pd
 data_files =  json.loads(sys.argv[2]) #["sample_data\Measurement1.csv", "sample_data\Measurement2.csv", "sample_data\Measurement3.csv", "sample_data\Measurement4.csv"] #for testing
 # label_file =  r"sample_data\Data_Label.csv" #for testing sys.argv[1]
 label_file =  sys.argv[1] #for testing sys.argv[1]
-json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
+#json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
 #for testing data_files =  [r"sample_data\Book2.xlsx"]
 # Get label information
 def read_label():
