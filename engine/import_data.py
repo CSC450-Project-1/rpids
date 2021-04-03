@@ -1,4 +1,4 @@
-import csv, json, os, sys
+import csv, json, os, sys, glob, xlrd
 import numpy as np
 import pandas as pd
 
@@ -16,6 +16,9 @@ label_file =  sys.argv[1] #for testing sys.argv[1]
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
 #for testing data_files =  [r"sample_data\Book2.xlsx"]
 # Get label information
+csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
+txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
+excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
 def read_label():
     column = []
 
@@ -27,33 +30,65 @@ def read_label():
             return print("Invalid label file!")
 
         return column
+def read_excel_label():
+    wb = xlrd.open_workbook(label_file)
+    sheet = wb.sheet_by_index(0)
+ 
+    sheet.cell_value(0, 0)
+    column = sheet.row_values(0)
 
-        
+    return column
+
+def read_excel_file():
+    df = pd.read_excel(data_files[0], names = read_excel_label())
+    return df
+
+def read_csv_file():
+    df = pd.read_csv(data_files[0], names = read_label())
+    return df
+
+
 def read_data():
     #find csv, excel, txt extension returns -1 if not found or the first index if found
-    csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
-    txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
-    excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
     #if excel extension and not csv, use read_excel to import data
-    if excel_ext and csv_ext == -1:
+    if excel_ext > 1 and csv_ext == -1:
          df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
     #if csv or text files use read_csv to import data
-    elif csv_ext or txt_ext and excel_ext == -1:
+    elif excel_ext == -1:
         df_from_each_file = (pd.read_csv(f, names = read_label()) for f in data_files)
-    
     #concatenate each dataframe
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
     return concatenated_df
 
-def main(): 
-    df = read_data()
-    # csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
-    # txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
-    # print("csv: ", csv_ext)
-    # print("csv: ", txt_ext)
+def read_all_files():
+    df_from_each_file = []
+    for filename in glob.glob(os.path.join(path, '*.csv')):
+        with open(os.path.join(os.getcwd(), filename), 'r') as f:
+            df_from_each_file.append((pd.read_csv(f, names = read_label())))
+    df_from_each_file.pop(0)   
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+    return concatenated_df
+
+def read_all_encompassing_file():
+    if excel_ext > 1 and csv_ext == -1:
+        df_from_each_file = (pd.read_excel(f) for f in data_files)
+    elif (csv_ext > 1 or txt_ext > 1) and excel_ext == -1:
+        df_from_each_file = (pd.read_csv(f)for f in data_files)
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+    return concatenated_df
+
+def main():
+    if(len(data_files) > 1 and label_file != ""):
+        df = read_data()
+    elif label_file == "":
+        df = read_all_encompassing_file()
+    elif excel_ext > 1 and label_file != "" and len(data_files) == 1:
+        df = read_excel_file()
+    elif csv_ext > 1 and label_file != "" and len(data_files) == 1:
+        df = read_csv_file()
     print(df)
-    df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
-    sys.stdout.flush()
+    #df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+    #sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
