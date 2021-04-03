@@ -14,7 +14,7 @@ function createWelcomeWindow() {
         icon: __dirname+'../../logo.ico',
         resizable: true,
         webPreferences: {
-            preload: path.join(__dirname, 'welcome_preload.js'),
+            preload: path.join(__dirname, './views/welcome/preload.js'),
             contextIsolation: false,
             nodeIntegration: false
         },
@@ -28,10 +28,10 @@ function createWelcomeWindow() {
     // TODO
     welcomeWindow.setMinimumSize(920, 600);
 
-    welcomeWindow.loadFile('./electron/views/welcome.html');
+    welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
     // Open the DevTools.
-    // welcomeWindow.webContents.openDevTools()
+    welcomeWindow.webContents.openDevTools()
 
     welcomeWindow.once('ready-to-show', () => {
         welcomeWindow.show()
@@ -44,7 +44,7 @@ function createMainWindow() {
         icon: __dirname+'../../logo.ico',
         resizable: true,
         webPreferences: {
-            preload: path.join(__dirname, 'index_preload.js'),
+            preload: path.join(__dirname, './views/index/preload.js'),
             contextIsolation: false,
             nodeIntegration: false
         },
@@ -56,7 +56,7 @@ function createMainWindow() {
     mainWindow.setMinimumSize(920, 600);
 
     // and load the index.html of the app.
-    mainWindow.loadFile('./electron/views/index.html');
+    mainWindow.loadFile('./electron/views/index/index.html');
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools()

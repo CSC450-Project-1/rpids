@@ -25,7 +25,7 @@ window.sysImportProject = function() {
 
 window.sysGetVersion = function(){
     // Get app version from package file
-    let package_raw = fs.readFileSync(path.resolve(__dirname, '../package.json'));
+    let package_raw = fs.readFileSync(path.resolve(__dirname, '../../../package.json'));
     let package = JSON.parse(package_raw);
     return package["version"];
 }
