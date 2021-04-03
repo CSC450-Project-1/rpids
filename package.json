@@ -1,6 +1,6 @@
 {
-    "name": "electron-gui-for-anything",
-    "version": "0.1.0",
+    "name": "rpids",
+    "version": "0.0.1",
     "main": "./electron/main.js",
     "scripts": {
         "start": "electron ."

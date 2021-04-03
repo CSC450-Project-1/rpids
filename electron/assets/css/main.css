@@ -146,3 +146,47 @@ body,html {
 a {
     cursor: pointer;
 }
+
+.left-column {
+    background-color: #303030;
+    height: 100%;
+    width: 100%;
+}
+
+.left-main-content{
+    height: 95%;
+    margin-left: 10%;
+    margin-right: 3%;
+}
+
+.right-column {
+    background-color: #2B2C2D;
+    height: 100%;
+    width: 100%;
+}
+
+body.welcome{
+    font-family: Sans-Serif;
+}
+
+.welcome-text{
+    color: #E2E2E2;
+}
+
+button.welcome{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    color:#E2E2E2;
+}
+
+.welcome-info{
+    color: #9D9E9D;
+}
+
+.draggable{
+    -webkit-app-region: drag;
+}

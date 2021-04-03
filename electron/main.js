@@ -1,35 +1,62 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, Notification, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Menu} = require("electron");
+const fs = require('fs');
 const {PythonShell} = require('python-shell');
-const exec = require('child_process').exec;
 const path = require('path')
 const Swal = require("electron-alert");
 
-var nodeConsole = require('console');
-var my_console = new nodeConsole.Console(process.stdout, process.stderr);
-var child;
 
-function print_both(str) {
-    console.log('main.js:    ' + str);
-    my_console.log('main.js:    ' + str);
-}
-
-function createWindow() {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
-        width: 820,
-        height: 650,
-        icon: __dirname+'/logo.ico',
+function createWelcomeWindow() {
+    // Create the welcome browser window
+    const welcomeWindow = new BrowserWindow({
+        width: 920,
+        height: 600,
+        icon: __dirname+'../../logo.ico',
         resizable: true,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'welcome_preload.js'),
             contextIsolation: false,
             nodeIntegration: false
-        }
+        },
+        backgroundColor: '#303030',
+        transparent: true,
+        frame: false,
+        fullscreenable: false,
+        show: false
     })
 
+    // TODO
+    welcomeWindow.setMinimumSize(920, 600);
+
+    welcomeWindow.loadFile('./electron/views/welcome.html');
+
+    // Open the DevTools.
+    // welcomeWindow.webContents.openDevTools()
+
+    welcomeWindow.once('ready-to-show', () => {
+        welcomeWindow.show()
+    })
+}
+
+function createMainWindow() {
+    // Create the main browser window.
+    const mainWindow = new BrowserWindow({
+        icon: __dirname+'../../logo.ico',
+        resizable: true,
+        webPreferences: {
+            preload: path.join(__dirname, 'index_preload.js'),
+            contextIsolation: false,
+            nodeIntegration: false
+        },
+        backgroundColor: '#303030',
+        show: false
+    })
+
+    // TODO
+    mainWindow.setMinimumSize(920, 600);
+
     // and load the index.html of the app.
-    mainWindow.loadFile('./electron/index.html');
+    mainWindow.loadFile('./electron/views/index.html');
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
@@ -44,13 +71,116 @@ function createWindow() {
         if (err) throw err; // TODO: Better handling of backend/Python errors
         console.log('results: ', results);
     });
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show()
+        mainWindow.maximize()
+    })
+
+    // Close app when main window is closed
+    mainWindow.once('close', () => {
+        app.quit();
+    })
 }
+
+//TODO: Add more to menu
+function createMenu(settings){
+    const template = [
+        {
+           label: 'Settings',
+           submenu: [
+              {
+                 label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
+                 click () {
+                    settings["show_welcome_page"] = !settings["show_welcome_page"];
+                    updateSettings(settings);
+                  }
+              },
+           ]
+        },
+        
+        {
+           label: 'View',
+           submenu: [
+              {
+                 role: 'reload'
+              },
+              {
+                 type: 'separator'
+              },
+              {
+                 role: 'resetzoom'
+              },
+              {
+                 role: 'zoomin'
+              },
+              {
+                 role: 'zoomout'
+              },
+              {
+                 type: 'separator'
+              },
+              {
+                 role: 'togglefullscreen'
+              }
+           ]
+        },
+        
+        {
+           role: 'window',
+           submenu: [
+              {
+                 role: 'minimize'
+              },
+              {
+                 role: 'close'
+              }
+           ]
+        },
+        
+        {
+           role: 'help',
+           submenu: [
+              {
+                 label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
+              }
+           ]
+        }
+     ]
+     
+     const menu = Menu.buildFromTemplate(template)
+     Menu.setApplicationMenu(menu)
+}
+
+function getSettings(){
+    let settings_raw = fs.readFileSync(path.resolve(__dirname, '../settings.json'));
+    const settings = JSON.parse(settings_raw);
+    return settings;
+}
+
+function updateSettings(new_settings){
+    fs.writeFileSync(path.resolve(__dirname, '../settings.json'), JSON.stringify(new_settings));
+}
+
+// Listen for get settings channel request
+ipcMain.handle('getSettings', async (event) => {
+    return getSettings();
+})
+
+ipcMain.on('updateSettings', (event, args) => {
+    const new_settings = args.settings;
+    updateSettings(new_settings);
+});
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    createWindow();
+    const settings = getSettings();
+
+    createMenu(settings);
+    settings["show_welcome_page"] ? createWelcomeWindow() : createMainWindow();
 
     app.on('activate', function() {
         // On macOS it's common to re-create a window in the app when the
@@ -75,17 +205,17 @@ ipcMain.on('importLabel', (event, args) => {
             { name: 'All Files', extensions: ['csv','txt','xlsx'] }
         ],
         properties: ['openFile']
-      }).then(result => {
+    }).then(result => {
         if(!result.canceled){
-            event.sender.send('labelDone', result.filePaths[0]);
+            event.sender.send('importLabelDone', result.filePaths[0]);
         }
-      }).catch(err => {
+    }).catch(err => {
         console.error("Error in importing label: ", err);
-      });
- });
+    });
+});
 
- // Show window for importing run data files
- ipcMain.on('importRuns', (event, args) => {
+// Show window for importing run data files
+ipcMain.on('importRuns', (event, args) => {
     dialog.showOpenDialog({
         title: "Import Run Data Files",
         buttonLabel: "Import",
@@ -93,16 +223,17 @@ ipcMain.on('importLabel', (event, args) => {
             { name: 'All Files', extensions: ['csv','txt','xlsx'] }
         ],
         properties: ['openFile', 'multiSelections']
-      }).then(result => {
+    }).then(result => {
         if(!result.canceled){
-            event.sender.send('runDone', result.filePaths);
+            event.sender.send('importRunDone', result.filePaths);
         }
-      }).catch(err => {
+    }).catch(err => {
         console.error("Error in importing runs: ", err);
-      });
- });
+    });
+});
 
- ipcMain.on('showError', (event, args) => {
+// Display error message
+ipcMain.on('showError', (event, args) => {
     let alert = new Swal();
     let swalOptions = {
         title: args.title,
@@ -111,38 +242,37 @@ ipcMain.on('importLabel', (event, args) => {
     };
     
     alert.fireFrameless(swalOptions, null, true, false);
- })
+});
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-ipcMain.on('execute', (command) => {
-    console.log('executing ls');
-    child = exec("ls", function(error, stdout, stderr) {
-        if (error !== null) {
-            console.log('exec error: ' + error);
+// TODO: Called when initiated a new project
+ipcMain.on('createWindow', (event, args) => {
+    var welcomeWindow = BrowserWindow.getFocusedWindow();
+    welcomeWindow.hide();
+
+    const settings = getSettings();
+
+    createMenu(settings);
+    createMainWindow();
+});
+
+ipcMain.on('importProject', (event, args) => {
+    dialog.showOpenDialog({
+        title: "Import Project File",
+        buttonLabel: "Import",
+        filters: [
+            { name: 'All Files', extensions: ['csv'] }
+        ],
+        properties: ['openFile']
+    }).then(result => {
+        if(!result.canceled){
+            event.sender.send('importProjectDone', result.filePaths[0]);
         }
+    }).catch(err => {
+        console.error("Error in importing project: ", err);
     });
 });
 
-
-ipcMain.on('open_json_file', () => {
-    var fs = require('fs');
-    var fileName = './config.json';
-    var file = require(fileName);
-
-    // Asynchronous read
-    // fs.readFile('config.json', function (err, data) {
-    //   if (err) {
-    //     return console.error(err);
-    //   }
-    //   console.log("Asynchronous read: " + data.toString());
-    // });
-
-    // Synchronous read
-    var data = fs.readFileSync(fileName);
-    var json = JSON.parse(data);
-
-    print_both('Called through ipc.send from gui_example.js');
-    print_both('Data from config.json:\nA_MODE = ' + json.A_MODE + '\nB_MODE = ' + json.B_MODE +
-        '\nC_MODE = ' + json.C_MODE + '\nD_MODE = ' + json.D_MODE);
+// Close window
+ipcMain.on('closeApp', (event, args) => {
+    app.quit();
 });

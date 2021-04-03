@@ -1,116 +1,173 @@
-# Electron GUI for Python
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![GPL License][license-shield]][license-url]
 
-A simple example on how to create an electron GUI for a python program and interacting with it.
 
-## How does it work ( simple representation )
 
-```text
-electron
---------> |------------|    python
-          |            |-------------> |-------------------|
-          |  electron  |  sub process  | python program    |
-          |  --------  |               | --------------    |
-          |   > html   |      std      |  takes requests   |
-          |   > css    | <-----------> |  from js and      |
-          |   > js     | communication |  responds it,     |
-          |            |               |  in the terminal  |
-          |------------|               |-------------------|
-```
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://github.com/CSC450-Project-1/rpids">
+    <img src="../logo.ico" alt="Logo" width="80" height="80">
+  </a>
 
-Essentially no network is being created only one terminal is used when electron is launched and than from 
-within javascript ( electron ) a python program is initiated as a subprocess.
-These two programs than communicate via standart streams.
+  <h3 align="center">RPIDS</h3>
 
-### Structure of example
+  <p align="center">
+    GUI-based software to analyze chemical sensor array data with PCA and HCA 
+    <br />
+    <a href="https://github.com/CSC450-Project-1/rpids"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/CSC450-Project-1/rpids">View Demo</a>
+    ·
+    <a href="https://github.com/CSC450-Project-1/rpids/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/CSC450-Project-1/rpids/issues">Request Feature</a>
+  </p>
+</p>
 
-```text
-│ 
-├── docs
-│   ├── README.md
-│   └── LICENSE
-|
-├── img
-│   └── example.png
-|
-├── gui_example.html
-├── gui_example.css
-├── gui_example.js
-├── main.js
-│ 
-├── python_example.py
-| 
-├── config.json
-└── package.json
-```
 
-## Installation Guide
 
-1. To download and install [electron](https://electron.atom.io) ( OS X or Linux ) you have to download it from [npm-electron](https://www.npmjs.com/package/electron) using :
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
 
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
+
+Here's a blank template to get started:
+**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
+`github_username`, `repo_name`, `twitter_handle`, `email`, `project_title`, `project_description`
+
+
+### Built With
+
+* []()
+* []()
+* []()
+
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+To get a local copy up and running follow these simple steps.
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+* npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/CSC450-Project-1/rpids.git
    ```
-   npm install electron --save-dev
-   ```
-   ```
-   npm install -g electron
-   ```
-   ( if you don't have npm installed use this [link](https://nodejs.org/en/download/) to download it. )
-
-2. Clone this repository:
-   ```
-   git clone https://github.com/keybraker/electron-GUI-for-python.git
+2. Install NPM packages
+   ```sh
+   npm install
    ```
 
-## Execution Guide
 
-1. Open a terminal window and cd to cloned project
-   ```
-   cd electron-GUI-for-python
-   ```
 
-2. Initialize the elcetron aplication (first-time)
-   ```
-   npm i
-   ```
+<!-- USAGE EXAMPLES -->
+## Usage
 
-3. Run the electron application
-   ```
-   npm start
-   ```
+Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
-4. A page should spawn looking as follows:
+_For more examples, please refer to the [Documentation](https://example.com)_
 
-![alt text](../img/example.png)
 
-1. Press __LAUNCH PROGRAM___ button
 
-   this will launch a python application with a loop inside,
-   that is waiting for data to be send from js
+<!-- ROADMAP -->
+## Roadmap
 
-2. Press __INTERACT WITH PROGRAM__ button
+See the [open issues](https://github.com/CSC450-Project-1/rpids/issues) for a list of proposed features (and known issues).
 
-   this will send a message named "hello" from js to python
-   and python will read it and print a message
 
-3. Press __TERMINATE PROGRAM__ button
 
-   a termination message ("terminate") is sent to the program which knows
-   to stop the loop and execution
+<!-- CONTRIBUTING -->
+## Contributing
 
-4. Press __HOW TO OPEN A FILE__ button
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-   from ```electron/gui_example.js``` an ipc.send message is sent to the main.js
-   which will then read and output `config.json` values (fast feature to store settings).
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### Interpretation Guide
 
-Important functionality can be found in files ```electron/gui_example.js``` where the core of electron is. Listeners are implemented there awaiting for click events to trigger initialization of program, communication and termination. The program ```external_programs/python_example.py``` which is the external or 3rd party application that electron calls, is a simple for-loop awaiting commands. It responds to commands and terminates when sent an empty string, "terminate" or by pressing the terminate program button.
 
-## Authors
+<!-- LICENSE -->
+## License
 
-* **Ioannis Tsiakkas** - *(Keybraker)* - [Keybraker](https://github.com/keybraker)
+Distributed under the GPL License. See `LICENSE` for more information.
 
-[![Python 2 Version](https://img.shields.io/badge/Python-2.7.16-green.svg)](https://www.python.org/downloads/)
-[![Python 3 Version](https://img.shields.io/badge/Python-3.9.1-green.svg)](https://www.python.org/download/releases/3.0/)
-[![Electron Version](https://img.shields.io/badge/electron-v11.1.0-green.svg)](https://electron.atom.io)
-[![OSX Version](https://img.shields.io/badge/OS%20X-v11.0.1-green.svg)](https://www.apple.com/lae/macos/big-sur/)
-[![Ubuntu](https://img.shields.io/badge/Ubuntu-v20.0.4-green.svg)](https://ubuntu.com)
+
+
+<!-- CONTACT -->
+## Contact
+
+Project Link: [https://github.com/CSC450-Project-1/rpids](https://github.com/CSC450-Project-1/rpids)
+
+
+
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+
+* []()
+* []()
+* []()
+
+
+
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/CSC450-Project-1/repo.svg?style=for-the-badge
+[contributors-url]: https://github.com/CSC450-Project-1/repo/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/CSC450-Project-1/repo.svg?style=for-the-badge
+[forks-url]: https://github.com/CSC450-Project-1/repo/network/members
+[stars-shield]: https://img.shields.io/github/stars/CSC450-Project-1/repo.svg?style=for-the-badge
+[stars-url]: https://github.com/CSC450-Project-1/repo/stargazers
+[issues-shield]: https://img.shields.io/github/issues/CSC450-Project-1/repo.svg?style=for-the-badge
+[issues-url]: https://github.com/CSC450-Project-1/repo/issues
+[license-shield]: https://img.shields.io/github/license/CSC450-Project-1/repo.svg?style=for-the-badge
+[license-url]: https://github.com/CSC450-Project-1/repo/blob/main/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/CSC450-Project-1
