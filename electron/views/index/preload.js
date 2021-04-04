@@ -44,6 +44,23 @@ window.sysProcessImport = function(importFormData) {
     paths = [];
 }
 
+window.sysExportData = function() {
+    ipc.send('exportData');
+    ipc.on('exportDone', (event, exportPath) => {     
+        var options = {
+            scriptPath: path.join(__dirname, '/../engine/'),
+            args: [exportPath],
+            pythonPath: 'python'
+        };
+        PythonShell.run('export_data.py', options, function (err, results) {
+            if (err) throw err;
+            console.log('results: ', results);
+        });
+     })
+
+    console.log("Export has been called");
+}
+
 function sendImportPaths(importFormData) {
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),

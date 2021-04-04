@@ -276,3 +276,19 @@ ipcMain.on('importProject', (event, args) => {
 ipcMain.on('closeApp', (event, args) => {
     app.quit();
 });
+
+ipcMain.on('exportData', (event, args)=> {
+    dialog.showSaveDialog({
+        title: "Export Data Files",
+        buttonLabel: "Export",
+        filters: [
+            { name: '.csv', extensions: ['csv'] }
+        ],
+        // properties: ['openDirectory']
+      }).then(result => {
+            event.sender.send('exportDone', result.filePath);
+      }).catch(err => {
+        console.error("Error in exporting data: ", err);
+      });
+    console.log("Hello friend");
+ });

@@ -10,10 +10,11 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-data_files = [r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement1.csv", r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement2.csv", r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement3.csv"]  #for testing json.loads(sys.argv[2])
-path = r"engine\sample_data"
-#for testing label_file =  sys.argv[1]
-label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\Data_Label.csv"
+data_files =  json.loads(sys.argv[2]) #["sample_data\Measurement1.csv", "sample_data\Measurement2.csv", "sample_data\Measurement3.csv", "sample_data\Measurement4.csv"] #for testing
+# label_file =  r"sample_data\Data_Label.csv" #for testing sys.argv[1]
+label_file =  sys.argv[1] #for testing sys.argv[1]
+#json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
+#for testing data_files =  [r"sample_data\Book2.xlsx"]
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
 txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
@@ -59,14 +60,14 @@ def read_data():
     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
     return concatenated_df
 
-def read_all_files():
-    df_from_each_file = []
-    for filename in glob.glob(os.path.join(path, '*.csv')):
-        with open(os.path.join(os.getcwd(), filename), 'r') as f:
-            df_from_each_file.append((pd.read_csv(f, names = read_label())))
-    df_from_each_file.pop(0)   
-    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
-    return concatenated_df
+# def read_all_files():
+#     df_from_each_file = []
+#     for filename in glob.glob(os.path.join(path, '*.csv')):
+#         with open(os.path.join(os.getcwd(), filename), 'r') as f:
+#             df_from_each_file.append((pd.read_csv(f, names = read_label())))
+#     df_from_each_file.pop(0)   
+#     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+#     return concatenated_df
 
 def read_all_encompassing_file():
     if excel_ext > 1 and csv_ext == -1:
@@ -86,8 +87,8 @@ def main():
     elif csv_ext > 1 and label_file != "" and len(data_files) == 1:
         df = read_csv_file()
     print(df)
-    #df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
-    #sys.stdout.flush()
+    df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
