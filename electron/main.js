@@ -4,7 +4,7 @@ const fs = require('fs');
 const {PythonShell} = require('python-shell');
 const path = require('path')
 const Swal = require("electron-alert");
-
+const isDev = require('electron-is-dev');
 
 function createWelcomeWindow() {
     // Create the welcome browser window
@@ -67,10 +67,16 @@ function createMainWindow() {
     };
 
     // Start Dash server
-    PythonShell.run('dash_server.py', options, function (err, results) {
-        if (err) throw err; // TODO: Better handling of backend/Python errors
-        console.log('results: ', results);
-    });
+    // if (!isDev){
+        PythonShell.run('dash_server.py', options, function (err, results) {
+            if (err) throw err; // TODO: Better handling of backend/Python errors
+            console.log('results: ', results);
+        });
+    // }else{
+    //     pyProc = require('child_process').execFile(path.join(__dirname, '../engine/dashserverdist/dash_server/dash_server.exe'), [4242])
+    //     console.log(pyProc);
+    // }
+
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()

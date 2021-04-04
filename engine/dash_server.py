@@ -2,6 +2,8 @@
 import plotly.graph_objects as go
 import plotly.express as px
 
+import monkey_patch as mp
+
 # Dash imports
 import dash
 import dash_core_components as dcc
@@ -9,6 +11,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 # PCA imports
+import sklearn.utils._cython_blas
 from sklearn.decomposition import PCA
 
 # HCA imports
@@ -233,4 +236,4 @@ def update_plot(analysis_type, hca_orientation, marker_size):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
