@@ -103,6 +103,9 @@ function createMenu(settings){
            label: 'View',
            submenu: [
               {
+                 role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
+              },
+              {
                  role: 'reload'
               },
               {
@@ -279,7 +282,7 @@ ipcMain.on('closeApp', (event, args) => {
 
 ipcMain.on('exportData', (event, args)=> {
     dialog.showSaveDialog({
-        title: "Export Data Files",
+        title: "Export Data File",
         buttonLabel: "Export",
         filters: [
             { name: '.csv', extensions: ['csv'] }
