@@ -85,7 +85,7 @@
     $("#import_label").on('click', window.sysImportLabel)
     $("#import_runs").on('click', window.sysImportRuns)
     $("#import_submit").on('click', importSubmit)
-    $("#exportBtn").on('click', window.sysExportData)
+    $("#export-btn").on('click', window.sysExportData)
 
     function attachHandlers() {
        
