@@ -275,7 +275,7 @@ ipcMain.on('importProject', (event, args) => {
 // Close window
 ipcMain.on('closeApp', (event, args) => {
     app.quit();
-});
+});});
 
 ipcMain.on('exportData', (event, args)=> {
     dialog.showSaveDialog({
