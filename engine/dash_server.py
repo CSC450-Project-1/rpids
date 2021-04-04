@@ -21,7 +21,6 @@ from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
 
 # Misc imports
-
 app = dash.Dash()
 app.layout = html.Div([
     html.Div([
@@ -116,6 +115,7 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
                        plot_bgcolor='rgba(0,0,0,0)')
 
     dataset = pd.read_json("./temp/data.json", orient="", typ="frame")
+    columns = dataset.columns.tolist()
 
     if(analysis_type == 'hca_dendrogram'):
         if normalization_type == 'linear_rescaling':
@@ -128,31 +128,35 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
         else:
             X = dataset.iloc[:, [3, 4]].values
 
+    elif(analysis_type == 'pca_2D' or analysis_type == 'pca_3D'):
+        if normalization_type == 'linear_rescaling':
+            linear_rescaling = (dataset-dataset.min()) / \
+                (dataset.max()-dataset.min())
+            X = linear_rescaling[columns]
+        elif normalization_type == 'standardization':
+            standardization = (dataset-dataset.mean())/dataset.std()
+            X = standardization[columns]
+        else:
+            col_list = dataset[columns]
+
     if analysis_type == 'none':
         fig = go.Figure()
 
     elif analysis_type == 'pca_2D':
-        # TODO: Replace example data
-        df = px.data.iris()
-        X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
-
         pca = PCA(n_components=2)
-        components = pca.fit_transform(X)
+        #X = ["H2O", " Ni(II)", " Cu(II)", " Fe(II)", " Fe(III) "]
+        components = pca.fit_transform(dataset[columns])
 
-        fig = px.scatter(components, x=0, y=1, color=df['species'])
+        fig = px.scatter(components, x=0, y=1, color=0)
 
     elif analysis_type == 'pca_3D':
-        # TODO: Replace example data
-        #df = px.data.iris()
-        #X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
-
         pca = PCA(n_components=3)
         components = pca.fit_transform(X)
 
         total_var = pca.explained_variance_ratio_.sum() * 100
 
         fig = px.scatter_3d(
-            components, x=0, y=1, z=2, color=df['species'],
+            components, x=0, y=1, z=2, color=columns,
             title=f'Total Explained Variance: {total_var:.2f}%',
             labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'}
         )
@@ -178,6 +182,8 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
                      zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
                      zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+
+    fig.to_json('./temp/data.json')
     return fig
 
 
