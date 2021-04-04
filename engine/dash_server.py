@@ -1,4 +1,6 @@
 # Plotly imports
+import os
+import time
 import plotly.graph_objects as go
 import plotly.express as px
 
@@ -18,8 +20,6 @@ from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
 
 # Misc imports
-import time
-import os
 
 
 app = dash.Dash()
@@ -34,13 +34,12 @@ app.layout = html.Div([
                 {'label': 'HCA Dendrogram', 'value': 'hca_dendrogram'},
                 {'label': 'HCA Heatmap', 'value': 'hca_heatmap'}
             ],
-            value='pca_2D', #TODO
+            value='pca_2D',  # TODO
             clearable=False
         )]),
     html.Div(
         id='hca-orientation',
-        children=
-            dcc.Dropdown(
+        children=dcc.Dropdown(
                 id='hca-dropdown',
                 options=[
                     {'label': 'Horizontal', 'value': 'horizontal'},
@@ -51,8 +50,7 @@ app.layout = html.Div([
     )),
     html.Div(
         id='marker-customize',
-        children=
-            dcc.Slider(
+        children=dcc.Slider(
                 id='marker-slider',
                 min=1,
                 max=10,
@@ -62,11 +60,12 @@ app.layout = html.Div([
     ),
     dcc.Graph(id='plot',
               config={
-                'modeBarButtonsToRemove': ['pan2d', 'lasso2d'], # TODO: Need to ask Yoshimatsu what he wants
+                # TODO: Need to ask Yoshimatsu what he wants
+                'modeBarButtonsToRemove': ['pan2d', 'lasso2d'],
                 'displaylogo': False,
                 'toImageButtonOptions': {
                     'format': 'svg',
-                    'filename': 'plotly_graph' # TODO: Can customize filename
+                    'filename': 'plotly_graph'  # TODO: Can customize filename
                 }
     }),
     dcc.Loading(
@@ -78,42 +77,62 @@ app.layout = html.Div([
 ])
 
 # Show loading spinner
+
+
 @app.callback(Output("loading-spinner", "children"), Input('analysis-type', 'value'))
 def show_loading(value):
     time.sleep(1)
     return
 
 # Show/hide HCA dropdown
+
+
 @app.callback(Output('hca-orientation', 'style'), Input('analysis-type', 'value'))
 def show_hca_dropdown(analysis_type):
     if analysis_type == 'hca_dendrogram':
         return {'visibility': 'visible'}
     else:
-        return {'visibility': 'hidden'} 
+        return {'visibility': 'hidden'}
 
 # Return selected plot type
+
+
 @app.callback(Output('plot', 'figure'), Input('analysis-type', 'value'), Input('hca-dropdown', 'value'), Input('marker-slider', 'value'))
 def update_plot(analysis_type, hca_orientation, marker_size):
 
-    layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+    layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
+                       plot_bgcolor='rgba(0,0,0,0)')
 
     if analysis_type == 'none' or analysis_type == 'hca_heatmp':
         fig = go.Figure()
 
     elif analysis_type == 'pca_2D':
         # TODO: Replace example data
-        df = px.data.iris()
-        X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+        # df = px.data.iris()
+        X = dataset.columns.tolist
+
+        # if normalization_type == 'linear_rescaling':
+        #    linear_rescaling = (dataset-dataset.min()) / \
+        #        (dataset.max()-dataset.min())
+        #    X = linear_rescaling.iloc[:, [3, 4]].values
+        # elif normalization_type == 'standardization':
+        #    standardization = (dataset-dataset.mean())/dataset.std()
+        #    X = standardization.iloc[:, [3, 4]].values
+        # else:
+        #    X = dataset.iloc[:, [3, 4]].values
 
         pca = PCA(n_components=2)
         components = pca.fit_transform(X)
 
+
+<< << << < Updated upstream
         fig = px.scatter(components, x=0, y=1, color=df['species'])
-    
+
     elif analysis_type == 'pca_3D':
         # TODO: Replace example data
         df = px.data.iris()
         X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+
 
         pca = PCA(n_components=3)
         components = pca.fit_transform(X)
@@ -121,11 +140,15 @@ def update_plot(analysis_type, hca_orientation, marker_size):
         total_var = pca.explained_variance_ratio_.sum() * 100
 
         fig = px.scatter_3d(
-            components, x=0, y=1, z=2, color=df['species'],
-            title=f'Total Explained Variance: {total_var:.2f}%',
+            components, x=0, y=1, z=2, title=f'Total Explained Variance: {total_var:.2f}%',
             labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'}
+<<<<<<< Updated upstream
         )
     
+=======
+        )  # color=df['species']
+
+>>>>>>> Stashed changes
     elif analysis_type == 'hca_dendrogram':
         X = np.random.rand(15, 12) # 15 samples, with 12 dimensions each
         if hca_orientation == 'horizontal':
