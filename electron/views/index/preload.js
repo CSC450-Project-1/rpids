@@ -48,7 +48,7 @@ window.sysExportData = function() {
     ipc.send('exportData');
     ipc.on('exportDone', (event, exportPath) => {     
         var options = {
-            scriptPath: path.join(__dirname, '/../engine/'),
+            scriptPath: path.join(__dirname, '../../../engine/'),
             args: [exportPath],
             pythonPath: 'python'
         };
@@ -63,7 +63,7 @@ window.sysExportData = function() {
 
 function sendImportPaths(importFormData) {
     var options = {
-        scriptPath: path.join(__dirname, '/../engine/'),
+        scriptPath: path.join(__dirname, '../../../engine/'),
         args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
         pythonPath: 'python'
     };

@@ -290,5 +290,4 @@ ipcMain.on('exportData', (event, args)=> {
       }).catch(err => {
         console.error("Error in exporting data: ", err);
       });
-    console.log("Hello friend");
  });
