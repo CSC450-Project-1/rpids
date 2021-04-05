@@ -61,17 +61,6 @@ function createMainWindow() {
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
 
-    var options = {
-        scriptPath: path.join(__dirname, '/../engine/'),
-        pythonPath: 'python'
-    };
-
-    // Start Dash server
-    PythonShell.run('dash_server.py', options, function (err, results) {
-        if (err) throw err; // TODO: Better handling of backend/Python errors
-        console.log('results: ', results);
-    });
-
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
         mainWindow.maximize()
@@ -242,9 +231,27 @@ ipcMain.on('showError', (event, args) => {
         title: args.title,
         text: args.message,
         type: "error",
+        background: "#EEEEEE",
     };
     
-    alert.fireFrameless(swalOptions, null, true, false);
+    alert.fireFrameless(swalOptions, null, true, false)
+});
+
+// Show error to user if server takes too long to response
+ipcMain.on('showServerError', (event, args) => {
+    let alert = new Swal();
+    let swalOptions = {
+        title: "Failed Starting Server",
+        text: "Do you want to try again?",
+        confirmButtonText: "Try Again",
+        showCancelButton: true,
+        type: "error",
+        background: "#EEEEEE",
+    };
+    
+    alert.fireFrameless(swalOptions, null, true, false).then((result) => {
+        if (result.value) event.sender.send('restartServer');
+    });
 });
 
 // TODO: Called when initiated a new project

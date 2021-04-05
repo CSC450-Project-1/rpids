@@ -42,6 +42,37 @@ window.sysProcessImport = function(importFormData) {
 
     is_consistent ? sendImportPaths(importFormData) : showErrorMessage("Inconsistency Detected", "Please try again with consistent file types");
     paths = [];
+
+    // TODO: PUT STARTING SERVER IN CORRECT PLACE
+    $('#loading-gif').css('visibility', 'visible');
+    startDashServer();
+
+    let max = 30;
+    checkServerStatus(max, 1);
+}
+
+// Recursive method used to determine when server is done loading
+function checkServerStatus(max, attempt_num){
+    if(attempt_num == max) {
+        ipc.send('showServerError');
+        ipc.on('restartServer', (event) => {     
+            checkServerStatus(max, 0);
+        })
+        return $('#loading-gif').css('visibility', 'hidden');
+    }
+
+    fetch('http://127.0.0.1:8050/')
+    .then(response => {
+        if (!response.ok) {
+            checkServerStatus(max, ++attempt_num);
+        }else{
+            $('#loading-gif').css('visibility', 'hidden');
+            location.reload();
+        }
+    })
+    .catch(error => {
+        checkServerStatus(max, ++attempt_num);
+    });
 }
 
 window.sysExportData = function() {
@@ -74,8 +105,21 @@ function sendImportPaths(importFormData) {
 }
 
 function showErrorMessage(title, message) {
+    // Used to show a Sweet Alert error message
     ipc.send('showError', {
         title: title,
         message: message
     })
+}
+
+function startDashServer(){
+    var options = {
+        scriptPath: path.join(__dirname, '../../../engine/'),
+        pythonPath: 'python'
+    };
+
+    PythonShell.run('dash_server.py', options, function (err, results) {
+        if (err) throw err; // TODO: Better handling of backend/Python errors
+        console.log('results: ', results);
+    });
 }
