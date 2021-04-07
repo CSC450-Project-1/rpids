@@ -53,13 +53,13 @@ window.sysProcessImport = function(importFormData) {
 
 // Recursive method used to determine when server is done loading
 function checkServerStatus(max, attempt_num){
-    if(attempt_num == max) {
-        ipc.send('showServerError');
-        ipc.on('restartServer', (event) => {     
-            checkServerStatus(max, 0);
-        })
-        return $('#loading-gif').css('visibility', 'hidden');
-    }
+    // if(attempt_num == max) {
+    //     ipc.send('showServerError');
+    //     ipc.on('restartServer', (event) => {     
+    //         checkServerStatus(max, 0);
+    //     })
+    //     return $('#loading-gif').css('visibility', 'hidden');
+    // }
 
     fetch('http://127.0.0.1:8050/')
     .then(response => {
@@ -67,7 +67,8 @@ function checkServerStatus(max, attempt_num){
             checkServerStatus(max, ++attempt_num);
         }else{
             $('#loading-gif').css('visibility', 'hidden');
-            location.reload();
+            $("#plotly-frame").location.reload();
+            //location.reload();
         }
     })
     .catch(error => {

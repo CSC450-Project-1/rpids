@@ -48,6 +48,10 @@ body,html {
     margin-right: 2px;
 }
 
+.tab.placeholder {
+    display: none;
+}
+
 .tab.active {
     background-color: white;
 }
@@ -64,6 +68,9 @@ body,html {
     background-color: white;
     z-index: 1;
     position: relative;
+}
+.tab-content.no-tabs {
+    display: none;
 }
 
 .tab-label {

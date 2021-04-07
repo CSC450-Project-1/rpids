@@ -54,14 +54,18 @@
 
     //Add additional handlers here
     
+    form = $("#import_form")
 
     function clearForm(){
         //TODO wipes out from selections on new import
+        console.log("wiping form")
+        form.find("input[type='text']").val("")
+        
     }
 
     function importSubmit() {
 
-        form = $("#import_form")
+       
 
         formData = {
             name: form.find("[name='name']").val(),
@@ -72,6 +76,9 @@
         if(validateInputs()){
             window.sysProcessImport(formData)
         }
+
+        createTab(formData.name)
+        clearForm()
 
     }
 
@@ -92,12 +99,82 @@
        
     }
 
+    
+
+    function setupTabManager() {
+        $("#tab-container").on('click', function(e){
+
+            //TODO: tab was clicked
+
+
+            //Close Tab was clicked
+            if ($(e.target).attr("data-tab-close") != undefined) {
+                deleteTab($(e.target).parents("[data-tab-id]"))
+            }
+
+
+        }) //End on Click
+    }
+
+    function createTab(tabName) {
+
+        if (tabName) {
+            tabManager.tabContainerElement.children(".tab").removeClass('active')
+            placeholderTab = tabManager.tabContainerElement.find(".tab.placeholder")
+            newTab = placeholderTab.clone().appendTo(tabManager.tabContainerElement)
+            newTab.removeClass("placeholder")
+            newTab.addClass("active")
+            newTab.find(".tab-label").text(tabName)
+            //creates a unique id for tab
+            newId = create_UUID()
+            newTab.attr("data-tab-id", newId)
+            tabManager.tabs[newId] = newTab
+        }
+
+        if (Object.keys(tabManager.tabs) != 0) {
+            tabManager.tabContentElement.removeClass("no-tabs")
+        }
+        // if ()
+    }
+
+    function deleteTab(tab){
+        tabId = tab.data("tab-id")
+        console.log("tab to be deleted")
+        delete tabManager.tabs[tabId]
+        tab.remove()
+
+        if (Object.keys(tabManager.tabs) == 0) {
+            tabManager.tabContentElement.addClass("no-tabs")
+        }
+    }
+    function create_UUID(){
+        var dt = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    }
+    
+
+
    $(function main() {
         console.log("document loaded")
         
+
+
+
         attachHandlers()
 
-     
+        //Tab Manager for Tabs
+        tabManager = {
+            tabs: {},
+            tabContainerElement: $("#tab-container"),
+            tabContentElement: $("#tab-content")
+        }
+
+        setupTabManager()
 
 
 

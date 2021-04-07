@@ -187,4 +187,4 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
