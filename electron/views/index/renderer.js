@@ -68,16 +68,17 @@
        
 
         formData = {
+            id: create_UUID(),
             name: form.find("[name='name']").val(),
             dataFormat: form.find("[name='dataFormat']").val(),
-            analType: form.find("[name='analType']").val()
+            analType: form.find("[name='analType']").val(),
         }
         
         if(validateInputs()){
             window.sysProcessImport(formData)
         }
 
-        createTab(formData.name)
+        createTab(formData)
         clearForm()
 
     }
@@ -116,20 +117,20 @@
         }) //End on Click
     }
 
-    function createTab(tabName) {
 
-        if (tabName) {
+    function createTab(formData) {
+
+
             tabManager.tabContainerElement.children(".tab").removeClass('active')
             placeholderTab = tabManager.tabContainerElement.find(".tab.placeholder")
             newTab = placeholderTab.clone().appendTo(tabManager.tabContainerElement)
             newTab.removeClass("placeholder")
             newTab.addClass("active")
-            newTab.find(".tab-label").text(tabName)
+            newTab.find(".tab-label").text(formData.name)
             //creates a unique id for tab
-            newId = create_UUID()
-            newTab.attr("data-tab-id", newId)
-            tabManager.tabs[newId] = newTab
-        }
+            newTab.attr("data-tab-id", formData.id)
+            tabManager.tabs[formData.id] = newTab
+        
 
         if (Object.keys(tabManager.tabs) != 0) {
             tabManager.tabContentElement.removeClass("no-tabs")
@@ -147,6 +148,7 @@
             tabManager.tabContentElement.addClass("no-tabs")
         }
     }
+
     function create_UUID(){
         var dt = new Date().getTime();
         var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
