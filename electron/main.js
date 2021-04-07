@@ -31,7 +31,7 @@ function createWelcomeWindow() {
     welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
     // Open the DevTools.
-    welcomeWindow.webContents.openDevTools()
+    // welcomeWindow.webContents.openDevTools() //TODO JUST FOR DEMO
 
     welcomeWindow.once('ready-to-show', () => {
         welcomeWindow.show()
@@ -59,7 +59,7 @@ function createMainWindow() {
     mainWindow.loadFile('./electron/views/index/index.html');
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools() //TODO JUST FOR DEMO
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()

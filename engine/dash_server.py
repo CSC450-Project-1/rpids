@@ -28,7 +28,7 @@ app.layout = html.Div([
                 {'label': 'HCA Dendrogram', 'value': 'hca_dendrogram'},
                 {'label': 'HCA Heatmap', 'value': 'hca_heatmap'}
             ],
-            value='pca_2D',  # TODO
+            value='none',  # TODO
             clearable=False
         )]),
     html.Div(
@@ -138,7 +138,7 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
             else:
                 col_list = dataset[columns]
 
-        elif analysis_type == 'pca_2D':
+        if analysis_type == 'pca_2D':
             pca = PCA(n_components=2)
             # X = ["H2O", " Ni(II)", " Cu(II)", " Fe(II)", " Fe(III) "]
             components = pca.fit_transform(dataset[columns])
@@ -146,13 +146,15 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
             fig = px.scatter(components, x=0, y=1, color=0)
 
         elif analysis_type == 'pca_3D':
+            df = px.data.iris()
+            X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
             pca = PCA(n_components=3)
             components = pca.fit_transform(X)
 
             total_var = pca.explained_variance_ratio_.sum() * 100
 
             fig = px.scatter_3d(
-                components, x=0, y=1, z=2, color=columns,
+                components, x=0, y=1, z=2, color=df["species"],
                 title=f'Total Explained Variance: {total_var:.2f}%',
                 labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'})
 
