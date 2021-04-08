@@ -116,17 +116,18 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
     dataset = pd.read_json("./temp/data.json", orient="", typ="frame")
     columns = dataset.columns.tolist()
+    hca_x = dataset.iloc[:, [3, 4]].values
 
     if(analysis_type == 'hca_dendrogram'):
         if normalization_type == 'linear_rescaling':
             linear_rescaling = (dataset-dataset.min()) / \
                 (dataset.max()-dataset.min())
-            X = linear_rescaling.iloc[:, [3, 4]].values
+            hca_x = linear_rescaling.iloc[:, [3, 4]].values
         elif normalization_type == 'standardization':
             standardization = (dataset-dataset.mean())/dataset.std()
-            X = standardization.iloc[:, [3, 4]].values
+            hca_x = standardization.iloc[:, [3, 4]].values
         else:
-            X = dataset.iloc[:, [3, 4]].values
+            hca_x = dataset.iloc[:, [3, 4]].values
 
     elif(analysis_type == 'pca_2D' or analysis_type == 'pca_3D'):
         if normalization_type == 'linear_rescaling':
@@ -137,7 +138,7 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
             standardization = (dataset-dataset.mean())/dataset.std()
             X = standardization[columns]
         else:
-            col_list = dataset[columns]
+            X = dataset[columns]
 
     if analysis_type == 'none':
         fig = go.Figure()
@@ -145,7 +146,7 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
     elif analysis_type == 'pca_2D':
         pca = PCA(n_components=2)
         #X = ["H2O", " Ni(II)", " Cu(II)", " Fe(II)", " Fe(III) "]
-        components = pca.fit_transform(dataset[columns])
+        components = pca.fit_transform(X)
 
         fig = px.scatter(components, x=0, y=1, color=0)
 
@@ -163,15 +164,85 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
     elif analysis_type == 'hca_dendrogram':
         if hca_orientation == 'horizontal':
-            fig = ff.create_dendrogram(X, orientation='right')
+            fig = ff.create_dendrogram(hca_x, orientation='right')
         elif hca_orientation == 'vertical':
-            fig = ff.create_dendrogram(X)
+            fig = ff.create_dendrogram(hca_x)
 
     elif analysis_type == 'hca_heatmap':
-        fig = px.imshow(dataset)
+        data_array = dataset.values
+        data_array = data_array.transpose()
+        fig = ff.create_dendrogram(
+            data_array, orientation='bottom', labels=columns)
+        for i in range(len(fig['data'])):
+            fig['data'][i]['yaxis'] = 'y2'
+
+        dendro_side = ff.create_dendrogram(data_array, orientation='right')
+        for i in range(len(dendro_side['data'])):
+            dendro_side['data'][i]['xaxis'] = 'x2'
+
+        for data in dendro_side['data']:
+            fig.add_trace(data)
+
+        dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
+        dendro_leaves = list(map(int, dendro_leaves))
+        data_dist = pdist(data_array)
+        heat_data = squareform(data_dist)
+        heat_data = heat_data[dendro_leaves, :]
+        heat_data = heat_data[:, dendro_leaves]
+
+        heatmap = [
+            go.Heatmap(
+                x=dendro_leaves,
+                y=dendro_leaves,
+                z=heat_data,
+                colorscale='Blues'
+            )
+        ]
+
+        heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
+        heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
+
+        for data in heatmap:
+            fig.add_trace(data)
+
+        fig.update_layout({'width': 600, 'height': 600,
+                           'showlegend': False, 'hovermode': 'closest',
+                           })
+
+        fig.update_layout(xaxis={'domain': [.15, 1],
+                                 'mirror': False,
+                                 'showgrid': False,
+                                 'showline': False,
+                                 'zeroline': False,
+                                 'ticks': ""})
+
+        fig.update_layout(xaxis2={'domain': [0, .15],
+                                  'mirror': False,
+                                  'showgrid': False,
+                                  'showline': False,
+                                  'zeroline': False,
+                                  'showticklabels': False,
+                                  'ticks': ""})
+
+        fig.update_layout(yaxis={'domain': [0, .85],
+                                 'mirror': False,
+                                 'showgrid': False,
+                                 'showline': False,
+                                 'zeroline': False,
+                                 'showticklabels': False,
+                                 'ticks': ""
+                                 })
+
+        fig.update_layout(yaxis2={'domain': [.825, .975],
+                                  'mirror': False,
+                                  'showgrid': False,
+                                  'showline': False,
+                                  'zeroline': False,
+                                  'showticklabels': False,
+                                  'ticks': ""})
+
         return fig
 
-    # Customize marker size
     fig.update_traces(marker=dict(
         size=marker_size
     )
@@ -183,7 +254,7 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
                      zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
 
-    fig.to_json('./temp/data.json')
+    fig.to_json('/temp/data.json')
     return fig
 
 
