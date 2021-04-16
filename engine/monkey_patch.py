@@ -14,8 +14,6 @@ IS_FROZEN = hasattr(sys, '_MEIPASS')
 
 # backup true function
 _true_get_distribution = pkg_resources.get_distribution
-# create small placeholder for the dash call
-# _flask_compress_version = parse_version(get_distribution("flask-compress").version)
 _Dist = namedtuple('_Dist', ['version'])
 
 def _get_distribution(dist):

@@ -3,6 +3,8 @@ const ipc = require('electron').ipcRenderer;
 const exec = require('child_process').exec;
 const path = require('path');
 const fs = require('fs');
+const isDev = require('electron-is-dev');
+const exec = require('child_process').execFile;
 
 window.importPaths = [];
 window.paths = [];
@@ -45,15 +47,25 @@ window.sysProcessImport = function(importFormData) {
 }
 
 function sendImportPaths(importFormData) {
-    var options = {
-        scriptPath: path.join(__dirname, '/../engine/'),
-        args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
-        pythonPath: 'python'
-    };
-    PythonShell.run('import_data.py', options, function (err, results) {
-        if (err) throw err;
-        console.log('results: ', results);
-    });
+    if(isDev){
+        var options = {
+            scriptPath: path.join(__dirname, '/../engine/'),
+            args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
+            pythonPath: 'python'
+        };
+        PythonShell.run('import_data.py', options, function (err, results) {
+            if (err) throw err;
+            console.log('results: ', results);
+        });
+    }else{
+        var opt = function(){
+            exec('file.EXE', ["arg1", "arg2", "arg3"], function(err, results) {  
+              console.log(err)
+              console.log(results.toString());                       
+          });  
+        }
+        opt();
+    }
 }
 
 function showErrorMessage(title, message) {
