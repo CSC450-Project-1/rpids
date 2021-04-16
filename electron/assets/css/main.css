@@ -190,3 +190,15 @@ button.welcome{
 .draggable{
     -webkit-app-region: drag;
 }
+
+/* #exportBtn{
+    width: 90px;
+    background-color: rgb(32, 144, 201);
+
+} */
+
+#exportDiv{
+    text-align: center;
+    vertical-align: auto;
+    background-color: rgb(29, 31, 32);
+}

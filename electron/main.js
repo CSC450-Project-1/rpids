@@ -31,7 +31,7 @@ function createWelcomeWindow() {
     welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
     // Open the DevTools.
-    welcomeWindow.webContents.openDevTools()
+    // welcomeWindow.webContents.openDevTools() //TODO JUST FOR DEMO
 
     welcomeWindow.once('ready-to-show', () => {
         welcomeWindow.show()
@@ -108,6 +108,9 @@ function createMenu(settings){
         {
            label: 'View',
            submenu: [
+              {
+                 role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
+              },
               {
                  role: 'reload'
               },
@@ -245,9 +248,27 @@ ipcMain.on('showError', (event, args) => {
         title: args.title,
         text: args.message,
         type: "error",
+        background: "#EEEEEE",
     };
     
-    alert.fireFrameless(swalOptions, null, true, false);
+    alert.fireFrameless(swalOptions, null, true, false)
+});
+
+// Show error to user if server takes too long to response
+ipcMain.on('showServerError', (event, args) => {
+    let alert = new Swal();
+    let swalOptions = {
+        title: "Failed Starting Server",
+        text: "Do you want to try again?",
+        confirmButtonText: "Try Again",
+        showCancelButton: true,
+        type: "error",
+        background: "#EEEEEE",
+    };
+    
+    alert.fireFrameless(swalOptions, null, true, false).then((result) => {
+        if (result.value) event.sender.send('restartServer');
+    });
 });
 
 // TODO: Called when initiated a new project
@@ -282,3 +303,18 @@ ipcMain.on('importProject', (event, args) => {
 ipcMain.on('closeApp', (event, args) => {
     app.quit();
 });
+
+ipcMain.on('exportData', (event, args)=> {
+    dialog.showSaveDialog({
+        title: "Export Data File",
+        buttonLabel: "Export",
+        filters: [
+            { name: '.csv', extensions: ['csv'] }
+        ],
+        // properties: ['openDirectory']
+      }).then(result => {
+            event.sender.send('exportDone', result.filePath);
+      }).catch(err => {
+        console.error("Error in exporting data: ", err);
+      });
+ });
