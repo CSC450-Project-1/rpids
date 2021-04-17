@@ -140,21 +140,27 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
         if analysis_type == 'pca_2D':
             pca = PCA(n_components=2)
-            # X = ["H2O", " Ni(II)", " Cu(II)", " Fe(II)", " Fe(III) "]
-            components = pca.fit_transform(dataset[columns])
+            X =[]
+            for col in dataset.columns: 
+                if col != "Samples":
+                    X.append(col)
+            
+            components = pca.fit_transform(dataset[X])
 
-            fig = px.scatter(components, x=0, y=1, color=0)
+            fig = px.scatter(components, x=0, y=1, color=dataset["Samples"])
 
         elif analysis_type == 'pca_3D':
-            df = px.data.iris()
-            X = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+            X =[]
+            for col in dataset.columns: 
+                if col != "Samples":
+                    X.append(col)
             pca = PCA(n_components=3)
-            components = pca.fit_transform(X)
+            components = pca.fit_transform(dataset[X])
 
             total_var = pca.explained_variance_ratio_.sum() * 100
 
             fig = px.scatter_3d(
-                components, x=0, y=1, z=2, color=df["species"],
+                components, x=0, y=1, z=2, color=dataset["Samples"],
                 title=f'Total Explained Variance: {total_var:.2f}%',
                 labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'})
 

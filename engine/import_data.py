@@ -9,8 +9,8 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-data_files = [r"C:\Users\kuhnb\Desktop\Large Dataset\allencompassingfile.xlsx"] #json.loads(sys.argv[2])
-label_file = "" #for testing sys.argv[1]
+data_files =  json.loads(sys.argv[2]) #[r"C:\Users\kuhnb\Desktop\Large Dataset\very_large.xlsx"]
+label_file =  sys.argv[1] #"" r"C:\Users\kuhnb\Desktop\Large Dataset\very_large_label.xlsx" #for testing 
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -37,7 +37,7 @@ def read_excel_label():
      return column
 
 def read_excel_file():
-     df = pd.read_excel(data_files[0], names = range(len(read_label()))).transpose()
+     df = pd.read_excel(data_files[0], names = read_excel_label())
      return df
 
 def read_csv_file():
@@ -98,7 +98,9 @@ def main():
          df = read_excel_file()
      elif csv_ext > 1 and label_file != "" and len(data_files) == 1:
          df = read_csv_file()
-     if(len(label_file) > 0):
+
+         
+     if(len(label_file) > 0 and csv_ext > 1):
         names = read_label()
         names = names * len(data_files)
         df["Samples"] = names
@@ -108,15 +110,19 @@ def main():
     #  print(df_t)
         dfs.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
         sys.stdout.flush()
+
      else: 
-         names = read_excel_label()
+         names = read_excel_file()
          df["Samples"] = names
          dfs = df.sort_values(by=['Samples'])
-         print(dfs)
-    #  df_t = format_dataframe(df)
-    #  print(df_t)
-         dfs.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
-         sys.stdout.flush()
+         print(names)
+         print(df)
+
+    #      print(dfs)
+    # #  df_t = format_dataframe(df)
+    # #  print(df_t)
+    #      dfs.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+    #      sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
