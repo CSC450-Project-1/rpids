@@ -72,3 +72,4 @@ patches/mtime-cache.json
 
 temp/*.json
 settings.json
+.csv
