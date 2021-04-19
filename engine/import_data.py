@@ -9,8 +9,8 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
-data_files =  json.loads(sys.argv[2]) #[r"C:\Users\kuhnb\Desktop\Large Dataset\very_large.xlsx"]
-label_file =  sys.argv[1] #"" r"C:\Users\kuhnb\Desktop\Large Dataset\very_large_label.xlsx" #for testing 
+data_files  = [ r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement2.csv",r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement1.csv", r"C:\Users\kuhnb\Desktop\Large Dataset\Measurement3.csv"] #  json.loads(sys.argv[2])
+label_file = r"C:\Users\kuhnb\Desktop\Large Dataset\Data_Label.csv" #for testing sys.argv[1]
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -89,6 +89,16 @@ def format_dataframe(df):
      df_t = df.transpose()
      return df_t
 
+def getFileNames():
+    file_names= []
+    for f in data_files:
+        file_names.append(os.path.basename(f))
+        
+    for i in range(len(data_files)):    
+       file_names[i] = file_names[i][: (len(file_names[i]) - 4)]
+    return file_names
+    
+
 def main():
      if(len(data_files) > 1 and label_file != ""):
          df = read_data()
@@ -102,13 +112,18 @@ def main():
          
      if(len(label_file) > 0 and csv_ext > 1):
         names = read_label()
+        for f in range(len(names)):
+            names[f] = names[f].strip()
+        file_names = getFileNames()
+        file_names = file_names * len(names)
         names = names * len(data_files)
         df["Samples"] = names
         dfs = df.sort_values(by=['Samples'])
+        dfs["run"] = file_names
         print(dfs)
     #  df_t = format_dataframe(df)
     #  print(df_t)
-        dfs.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+        df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
         sys.stdout.flush()
 
      else: 
