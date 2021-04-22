@@ -8,7 +8,11 @@ local_path = sys.argv[1]
 
 def main():
     data_file = pd.read_json(os.path.abspath('temp/data.json'))
-    data_file.to_csv(local_path + '.csv')
+    data_file.drop
+    data_file.to_csv(local_path, header = False, index = False)
+    f = open("temp/data.json", "r+")
+    f.seek(0)
+    f.truncate()
     print(data_file)
     sys.stdout.flush()
 

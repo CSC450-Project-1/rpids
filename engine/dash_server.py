@@ -142,17 +142,17 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
             pca = PCA(n_components=2)
             X =[]
             for col in dataset.columns: 
-                if col != "Samples":
+                if col != "Samples" and col != "run":
                     X.append(col)
             
             components = pca.fit_transform(dataset[X])
 
-            fig = px.scatter(components, x=0, y=1, color=dataset["Samples"])
+            fig = px.scatter(components, x=0, y=1, hover_name = dataset["run"], color=dataset["Samples"])
 
         elif analysis_type == 'pca_3D':
             X =[]
             for col in dataset.columns: 
-                if col != "Samples":
+                if col != "Samples" and col != "run":
                     X.append(col)
             pca = PCA(n_components=3)
             components = pca.fit_transform(dataset[X])
