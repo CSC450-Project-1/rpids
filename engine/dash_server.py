@@ -38,7 +38,7 @@ app.layout = html.Div([
             options=[
                 {'label': 'None', 'value': 'none'},
                 {'label': 'Linear Rescaling', 'value': 'linear_rescaling'},
-                {'label': 'Standardization', 'value': 'standardization'},
+                {'label': 'Z-Score', 'value': 'standardization'},
             ],
             value='none',
             clearable=False
@@ -64,16 +64,17 @@ app.layout = html.Div([
             value=5,
         )
     ),
-    dcc.Graph(id='plot',
-              config={
-                  # TODO: Need to ask Yoshimatsu what he wants
-                  'modeBarButtonsToRemove': ['pan2d', 'lasso2d'],
-                  'displaylogo': False,
-                  'toImageButtonOptions': {
-                      'format': 'svg',
-                      'filename': 'plotly_graph'  # TODO: Can customize filename
-                  }
-              }),
+    dcc.Graph(
+        id='plot',
+        config={
+            # TODO: Need to ask Yoshimatsu what he wants
+            'modeBarButtonsToRemove': ['pan2d', 'lasso2d'],
+            'displaylogo': False,
+            'toImageButtonOptions': {
+                'format': 'svg',
+                'filename': 'plotly_graph'  # TODO: Can customize filename
+            }
+        }),
     dcc.Loading(
         id="loading-1",
         type="default",
@@ -108,30 +109,34 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
     if(os.path.isfile("./temp/data.json")):
         layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)')
+                           plot_bgcolor='rgba(0,0,0,0)')
 
         dataset = pd.read_json("./temp/data.json", orient="", typ="frame")
         columns = dataset.columns.tolist()
+
+        # if normalization_type == 'linear_rescaling':
+        #     linear_rescaling = (dataset-dataset.min()) / \
+        #         (dataset.max()-dataset.min())
+        #     X = linear_rescaling.iloc[:, [3, 4]].values
+        # elif normalization_type == 'standardization':
+        #     standardization = (dataset-dataset.mean())/dataset.std()
+        #     X = standardization.iloc[:, [3, 4]].values
 
         if analysis_type == 'none':
             fig = go.Figure()
 
         if(analysis_type == 'hca_dendrogram'):
-            if normalization_type == 'linear_rescaling':
-                linear_rescaling = (dataset-dataset.min()) / \
-                    (dataset.max()-dataset.min())
-                X = linear_rescaling.iloc[:, [3, 4]].values
-            elif normalization_type == 'standardization':
-                standardization = (dataset-dataset.mean())/dataset.std()
-                X = standardization.iloc[:, [3, 4]].values
-            else:
-                X = dataset.iloc[:, [3, 4]].values
+            X = dataset.iloc[:, [3, 4]].values
 
         elif(analysis_type == 'pca_2D' or analysis_type == 'pca_3D'):
             if normalization_type == 'linear_rescaling':
-                linear_rescaling = (dataset-dataset.min()) / \
-                    (dataset.max()-dataset.min())
+                for col in dataset.columns:
+                    if col != "Samples" and col != "run":
+                        X.append(col)
+                linear_rescaling = (dataset[X] - dataset[X].min()) / \
+                    (dataset[X].max() - dataset[X].min())
                 X = linear_rescaling[columns]
+
             elif normalization_type == 'standardization':
                 standardization = (dataset-dataset.mean())/dataset.std()
                 X = standardization[columns]
@@ -146,8 +151,11 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
                     X.append(col)
 
             components = pca.fit_transform(dataset[X])
-            eigen_values = pca.explainedvariance
+
+            eigen_values = pca.explained_variance_
             eigen_vectors = pca.components_
+            eig_data = dict(zip(eigen_vectors, eigen_values))
+            eig_data.to_json('temp/eig_data.json')
 
             fig = px.scatter(components, x=0, y=1,
                              hover_name=dataset["run"], color=dataset["Samples"])
@@ -185,9 +193,9 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
         fig.update_layout(layout)
         fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
-                        zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+                         zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
         fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
-                        zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+                         zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
 
         fig.to_json('./temp/data.json')
         return fig
