@@ -140,18 +140,21 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
         if analysis_type == 'pca_2D':
             pca = PCA(n_components=2)
-            X =[]
-            for col in dataset.columns: 
+            X = []
+            for col in dataset.columns:
                 if col != "Samples" and col != "run":
                     X.append(col)
-            
-            components = pca.fit_transform(dataset[X])
 
-            fig = px.scatter(components, x=0, y=1, hover_name = dataset["run"], color=dataset["Samples"])
+            components = pca.fit_transform(dataset[X])
+            eigen_values = pca.explainedvariance
+            eigen_vectors = pca.components_
+
+            fig = px.scatter(components, x=0, y=1,
+                             hover_name=dataset["run"], color=dataset["Samples"])
 
         elif analysis_type == 'pca_3D':
-            X =[]
-            for col in dataset.columns: 
+            X = []
+            for col in dataset.columns:
                 if col != "Samples" and col != "run":
                     X.append(col)
             pca = PCA(n_components=3)
