@@ -158,6 +158,9 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
             components = pca.fit_transform(normalized_data[X])
 
+            eigen_values = pca.explainedvariance
+            eigen_vectors = pca.components_
+
             fig = px.scatter(components, x=0, y=1,
                              hover_name=dataset["run"], color=dataset["Samples"])
 
