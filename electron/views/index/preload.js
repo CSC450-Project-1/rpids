@@ -95,13 +95,15 @@ window.sysExportData = function() {
 function sendImportPaths(importFormData) {
     var options = {
         scriptPath: path.join(__dirname, '../../../engine/'),
-        args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
+        args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)],
         pythonPath: 'python'
     };
+
     PythonShell.run('import_data.py', options, function (err, results) {
         if (err) throw err;
         console.log('results: ', results);
     });
+    console.log("Import has been called");
 }
 
 function showErrorMessage(title, message) {
