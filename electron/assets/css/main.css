@@ -10,7 +10,7 @@ body,html {
   }
 .sidebar {
     height: 100vh;
-    flex: 0 0 200px;
+    flex: 0 0 150px;
     background-color: rgb(29, 31, 32);
 }
 
@@ -137,10 +137,18 @@ body,html {
 }
 .sidebar .icon {
     color: white;
+    display: inline-block;
+    font-size: 3.5rem;
 }
 .nav-item {
     color: white;
     font-size: 1.5rem;
+    text-align: center;
+}
+
+/* Offset for wider icon */
+.nav-item .fa-file-export.icon {
+    margin-left: 21px;
 }
 
 a {
