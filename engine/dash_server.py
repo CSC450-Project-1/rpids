@@ -3,7 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
 
-import monkey_patch as mp
+import dash_patch as patch
 
 # Dash imports
 import dash_html_components as html
