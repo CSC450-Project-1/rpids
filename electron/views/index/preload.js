@@ -99,19 +99,21 @@ function sendImportPaths(importFormData) {
     }
     var options = {
         scriptPath: path.join(__dirname, '../../../engine/'),
-        args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
+        args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)],
         pythonPath: 'python'
     };
+
     PythonShell.run('import_data.py', options, function (err, results) {
         if (err) throw err;
     });
     console.log('results: ', options['args']);
+
 }
 
 function showErrorMessage(title, message) {
     // Used to show a Sweet Alert error message
     ipc.send('showError', {
-        title: title,
+        title: title, 
         message: message
     })
 }

@@ -15,7 +15,7 @@ if sys.argv[1] is not None:
     label_file = sys.argv[1]
 else:
     label_file = ""
-form_data = sys.argv[3]
+form_data = json.loads(sys.argv[3])
 
  #for testing
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
@@ -153,14 +153,11 @@ def main():
         print(df)
     #  df_t = format_dataframe(df)
     #  print(df_t)
-        df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
-        sys.stdout.flush()
-        print(form_data)
+     df.to_csv('temp/data.csv') #TODO: just for testing
+     sys.stdout.flush()
+     print(form_data)
      
-     else: 
-        print(df)
-        df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
-        sys.stdout.flush()
+     
 
     #      print(dfs)
     # #  df_t = format_dataframe(df)

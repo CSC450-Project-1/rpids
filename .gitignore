@@ -72,3 +72,5 @@ patches/mtime-cache.json
 
 temp/*.json
 settings.json
+.csv
+sample_data/
