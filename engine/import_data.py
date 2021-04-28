@@ -10,7 +10,12 @@ import pandas as pd
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
 data_files= json.loads(sys.argv[2]) #[ r"C:\Users\kuhnb\Desktop\Large Dataset\output.csv.csv"]
-label_file = sys.argv[1] #for testing
+if sys.argv[1] is not None:
+    label_file = sys.argv[1]
+else:
+    label_file = ""
+
+ #for testing
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -87,9 +92,6 @@ def read_all_encompassing_file():
          df = pd.read_csv(data_files[0])
      return df
 
-def format_dataframe(df):
-     df_t = df.transpose()
-     return df_t
 
 def getFileNames():
     file_names= []

@@ -14,7 +14,10 @@ from sklearn.decomposition import PCA
 import pandas as pd
 import os
 import time
+import numpy as np 
+import json
 
+ 
 
 app = dash.Dash()
 app.layout = html.Div([
@@ -105,12 +108,10 @@ def show_hca_dropdown(analysis_type):
 
 @app.callback(Output('plot', 'figure'), Input('analysis-type', 'value'), Input('normalization-dropdown', 'value'), Input('hca-dropdown', 'value'), Input('marker-slider', 'value'))
 def update_plot(analysis_type, normalization_type, hca_orientation, marker_size):
-
     if(os.path.isfile("./temp/data.json")):
         layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)')
-
-        dataset = pd.read_json("./temp/data.json", orient="", typ="frame")
+        dataset = pd.read_json("./temp/data.json")
         columns = dataset.columns.tolist()
 
         if analysis_type == 'none':
@@ -146,12 +147,21 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
                     X.append(col)
 
             components = pca.fit_transform(dataset[X])
-            eigen_values = pca.explainedvariance
-            eigen_vectors = pca.components_
-
+            
             fig = px.scatter(components, x=0, y=1,
                              hover_name=dataset["run"], color=dataset["Samples"])
-
+            eigen_values = pca.explained_variance_
+            eigen_vectors = pca.components_
+            eigen_data = np.array([eigen_values, [eigen_vectors]])
+            pd.DataFrame(eigen_data).to_json("./temp/eig_data.json")
+            components_df = pd.DataFrame(components)
+            components_df["Samples"] = dataset["Samples"].values.tolist()
+            components_df["run"] = dataset["run"].values.tolist()
+            components_df.to_json("./temp/computed_data.json")
+            
+            # with open(, "w") as outfile:
+            #     json_object = json.dumps(json_eig, indent = 4)
+            #     outfile.write(json_object)
         elif analysis_type == 'pca_3D':
             X = []
             for col in dataset.columns:
@@ -163,10 +173,17 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
             total_var = pca.explained_variance_ratio_.sum() * 100
 
             fig = px.scatter_3d(
-                components, x=0, y=1, z=2, color=dataset["Samples"],
+                components, x=0, y=1, z=2, hover_name=dataset["run"], color=dataset["Samples"],
                 title=f'Total Explained Variance: {total_var:.2f}%',
                 labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'})
-
+            eigen_values = pca.explained_variance_
+            eigen_vectors = pca.components_
+            eigen_data = np.array([eigen_values, [eigen_vectors]])
+            pd.DataFrame(eigen_data).to_json("./temp/eig_data.json")
+            components_df = pd.DataFrame(components)
+            components_df["Samples"] = dataset["Samples"].values.tolist()
+            components_df["run"] = dataset["run"].values.tolist()
+            components_df.to_json("./temp/computed_data.json")
         elif analysis_type == 'hca_dendrogram':
             if hca_orientation == 'horizontal':
                 fig = ff.create_dendrogram(X, orientation='right')
