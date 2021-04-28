@@ -103,6 +103,8 @@ function sendImportPaths(importFormData) {
         pythonPath: 'python'
     };
 
+    // console.log(options.args)
+
     PythonShell.run('import_data.py', options, function (err, results) {
         if (err) throw err;
     });

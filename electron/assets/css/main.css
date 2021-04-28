@@ -138,7 +138,7 @@ body,html {
 .sidebar .icon {
     color: white;
     display: inline-block;
-    font-size: 3.5rem;
+    font-size: 60px;
 }
 .nav-item {
     color: white;
@@ -148,7 +148,7 @@ body,html {
 
 /* Offset for wider icon */
 .nav-item .fa-file-export.icon {
-    margin-left: 21px;
+    margin-left: 22.5px
 }
 
 a {
@@ -199,11 +199,11 @@ button.welcome{
     -webkit-app-region: drag;
 }
 
-/* #exportBtn{
+#exportBtn{
     width: 90px;
     background-color: rgb(32, 144, 201);
 
-} */
+}
 
 #exportDiv{
     text-align: center;
