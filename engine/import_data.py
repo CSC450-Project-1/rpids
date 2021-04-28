@@ -9,22 +9,27 @@ import pandas as pd
 # Throw error if numerical data in label file
 # Throw error if alpha space data in run data
 # Make sure label info num of lines == 1
+
 data_files= json.loads(sys.argv[2]) #[ r"C:\Users\kuhnb\Desktop\Large Dataset\output.csv.csv"]
 if sys.argv[1] is not None:
     label_file = sys.argv[1]
 else:
     label_file = ""
+form_data = sys.argv[3]
 
  #for testing
 #json.loads(sys.argv[2]) # for testing data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
+
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
 txt_ext= data_files[0].find("txt", len(data_files[0]) - 3, len(data_files[0]))
 excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]))
+
 def clear_json():
     f = open("temp/data.json", "r+")
     f.seek(0)
     f.truncate()
+
 def read_label():
      column = []
 
@@ -46,22 +51,36 @@ def read_excel_label():
      return column
 #, names = read_excel_label()
 def read_excel_file():
-     df = pd.read_excel(data_files[0], names = range(len(read_excel_label()))).transpose()
-     return df
+
+    if form_data["dataFormat"] == 'rows':
+        df = pd.read_excel(data_files[0], names = range(len(read_excel_label())))
+    else:
+        df = pd.read_excel(data_files[0], names = range(len(read_excel_label()))).transpose()
+        
+    return df
 
 def read_csv_file():
-     df = pd.read_csv(data_files[0], names = range(len(read_label()))).transpose()
-     return df
+    if form_data["dataFormat"] == 'rows':
+        df = pd.read_csv(data_files[0], names = range(len(read_label())))
+    else:
+        df = pd.read_csv(data_files[0], names = range(len(read_label()))).transpose()
+    return df
 
 
 def read_data():
      #find csv, excel, txt extension returns -1 if not found or the first index if found
      #if excel extension and not csv, use read_excel to import data
      if excel_ext > 1 and csv_ext == -1:
-        df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
+        if form_data["dataFormat"] == 'rows':
+            df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
+        else:
+            df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
      #if csv or text files use read_csv to import data
      elif excel_ext == -1:
-        df_from_each_file = (pd.read_csv(f, names = read_label()).transpose() for f in data_files)
+        if form_data["dataFormat"] == 'rows':
+            df_from_each_file = (pd.read_csv(f, names = read_label())for f in data_files)
+        else:
+            df_from_each_file = (pd.read_csv(f, names = read_label()).transpose() for f in data_files)
     #concatenate each dataframe
      concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
      return concatenated_df
@@ -136,7 +155,7 @@ def main():
     #  print(df_t)
         df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
         sys.stdout.flush()
-
+        print(form_data)
      
      else: 
         print(df)
