@@ -71,4 +71,4 @@ ts-gen
 patches/mtime-cache.json
 
 temp/*.json
-settings.json
+/settings.json

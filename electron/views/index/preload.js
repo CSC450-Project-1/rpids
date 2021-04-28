@@ -3,8 +3,12 @@ const ipc = require('electron').ipcRenderer;
 const exec = require('child_process').exec;
 const path = require('path');
 const fs = require('fs');
-const isDev = require('electron-is-dev');
-const exec = require('child_process').execFile;
+const execFile = require('child_process').execFile;
+
+const ENGINE_PATH = '../../../engine/';
+const IMPORT_PATH = ENGINE_PATH+'executables/import_data.exe';
+const EXPORT_PATH = ENGINE_PATH+'executables/export_data.exe';
+const DASH_PATH = ENGINE_PATH+'executables/dash_server.exe';
 
 window.importPaths = [];
 window.paths = [];
@@ -49,7 +53,7 @@ window.sysProcessImport = function(importFormData) {
     $('#loading-gif').css('visibility', 'visible');
     startDashServer();
 
-    let max = 30;
+    let max = isDev() ? 30 : 70;
     checkServerStatus(max, 1);
 }
 
@@ -79,25 +83,35 @@ function checkServerStatus(max, attempt_num){
 
 window.sysExportData = function() {
     ipc.send('exportData');
-    ipc.on('exportDone', (event, exportPath) => {     
-        var options = {
-            scriptPath: path.join(__dirname, '../../../engine/'),
-            args: [exportPath],
-            pythonPath: 'python'
-        };
-        PythonShell.run('export_data.py', options, function (err, results) {
-            if (err) throw err;
-            console.log('results: ', results);
-        });
+    ipc.on('exportDone', (event, exportPath) => { 
+        if(isDev()){
+            var options = {
+                scriptPath: path.join(__dirname, ENGINE_PATH),
+                args: [exportPath],
+                pythonPath: 'python'
+            };
+            PythonShell.run('export_data.py', options, function (err, results) {
+                if (err) throw err;
+                console.log('results: ', results);
+            });
+        }else{
+            var opt = function(){
+                execFile(path.join(__dirname, EXPORT_PATH), [exportPath], function(err, results) {  
+                  console.log(err)
+                  console.log(results.toString());                       
+              });  
+            }
+            opt();
+        }
      })
 
     console.log("Export has been called");
 }
 
 function sendImportPaths(importFormData) {
-    if(isDev){
+    if(isDev()){
         var options = {
-            scriptPath: path.join(__dirname, '../../../engine/'),
+            scriptPath: path.join(__dirname, ENGINE_PATH),
             args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
             pythonPath: 'python'
         };
@@ -107,7 +121,7 @@ function sendImportPaths(importFormData) {
         });
     }else{
         var opt = function(){
-            exec('file.EXE', ["arg1", "arg2", "arg3"], function(err, results) {  
+            execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), importFormData], function(err, results) {  
               console.log(err)
               console.log(results.toString());                       
           });  
@@ -125,13 +139,38 @@ function showErrorMessage(title, message) {
 }
 
 function startDashServer(){
-    var options = {
-        scriptPath: path.join(__dirname, '../../../engine/'),
-        pythonPath: 'python'
-    };
+    if(isDev()){
+        var options = {
+            scriptPath: path.join(__dirname, '../../../engine/'),
+            pythonPath: 'python'
+        };
 
-    PythonShell.run('dash_server.py', options, function (err, results) {
-        if (err) throw err; // TODO: Better handling of backend/Python errors
-        console.log('results: ', results);
-    });
+        PythonShell.run('dash_server.py', options, function (err, results) {
+            if (err) throw err; // TODO: Better handling of backend/Python errors
+            console.log('results: ', results);
+        });
+    }else{
+        var opt = function(){
+            execFile(path.join(__dirname, DASH_PATH), function(err, results) {  
+              console.log(err)
+              console.log(results.toString());                       
+            });
+        }
+        opt();
+    }
+
 }
+
+// Check if the app is currently in development mode
+function isDev(){
+    return (ipc.sendSync('isDevRequest'))
+}
+
+ipc.on('shutdownInit', function (event) {
+    // Make request to shutdown dash server
+    $.ajax({
+        url: "http://127.0.0.1:8050/shutdown",
+        type: 'GET',
+    })
+    ipc.send('shutdownDone');
+});

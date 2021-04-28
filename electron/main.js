@@ -5,13 +5,15 @@ const {PythonShell} = require('python-shell');
 const path = require('path')
 const Swal = require("electron-alert");
 const isDev = require('electron-is-dev');
+const exec = require('child_process').exec;
+
 
 function createWelcomeWindow() {
     // Create the welcome browser window
     const welcomeWindow = new BrowserWindow({
         width: 920,
         height: 600,
-        icon: __dirname+'../../logo.ico',
+        icon: __dirname+'../../build/icon.ico',
         resizable: true,
         webPreferences: {
             preload: path.join(__dirname, './views/welcome/preload.js'),
@@ -41,7 +43,7 @@ function createWelcomeWindow() {
 function createMainWindow() {
     // Create the main browser window.
     const mainWindow = new BrowserWindow({
-        icon: __dirname+'../../logo.ico',
+        icon: __dirname+'../../build/icon.ico',
         resizable: true,
         webPreferences: {
             preload: path.join(__dirname, './views/index/preload.js'),
@@ -49,7 +51,8 @@ function createMainWindow() {
             nodeIntegration: false
         },
         backgroundColor: '#303030',
-        show: false
+        show: false,
+        title: "RPIDS"
     })
 
     // TODO
@@ -65,17 +68,6 @@ function createMainWindow() {
         scriptPath: path.join(__dirname, '/../engine/'),
         pythonPath: 'python'
     };
-
-    // Start Dash server
-    // if (!isDev){
-        PythonShell.run('dash_server.py', options, function (err, results) {
-            if (err) throw err; // TODO: Better handling of backend/Python errors
-            console.log('results: ', results);
-        });
-    // }else{
-    //     pyProc = require('child_process').execFile(path.join(__dirname, '../engine/dashserverdist/dash_server/dash_server.exe'), [4242])
-    //     console.log(pyProc);
-    // }
 
 
     mainWindow.once('ready-to-show', () => {
@@ -162,9 +154,17 @@ function createMenu(settings){
 }
 
 function getSettings(){
-    let settings_raw = fs.readFileSync(path.resolve(__dirname, '../settings.json'));
-    const settings = JSON.parse(settings_raw);
-    return settings;
+     // Check if settings.json exists. If doesn't exist, create one using settings-default template
+    if(fs.existsSync(path.resolve(__dirname, '../settings.json'))) {
+        let settings = fs.readFileSync(path.resolve(__dirname, '../settings.json'));
+        return JSON.parse(settings);
+    }else{
+        let settings = fs.readFileSync(path.resolve(__dirname, '../settings-default.json'));
+        fs.writeFileSync(path.resolve(__dirname, '../settings.json'), settings, function (err) {
+            if (err) throw err;
+        });
+        return JSON.parse(settings);
+    }
 }
 
 function updateSettings(new_settings){
@@ -301,7 +301,7 @@ ipcMain.on('importProject', (event, args) => {
 
 // Close window
 ipcMain.on('closeApp', (event, args) => {
-    app.quit();
+    quitApp();
 });
 
 ipcMain.on('exportData', (event, args)=> {
@@ -318,3 +318,25 @@ ipcMain.on('exportData', (event, args)=> {
         console.error("Error in exporting data: ", err);
       });
  });
+
+ipcMain.on('isDevRequest', (event, args) => {
+    event.returnValue = isDev;
+ })
+
+app.on('before-quit', (event, args) => {
+    event.preventDefault();
+    quitApp();
+})
+
+function quitApp(){
+    const win = BrowserWindow.getFocusedWindow();
+    if(win && win.title=="RPIDS"){
+        // Close dash server instance
+        win.webContents.send('shutdownInit');
+        ipcMain.on('shutdownDone', (event, args) => {
+            app.exit();
+        })
+    }else{
+        app.exit();
+    }
+}

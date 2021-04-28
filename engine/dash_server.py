@@ -26,10 +26,18 @@ from sklearn.decomposition import PCA
 import pandas as pd
 import os
 import time
+import sys
 
 
 app = dash.Dash()
+
 app.layout = html.Div([
+    # Represents the URL bar, doesn't render anything
+    dcc.Location(id='url', refresh=False),
+
+    # Hidden output for route handling
+    html.Div(id='page-content', style={"display" : "none"}),
+
     html.Div([
         dcc.Dropdown(
             id='analysis-type',
@@ -94,9 +102,17 @@ app.layout = html.Div([
     )
 ])
 
+def shutdown():
+    sys.stderr.close()
+
+@app.callback(Output('page-content', 'children'),
+              Input('url', 'pathname'))
+def display_page(pathname):
+    if pathname =='/shutdown':
+        shutdown()
+    return ''
+
 # Show loading spinner
-
-
 @app.callback(Output("loading-spinner", "children"), Input('analysis-type', 'value'))
 def show_loading(value):
     time.sleep(1)
@@ -199,4 +215,4 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True) # TODO: Turn debug off when deploying
+    app.run_server(debug=False) # TODO: Turn debug off when deploying
