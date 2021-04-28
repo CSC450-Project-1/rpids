@@ -64,9 +64,9 @@
         form = $("#import_form")
 
         formData = {
-            name: form.find("[name='name']").val(),
-            dataFormat: form.find("[name='dataFormat']").val(),
-            analType: form.find("[name='analType']").val()
+            "name": form.find("[name='name']").val(),
+            "dataFormat": form.find("[name='dataFormat']:checked").val(),
+            "analType": form.find("[name='analType']").val()
         }
         
         if(validateInputs()){
@@ -96,10 +96,6 @@
         console.log("document loaded")
         
         attachHandlers()
-
-     
-
-
 
     })
 
