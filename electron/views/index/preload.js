@@ -12,6 +12,7 @@ window.sysImportLabel = function() {
     ipc.on('importLabelDone', (event, path) => {
         importPaths['label'] = path;
         document.querySelector('#import_runs').disabled = false;
+
      })
 }
 
@@ -93,6 +94,9 @@ window.sysExportData = function() {
 }
 
 function sendImportPaths(importFormData) {
+    if (importPaths.label == undefined){
+        importPaths.label = ""
+    }
     var options = {
         scriptPath: path.join(__dirname, '../../../engine/'),
         args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
@@ -100,8 +104,8 @@ function sendImportPaths(importFormData) {
     };
     PythonShell.run('import_data.py', options, function (err, results) {
         if (err) throw err;
-        console.log('results: ', results);
     });
+    console.log('results: ', options['args']);
 }
 
 function showErrorMessage(title, message) {
