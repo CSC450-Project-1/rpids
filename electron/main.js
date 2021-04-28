@@ -32,9 +32,6 @@ function createWelcomeWindow() {
 
     welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
-    // Open the DevTools.
-    // welcomeWindow.webContents.openDevTools() //TODO JUST FOR DEMO
-
     welcomeWindow.once('ready-to-show', () => {
         welcomeWindow.show()
     })
@@ -62,7 +59,7 @@ function createMainWindow() {
     mainWindow.loadFile('./electron/views/index/index.html');
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    isDev && mainWindow.webContents.openDevTools();
 
     var options = {
         scriptPath: path.join(__dirname, '/../engine/'),
@@ -81,73 +78,144 @@ function createMainWindow() {
     })
 }
 
+function getTemplate(settings){
+    if(isDev){
+        const template = [
+            {
+               label: 'Settings',
+               submenu: [
+                  {
+                     label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
+                     click () {
+                        settings["show_welcome_page"] = !settings["show_welcome_page"];
+                        updateSettings(settings);
+                      }
+                  },
+               ]
+            },
+            
+            {
+               label: 'View',
+               submenu: [
+                  {
+                     role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
+                  },
+                  {
+                     role: 'reload'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'resetzoom'
+                  },
+                  {
+                     role: 'zoomin'
+                  },
+                  {
+                     role: 'zoomout'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'togglefullscreen'
+                  }
+               ]
+            },
+            
+            {
+               role: 'window',
+               submenu: [
+                  {
+                     role: 'minimize'
+                  },
+                  {
+                     role: 'close'
+                  }
+               ]
+            },
+            
+            {
+               role: 'help',
+               submenu: [
+                  {
+                     label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
+                  }
+               ]
+            }
+         ]
+         return template;
+    }else{
+        const template = [
+            {
+               label: 'Settings',
+               submenu: [
+                  {
+                     label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
+                     click () {
+                        settings["show_welcome_page"] = !settings["show_welcome_page"];
+                        updateSettings(settings);
+                      }
+                  },
+               ]
+            },
+            
+            {
+               label: 'View',
+               submenu: [
+                  {
+                     role: 'reload'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'resetzoom'
+                  },
+                  {
+                     role: 'zoomin'
+                  },
+                  {
+                     role: 'zoomout'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'togglefullscreen'
+                  }
+               ]
+            },
+            
+            {
+               role: 'window',
+               submenu: [
+                  {
+                     role: 'minimize'
+                  },
+                  {
+                     role: 'close'
+                  }
+               ]
+            },
+            
+            {
+               role: 'help',
+               submenu: [
+                  {
+                     label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
+                  }
+               ]
+            }
+         ]
+         return template
+    }
+}
+
 //TODO: Add more to menu
 function createMenu(settings){
-    const template = [
-        {
-           label: 'Settings',
-           submenu: [
-              {
-                 label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
-                 click () {
-                    settings["show_welcome_page"] = !settings["show_welcome_page"];
-                    updateSettings(settings);
-                  }
-              },
-           ]
-        },
-        
-        {
-           label: 'View',
-           submenu: [
-              {
-                 role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
-              },
-              {
-                 role: 'reload'
-              },
-              {
-                 type: 'separator'
-              },
-              {
-                 role: 'resetzoom'
-              },
-              {
-                 role: 'zoomin'
-              },
-              {
-                 role: 'zoomout'
-              },
-              {
-                 type: 'separator'
-              },
-              {
-                 role: 'togglefullscreen'
-              }
-           ]
-        },
-        
-        {
-           role: 'window',
-           submenu: [
-              {
-                 role: 'minimize'
-              },
-              {
-                 role: 'close'
-              }
-           ]
-        },
-        
-        {
-           role: 'help',
-           submenu: [
-              {
-                 label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
-              }
-           ]
-        }
-     ]
+    const template = getTemplate(settings);
      
      const menu = Menu.buildFromTemplate(template)
      Menu.setApplicationMenu(menu)
