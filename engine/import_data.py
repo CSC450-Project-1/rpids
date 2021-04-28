@@ -153,7 +153,7 @@ def main():
         print(df)
     #  df_t = format_dataframe(df)
     #  print(df_t)
-     df.to_csv('temp/data.csv') #TODO: just for testing
+     df.to_json('temp/data.json') #TODO: just for testing
      sys.stdout.flush()
      print(form_data)
      
