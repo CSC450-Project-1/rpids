@@ -105,6 +105,14 @@ Run the following commands to create executables of the Python files.
    ```sh
    pyinstaller .\engine\import_data.py  -F --distpath .\executables
    ```
+4. Delete Unnecessary Build Directory
+   ```sh
+   rm -rf .\engine\build
+   ```
+5. Package App Into a Single Windows Executable
+   ```sh
+   yarn dist
+   ```
 
 <!-- USAGE EXAMPLES -->
 ## Usage
