@@ -15,10 +15,12 @@ data_files= json.loads(sys.argv[2])
 label_file = sys.argv[1] #for testing
 form_data = json.loads(sys.argv[3])
 
+# print(type(sys.argv[3]))
+
 # for testing
 # label_file =  r"sample_data\Data_Label.csv"
 # data_files = [r"sample_data\Measurement1.csv", r"sample_data\Measurement2.csv", r"sample_data\Measurement3.csv", r"sample_data\Measurement4.csv"]
-# form_data = json.loads('{"name":"test","dataFormat":"columns","analType":"pca"}')
+# form_data = 'columns'
 
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -153,22 +155,19 @@ def main():
         names = names * len(data_files)
         df["Samples"] = names
         df["run"] = file_name_list
-        print(df)
+        # print(df)
     #  df_t = format_dataframe(df)
     #  print(df_t)
         df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
         sys.stdout.flush()
-        print(form_data)
-     
      else: 
-        print(df)
+
         df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+        # print(sys.argv[3])
         sys.stdout.flush()
 
-    #      print(dfs)
     # #  df_t = format_dataframe(df)
-    # #  print(df_t)
-     
+
 
 if __name__ == "__main__":
     main()

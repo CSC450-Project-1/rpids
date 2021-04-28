@@ -99,11 +99,20 @@ function sendImportPaths(importFormData) {
         pythonPath: 'python'
     };
 
+    // console.log(options.args)
+
     PythonShell.run('import_data.py', options, function (err, results) {
-        if (err) throw err;
+
+        if (err) {
+            console.log('results: ', results)
+            throw err
+        };
         console.log('results: ', results);
+        
     });
-    console.log("Import has been called");
+    // console.log("Import has been called")
+    // console.log(JSON.stringify(importFormData))
+    // console.log(JSON.stringify(importPaths.runs))
 }
 
 function showErrorMessage(title, message) {
