@@ -22,7 +22,9 @@ import numpy as np
 from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
 
-app = dash.Dash()
+external_stylesheets=['./electron/assets/css/main.css']
+
+app = dash.Dash(external_stylesheets = external_stylesheets)
 app.layout = html.Div([
     html.Div([
         dcc.Dropdown(
@@ -78,15 +80,23 @@ app.layout = html.Div([
                   'toImageButtonOptions': {
                       'format': 'svg',
                       'filename': 'plotly_graph'  # TODO: Can customize filename
-                  }
-              }),
+                  },
+                  'responsive': True,
+                },
+                figure = {
+                    'layout' : {
+                        'autosize': True
+                    }
+                },
+                style= {'flex': '1 1 auto'}),
+                
     dcc.Loading(
         id="loading-1",
         type="default",
         fullscreen=True,
         children=html.Div(id="loading-spinner")
     )
-])
+], style = {'display': 'flex', 'flex-flow':'column', 'height':'100vh'})
 
 # Show loading spinner
 
@@ -316,4 +326,4 @@ def update_plot(analysis_type, normalization_type, hca_orientation, marker_size)
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
