@@ -85,16 +85,29 @@
             "analType": form.find("[name='analType']").val()
         }
         
-        if(validateInputs()){
+        if(validateInputs(formData)){
+            $('#importModal').modal('hide');
             window.sendImportPaths(formData)
         }
 
     }
 
-    function validateInputs(){
+    $('#analType').on('change', function (e) {
+        var optionSelected = $(this).find("option:selected");
+        var valueSelected  = optionSelected.val();
+        if(valueSelected!='') $("#analType").removeClass("is-invalid");
+        else $("#analType").addClass("is-invalid");
+    });
+
+    function validateInputs(formData){
+        if(formData.analType==""){
+            $("#analType").addClass("is-invalid");
+            return false;
+        }else{
+            return true
+        }
         //TODO
         // console.log("inputs 100% validate, probably")
-        return true
     }
 
     

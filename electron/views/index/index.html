@@ -95,11 +95,14 @@
             </div>
             <div class="form-group">
               <h5 for="inlineRadio1">Analysis Type</h5>
-              <select required class="form-control" id="analType" name="analType">
-                <option selected>Please select an analysis type</option>
-                <option value="pca">PCA</option>
-                <option value="hca">HCA</option>
+              <select class="custom-select" id="analType" name="analType" required>
+                <option selected value="">Please select an analysis type</option>
+                <option value="pca">Principal Component Analysis (PCA)</option>
+                <option value="hca">Hierarchical Clustering Analysis (HCA)</option>
               </select>
+              <div class="invalid-feedback">
+                An analysis type is required.
+              </div>
             </div>
             <hr>
             <h5>Please import a label file</h5>
@@ -108,8 +111,8 @@
                 <span class="input-group-text" id="import-label-prepend">Label</span>
               </div>
               <div class="custom-file">
-                <button type="button" class="custom-file-input" id="import-label"
-                  aria-describedby="import-label-prepend"></button>
+                <input type="button" class="custom-file-input" id="import-label"
+                  aria-describedby="import-label-prepend" required>
                 <label class="custom-file-label" for="import-label" id="import-label-path">Choose file</label>
               </div>
             </div>
@@ -119,15 +122,15 @@
                 <span class="input-group-text" id="import-runs-prepend">Run(s)</span>
               </div>
               <div class="custom-file">
-                <button type="button" class="custom-file-input" id="import-runs"
-                  aria-describedby="import-runs-prepend"></button>
+                <input type="button" class="custom-file-input" id="import-runs"
+                  aria-describedby="import-runs-prepend">
                 <label class="custom-file-label" for="import-label" id="import-runs-path">Choose file(s)</label>
               </div>
             </div>
           </form>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" id="import-submit" data-toggle="modal" data-target="#importModal">Import</button>
+            <button type="button" class="btn btn-primary" id="import-submit">Import</button>
           </div>
         </div>
       </div>
