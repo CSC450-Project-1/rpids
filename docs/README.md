@@ -10,7 +10,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/CSC450-Project-1/rpids">
-    <img src="../logo.ico" alt="Logo" width="80" height="80">
+    <img src="../electron/assets/img/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">RPIDS</h3>
@@ -90,18 +90,29 @@ This is an example of how to list things you need to use the software and how to
   npm install npm@latest -g
   ```
 
-### Installation
+### Packaging
 
-1. Clone the repo
+Run the following commands to create executables of the Python files.
+1. Create the Dash Server executable. NOTE: The dash_server.spec has user-specific paths to necessary Python libraries that need to be altered before running this command.
    ```sh
-   git clone https://github.com/CSC450-Project-1/rpids.git
+   pyinstaller .\engine\dash_server.spec --distpath .\executables
    ```
-2. Install NPM packages
+2. Create the Import Data Executable
    ```sh
-   npm install
+   pyinstaller .\engine\export_data.py  -F --distpath .\executables
    ```
-
-
+3. Create the Export Data Executable
+   ```sh
+   pyinstaller .\engine\import_data.py  -F --distpath .\executables
+   ```
+4. Delete Unnecessary Build Directory
+   ```sh
+   rm -rf .\engine\build
+   ```
+5. Package App Into a Single Windows Executable
+   ```sh
+   yarn dist
+   ```
 
 <!-- USAGE EXAMPLES -->
 ## Usage

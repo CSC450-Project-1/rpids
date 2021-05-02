@@ -1,18 +1,22 @@
 {
     "name": "rpids",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "main": "./electron/main.js",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
     },
     "devDependencies": {
         "electron": "^11.2.3"
     },
     "dependencies": {
         "bootstrap": "^4.6.0",
-        "electron-alert": "^0.1.11",
+        "electron-is-dev": "^2.0.0",
         "jquery": "^3.6.0",
         "popper.js": "^1.16.1",
-        "python-shell": "^2.0.3"
-    }
+        "python-shell": "^2.0.3",
+        "sweetalert2": "^10.16.6"
+    },
+    "license": "GNU"
 }

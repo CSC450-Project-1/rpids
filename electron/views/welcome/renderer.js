@@ -21,3 +21,4 @@ function updateSettings(){
 }
 
 document.getElementById("version").innerHTML = window.sysGetVersion();
+$('#logo').attr('draggable',false);

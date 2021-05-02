@@ -3,7 +3,8 @@ const { app, BrowserWindow, ipcMain, dialog, Menu} = require("electron");
 const fs = require('fs');
 const {PythonShell} = require('python-shell');
 const path = require('path')
-const Swal = require("electron-alert");
+const isDev = require('electron-is-dev');
+const exec = require('child_process').exec;
 
 
 function createWelcomeWindow() {
@@ -11,7 +12,7 @@ function createWelcomeWindow() {
     const welcomeWindow = new BrowserWindow({
         width: 920,
         height: 600,
-        icon: __dirname+'../../logo.ico',
+        icon: __dirname+'../../build/icon.ico',
         resizable: true,
         webPreferences: {
             preload: path.join(__dirname, './views/welcome/preload.js'),
@@ -30,9 +31,6 @@ function createWelcomeWindow() {
 
     welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
-    // Open the DevTools.
-    // welcomeWindow.webContents.openDevTools() //TODO JUST FOR DEMO
-
     welcomeWindow.once('ready-to-show', () => {
         welcomeWindow.show()
     })
@@ -41,7 +39,7 @@ function createWelcomeWindow() {
 function createMainWindow() {
     // Create the main browser window.
     const mainWindow = new BrowserWindow({
-        icon: __dirname+'../../logo.ico',
+        icon: __dirname+'../../build/icon.ico',
         resizable: true,
         webPreferences: {
             preload: path.join(__dirname, './views/index/preload.js'),
@@ -49,7 +47,8 @@ function createMainWindow() {
             nodeIntegration: false
         },
         backgroundColor: '#303030',
-        show: false
+        show: false,
+        title: "RPIDS"
     })
 
     // TODO
@@ -59,7 +58,13 @@ function createMainWindow() {
     mainWindow.loadFile('./electron/views/index/index.html');
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools() //TODO JUST FOR DEMO
+    isDev && mainWindow.webContents.openDevTools();
+
+    var options = {
+        scriptPath: path.join(__dirname, '/../engine/'),
+        pythonPath: 'python'
+    };
+
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
@@ -72,82 +77,161 @@ function createMainWindow() {
     })
 }
 
+function getTemplate(settings){
+    if(isDev){
+        const template = [
+            {
+               label: 'Settings',
+               submenu: [
+                  {
+                     label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
+                     click () {
+                        settings["show_welcome_page"] = !settings["show_welcome_page"];
+                        updateSettings(settings);
+                      }
+                  },
+               ]
+            },
+            
+            {
+               label: 'View',
+               submenu: [
+                  {
+                     role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
+                  },
+                  {
+                     role: 'reload'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'resetzoom'
+                  },
+                  {
+                     role: 'zoomin'
+                  },
+                  {
+                     role: 'zoomout'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'togglefullscreen'
+                  }
+               ]
+            },
+            
+            {
+               role: 'window',
+               submenu: [
+                  {
+                     role: 'minimize'
+                  },
+                  {
+                     role: 'close'
+                  }
+               ]
+            },
+            
+            {
+               role: 'help',
+               submenu: [
+                  {
+                     label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
+                  }
+               ]
+            }
+         ]
+         return template;
+    }else{
+        const template = [
+            {
+               label: 'Settings',
+               submenu: [
+                  {
+                     label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
+                     click () {
+                        settings["show_welcome_page"] = !settings["show_welcome_page"];
+                        updateSettings(settings);
+                      }
+                  },
+               ]
+            },
+            
+            {
+               label: 'View',
+               submenu: [
+                  {
+                     role: 'reload'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'resetzoom'
+                  },
+                  {
+                     role: 'zoomin'
+                  },
+                  {
+                     role: 'zoomout'
+                  },
+                  {
+                     type: 'separator'
+                  },
+                  {
+                     role: 'togglefullscreen'
+                  }
+               ]
+            },
+            
+            {
+               role: 'window',
+               submenu: [
+                  {
+                     role: 'minimize'
+                  },
+                  {
+                     role: 'close'
+                  }
+               ]
+            },
+            
+            {
+               role: 'help',
+               submenu: [
+                  {
+                     label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
+                  }
+               ]
+            }
+         ]
+         return template
+    }
+}
+
 //TODO: Add more to menu
 function createMenu(settings){
-    const template = [
-        {
-           label: 'Settings',
-           submenu: [
-              {
-                 label: 'Show initial load window',type: 'checkbox', checked: settings["show_welcome_page"],
-                 click () {
-                    settings["show_welcome_page"] = !settings["show_welcome_page"];
-                    updateSettings(settings);
-                  }
-              },
-           ]
-        },
-        
-        {
-           label: 'View',
-           submenu: [
-              {
-                 role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
-              },
-              {
-                 role: 'reload'
-              },
-              {
-                 type: 'separator'
-              },
-              {
-                 role: 'resetzoom'
-              },
-              {
-                 role: 'zoomin'
-              },
-              {
-                 role: 'zoomout'
-              },
-              {
-                 type: 'separator'
-              },
-              {
-                 role: 'togglefullscreen'
-              }
-           ]
-        },
-        
-        {
-           role: 'window',
-           submenu: [
-              {
-                 role: 'minimize'
-              },
-              {
-                 role: 'close'
-              }
-           ]
-        },
-        
-        {
-           role: 'help',
-           submenu: [
-              {
-                 label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
-              }
-           ]
-        }
-     ]
+    const template = getTemplate(settings);
      
      const menu = Menu.buildFromTemplate(template)
      Menu.setApplicationMenu(menu)
 }
 
 function getSettings(){
-    let settings_raw = fs.readFileSync(path.resolve(__dirname, '../settings.json'));
-    const settings = JSON.parse(settings_raw);
-    return settings;
+     // Check if settings.json exists. If doesn't exist, create one using settings-default template
+    if(fs.existsSync(path.resolve(__dirname, '../settings.json'))) {
+        let settings = fs.readFileSync(path.resolve(__dirname, '../settings.json'));
+        return JSON.parse(settings);
+    }else{
+        let settings = fs.readFileSync(path.resolve(__dirname, '../settings-default.json'));
+        fs.writeFileSync(path.resolve(__dirname, '../settings.json'), settings, function (err) {
+            if (err) throw err;
+        });
+        return JSON.parse(settings);
+    }
 }
 
 function updateSettings(new_settings){
@@ -224,35 +308,6 @@ ipcMain.on('importRuns', (event, args) => {
     });
 });
 
-// Display error message
-ipcMain.on('showError', (event, args) => {
-    let alert = new Swal();
-    let swalOptions = {
-        title: args.title,
-        text: args.message,
-        type: "error",
-        background: "#EEEEEE",
-    };
-    
-    alert.fireFrameless(swalOptions, null, true, false)
-});
-
-// Show error to user if server takes too long to response
-ipcMain.on('showServerError', (event, args) => {
-    let alert = new Swal();
-    let swalOptions = {
-        title: "Failed Starting Server",
-        text: "Do you want to try again?",
-        confirmButtonText: "Try Again",
-        showCancelButton: true,
-        type: "error",
-        background: "#EEEEEE",
-    };
-    
-    alert.fireFrameless(swalOptions, null, true, false).then((result) => {
-        if (result.value) event.sender.send('restartServer');
-    });
-});
 
 // TODO: Called when initiated a new project
 ipcMain.on('createWindow', (event, args) => {
@@ -284,7 +339,7 @@ ipcMain.on('importProject', (event, args) => {
 
 // Close window
 ipcMain.on('closeApp', (event, args) => {
-    app.quit();
+    quitApp();
 });
 
 ipcMain.on('exportData', (event, args)=> {
@@ -301,3 +356,25 @@ ipcMain.on('exportData', (event, args)=> {
         console.error("Error in exporting data: ", err);
       });
  });
+
+ipcMain.on('isDevRequest', (event, args) => {
+    event.returnValue = isDev;
+ })
+
+app.on('before-quit', (event, args) => {
+    event.preventDefault();
+    quitApp();
+})
+
+function quitApp(){
+    const win = BrowserWindow.getFocusedWindow();
+    if(win && win.title=="RPIDS"){
+        // Close dash server instance
+        win.webContents.send('shutdownInit');
+        ipcMain.on('shutdownDone', (event, args) => {
+            app.exit();
+        })
+    }else{
+        app.exit();
+    }
+}

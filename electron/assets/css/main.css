@@ -122,12 +122,21 @@ body,html {
     visibility: hidden;
 }
 
+.hidden{
+    visibility: hidden;
+}
+
 .plot-view{
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.tool-icon{
+    height: 50px;
+    width: 50px;
 }
 
 .tools {
@@ -209,4 +218,13 @@ button.welcome{
     text-align: center;
     vertical-align: auto;
     background-color: rgb(29, 31, 32);
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
