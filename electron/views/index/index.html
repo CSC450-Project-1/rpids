@@ -47,7 +47,7 @@
   
 
           <div class="tab-content">
-            <div class="plot-view">
+            <div class="plot-view mt-3">
                 <img class="loading-gif" id="loading-gif" src="../../assets/img/loading.gif">
                 <iframe id="plotly-frame" src="http://127.0.0.1:8050/" width="100%" height="100%" class="plotly-frame" frameBorder="0"></iframe>
             </div>
@@ -115,6 +115,9 @@
                   aria-describedby="import-label-prepend" required>
                 <label class="custom-file-label" for="import-label" id="import-label-path">Choose file</label>
               </div>
+              <div class="invalid-feedback" id="import-label-feedback">
+                A label file is required.
+              </div>
             </div>
             <h5 class="mt-3">Please import file(s) containing run data</h5>
             <div class="input-group">
@@ -125,6 +128,9 @@
                 <input type="button" class="custom-file-input" id="import-runs"
                   aria-describedby="import-runs-prepend">
                 <label class="custom-file-label" for="import-label" id="import-runs-path">Choose file(s)</label>
+              </div>
+              <div class="invalid-feedback" id="import-runs-feedback">
+                A run file is required.
               </div>
             </div>
           </form>

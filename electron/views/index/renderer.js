@@ -100,14 +100,20 @@
     });
 
     function validateInputs(formData){
+        isValid = true;
         if(formData.analType==""){
             $("#analType").addClass("is-invalid");
-            return false;
-        }else{
-            return true
+            isValid = false;
+        }if(!window.importPaths.label || !window.importPaths.label.length){
+            $("#import-label").addClass("is-invalid");
+            $("#import-label-feedback").addClass("d-block");
+            isValid = false;
+        }if(!window.importPaths.runs || !window.importPaths.runs.length){
+            $("#import-runs").addClass("is-invalid");
+            $("#import-runs-feedback").addClass("d-block");
+            isValid = false;
         }
-        //TODO
-        // console.log("inputs 100% validate, probably")
+        return isValid;
     }
 
     

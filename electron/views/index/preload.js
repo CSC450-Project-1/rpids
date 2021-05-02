@@ -19,6 +19,10 @@ window.sysImportLabel = function() {
         importPaths.label = path;
         let filename = path.replace(/^.*[\\\/]/, '');
         document.querySelector('#import-label-path').innerHTML = filename;
+
+        // Show input field is valid
+        document.querySelector('#import-label').classList.remove('is-invalid');
+        document.querySelector('#import-label-feedback').classList.remove('d-block');
      })
 }
 
@@ -40,6 +44,9 @@ window.sysImportRuns = function() {
                 let filename = paths[0].replace(/^.*[\\\/]/, '')
                 document.querySelector('#import-runs-path').innerHTML = filename;  
             }
+            // Show input field is valid
+            document.querySelector('#import-runs').classList.remove('is-invalid');
+            document.querySelector('#import-runs-feedback').classList.remove('d-block');
         }else{
             window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
             importPaths.runs = [];
