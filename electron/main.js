@@ -3,7 +3,6 @@ const { app, BrowserWindow, ipcMain, dialog, Menu} = require("electron");
 const fs = require('fs');
 const {PythonShell} = require('python-shell');
 const path = require('path')
-const Swal = require("electron-alert");
 const isDev = require('electron-is-dev');
 const exec = require('child_process').exec;
 
@@ -309,35 +308,6 @@ ipcMain.on('importRuns', (event, args) => {
     });
 });
 
-// Display error message
-ipcMain.on('showError', (event, args) => {
-    let alert = new Swal();
-    let swalOptions = {
-        title: args.title,
-        text: args.message,
-        type: "error",
-        background: "#EEEEEE",
-    };
-    
-    alert.fireFrameless(swalOptions, null, true, false)
-});
-
-// Show error to user if server takes too long to response
-ipcMain.on('showServerError', (event, args) => {
-    let alert = new Swal();
-    let swalOptions = {
-        title: "Failed Starting Server",
-        text: "Do you want to try again?",
-        confirmButtonText: "Try Again",
-        showCancelButton: true,
-        type: "error",
-        background: "#EEEEEE",
-    };
-    
-    alert.fireFrameless(swalOptions, null, true, false).then((result) => {
-        if (result.value) event.sender.send('restartServer');
-    });
-});
 
 // TODO: Called when initiated a new project
 ipcMain.on('createWindow', (event, args) => {

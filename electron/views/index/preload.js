@@ -11,7 +11,7 @@ const EXPORT_PATH = ENGINE_PATH+'executables/export_data.exe';
 const DASH_PATH = ENGINE_PATH+'executables/dash_server.exe';
 
 window.importPaths = [];
-window.paths = [];
+window.maxAttempts = isDev() ? 30 : 70;
 
 window.sysImportLabel = function() {
     ipc.send('importLabel');
@@ -30,16 +30,15 @@ window.sysImportRuns = function() {
 }
 
 window.sysProcessImport = function(importFormData) {
-    console.log(importFormData)
-
     // Check consistency of file types
     var re = /(?:\.([^.]+))?$/; // Regex for file type
-    var ext = re.exec(paths[0])[1];
+    var ext = re.exec(importPaths['runs'])[1];
     var is_consistent = true;
 
-    if (paths.length>1) {
-        for (let i = 1; i < paths.length; i++) {
-            if (re.exec(paths[i])[1] != ext) {
+    if (importPaths['runs'].length) {
+        for (let i = 0; i < importPaths['runs'].length; i++) {
+            let test = re.exec(importPaths['runs'][i])[1]
+            if (test != ext) {
                 is_consistent = false;
                 break;
             }
@@ -47,39 +46,49 @@ window.sysProcessImport = function(importFormData) {
         }
     }
 
-    is_consistent ? sendImportPaths(importFormData) : showErrorMessage("Inconsistency Detected", "Please try again with consistent file types");
-    paths = [];
+    is_consistent ? sendImportPaths(importFormData) : window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
+    importPaths = [];
+}
 
-    // TODO: PUT STARTING SERVER IN CORRECT PLACE
+function initStartServer(){
     $('#loading-gif').css('visibility', 'visible');
-    startDashServer();
+    startServer();
+    checkServerStatus(1);
+}
 
-    let max = isDev() ? 30 : 70;
-    checkServerStatus(max, 1);
+window.restartServer = function(){
+    $('#loading-gif').css('visibility', 'visible');
+    checkServerStatus(1);
+}
+
+window.cancelServerRequest = function(){
+    $('#loading-gif').css('visibility', 'hidden');
 }
 
 // Recursive method used to determine when server is done loading
-function checkServerStatus(max, attempt_num){
-    if(attempt_num == max) {
-        ipc.send('showServerError');
-        ipc.on('restartServer', (event) => {     
-            checkServerStatus(max, 0);
+function checkServerStatus(attempt_num){
+    if(attempt_num==maxAttempts){
+        window.showErrorMessage({title: 'Failed Starting Server',
+                                 message: 'Do you want to try again?',
+                                 confirmText: 'Try Again',
+                                 confirmAction: window.restartServer,
+                                 cancelAction: window.cancelServerRequest,
+                                 showCancel: true
+                                });
+    }else{
+        fetch('http://127.0.0.1:8050/')
+        .then(response => {
+            if (!response.ok) {
+                checkServerStatus(++attempt_num);
+            }else{
+                $('#loading-gif').css('visibility', 'hidden');
+                location.reload();
+            }
         })
-        return $('#loading-gif').css('visibility', 'hidden');
+        .catch(error => {
+            checkServerStatus(++attempt_num);
+        });
     }
-
-    fetch('http://127.0.0.1:8050/')
-    .then(response => {
-        if (!response.ok) {
-            checkServerStatus(max, ++attempt_num);
-        }else{
-            $('#loading-gif').css('visibility', 'hidden');
-            location.reload();
-        }
-    })
-    .catch(error => {
-        checkServerStatus(max, ++attempt_num);
-    });
 }
 
 window.sysExportData = function() {
@@ -118,29 +127,23 @@ function sendImportPaths(importFormData) {
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
-            if (err) throw err;
+            if (err) throw err; // TODO SHOW A SWEETALERT ERROR HERE
             console.log('results: ', results);
+            initStartServer();
         });
     }else{
         var opt = function(){
             execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)], function(err, results) {  
               console.log(err)
-              console.log(results.toString());                       
+              console.log(results.toString());   
+              initStartServer();                    
           });  
         }
         opt();
     }
 }
 
-function showErrorMessage(title, message) {
-    // Used to show a Sweet Alert error message
-    ipc.send('showError', {
-        title: title, 
-        message: message
-    })
-}
-
-function startDashServer(){
+function startServer(){
     if(isDev()){
         var options = {
             scriptPath: path.join(__dirname, '../../../engine/'),

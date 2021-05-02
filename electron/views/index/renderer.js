@@ -53,7 +53,23 @@
     //  })
 
     //Add additional handlers here
-    
+
+    // Show a customizable sweet alert error message
+    window.showErrorMessage = function showErrorMessage({title, message, confirmText="", confirmAction=null, cancelAction=null,showCancel=false}){
+        Swal.fire({
+            icon: 'error',
+            title: title,
+            text: message,
+            showCancelButton: showCancel,
+            confirmButtonText: confirmText=="" ? "Ok" : confirmText
+        }).then((result) => {
+            if (result.isConfirmed && confirmAction) {
+                confirmAction();
+            }else if(cancelAction){
+                cancelAction();
+            }
+        })
+    }
 
     function clearForm(){
         //TODO wipes out from selections on new import
@@ -77,7 +93,7 @@
 
     function validateInputs(){
         //TODO
-        console.log("inputs 100% validate, probably")
+        // console.log("inputs 100% validate, probably")
         return true
     }
 
