@@ -80,13 +80,13 @@
         form = $("#import_form")
 
         formData = {
-            "name": form.find("[name='name']").val(),
+            // "name": form.find("[name='name']").val(),
             "dataFormat": form.find("[name='dataFormat']:checked").val(),
             "analType": form.find("[name='analType']").val()
         }
         
         if(validateInputs()){
-            window.sysProcessImport(formData)
+            window.sendImportPaths(formData)
         }
 
     }
@@ -98,9 +98,9 @@
     }
 
     
-    $("#import_label").on('click', window.sysImportLabel)
-    $("#import_runs").on('click', window.sysImportRuns)
-    $("#import_submit").on('click', importSubmit)
+    $("#import-label").on('click', window.sysImportLabel)
+    $("#import-runs").on('click', window.sysImportRuns)
+    $("#import-submit").on('click', importSubmit)
     $("#export-btn").on('click', window.sysExportData)
 
     function attachHandlers() {

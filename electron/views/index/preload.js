@@ -16,28 +16,47 @@ window.maxAttempts = isDev() ? 30 : 70;
 window.sysImportLabel = function() {
     ipc.send('importLabel');
     ipc.on('importLabelDone', (event, path) => {
-        importPaths['label'] = path;
-        document.querySelector('#import_runs').disabled = false;
-
+        importPaths.label = path;
+        let filename = path.replace(/^.*[\\\/]/, '');
+        document.querySelector('#import-label-path').innerHTML = filename;
      })
 }
 
 window.sysImportRuns = function() {
     ipc.send('importRuns');
     ipc.on('importRunDone', (event, paths) => { 
-        importPaths['runs'] = paths;
+        importPaths.runs = paths;
+
+        if(areValidRuns()){
+            // Update input field with selected path
+            if(paths.length>1){
+                var filenames = '';
+                for (let i = 0; i < paths.length; i++) {
+                    let filename = paths[i].replace(/^.*[\\\/]/, '')
+                    filenames += filename+(i==paths.length-1?'':', ');
+                }
+                document.querySelector('#import-runs-path').innerHTML = filenames;
+            }else{
+                let filename = paths[0].replace(/^.*[\\\/]/, '')
+                document.querySelector('#import-runs-path').innerHTML = filename;  
+            }
+        }else{
+            window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
+            importPaths.runs = [];
+            document.querySelector('#import-runs-path').innerHTML = "Choose file(s)";  
+        }
     })
 }
 
-window.sysProcessImport = function(importFormData) {
+function areValidRuns(){
     // Check consistency of file types
     var re = /(?:\.([^.]+))?$/; // Regex for file type
-    var ext = re.exec(importPaths['runs'])[1];
+    var ext = re.exec(importPaths.runs)[1];
     var is_consistent = true;
 
-    if (importPaths['runs'].length) {
-        for (let i = 0; i < importPaths['runs'].length; i++) {
-            let test = re.exec(importPaths['runs'][i])[1]
+    if (importPaths.runs.length) {
+        for (let i = 0; i < importPaths.runs.length; i++) {
+            let test = re.exec(importPaths.runs[i])[1]
             if (test != ext) {
                 is_consistent = false;
                 break;
@@ -45,9 +64,7 @@ window.sysProcessImport = function(importFormData) {
             
         }
     }
-
-    is_consistent ? sendImportPaths(importFormData) : window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
-    importPaths = [];
+    return is_consistent;
 }
 
 function initStartServer(){
@@ -118,7 +135,7 @@ window.sysExportData = function() {
     console.log("Export has been called");
 }
 
-function sendImportPaths(importFormData) {
+window.sendImportPaths = function sendImportPaths(importFormData) {
     if (importPaths.label == undefined) importPaths.label = ""
     if(isDev()){
         var options = {
