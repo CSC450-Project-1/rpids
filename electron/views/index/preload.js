@@ -9,6 +9,7 @@ const ENGINE_PATH = '../../../engine/';
 const IMPORT_PATH = ENGINE_PATH+'executables/import_data.exe';
 const EXPORT_PATH = ENGINE_PATH+'executables/export_data.exe';
 const DASH_PATH = ENGINE_PATH+'executables/dash_server.exe';
+const SERVER_ADDRESS = 'http://127.0.0.1:8050/';
 
 window.importPaths = [];
 window.maxAttempts = isDev() ? 30 : 70;
@@ -17,13 +18,18 @@ window.sysImportLabel = function() {
     ipc.send('importLabel');
     ipc.on('importLabelDone', (event, path) => {
         importPaths.label = path;
-        let filename = path.replace(/^.*[\\\/]/, '');
-        document.querySelector('#import-label-path').innerHTML = filename;
+        document.querySelector('#import-label-path').innerHTML = extractFilename(path);
 
         // Show input field is valid
         document.querySelector('#import-label').classList.remove('is-invalid');
         document.querySelector('#import-label-feedback').classList.remove('d-block');
      })
+}
+
+function extractFilename(path){
+    let path_array = path.split('\\');
+    let last_index = path_array.length - 1;
+    return path_array[last_index].replace(/\-/g, '_');
 }
 
 window.sysImportRuns = function() {
@@ -36,23 +42,31 @@ window.sysImportRuns = function() {
             if(paths.length>1){
                 var filenames = '';
                 for (let i = 0; i < paths.length; i++) {
-                    let filename = paths[i].replace(/^.*[\\\/]/, '')
-                    filenames += filename+(i==paths.length-1?'':', ');
+                    filenames += extractFilename(paths[i])+(i==paths.length-1?'':', ');
                 }
                 document.querySelector('#import-runs-path').innerHTML = filenames;
             }else{
-                let filename = paths[0].replace(/^.*[\\\/]/, '')
-                document.querySelector('#import-runs-path').innerHTML = filename;  
+                document.querySelector('#import-runs-path').innerHTML = extractFilename(paths[0]);  
             }
             // Show input field is valid
             document.querySelector('#import-runs').classList.remove('is-invalid');
             document.querySelector('#import-runs-feedback').classList.remove('d-block');
         }else{
             window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
-            importPaths.runs = [];
-            document.querySelector('#import-runs-path').innerHTML = "Choose file(s)";  
+            resetInputPaths({runs: true});
         }
     })
+}
+
+function resetInputPaths({label=false,runs=false}){
+    if(label){
+        importPaths.label = [];
+        document.querySelector('#import-label-path').innerHTML = "Choose file"
+    }
+    if(runs){
+        importPaths.runs = [];
+        document.querySelector('#import-runs-path').innerHTML = "Choose file(s)";
+    }
 }
 
 function areValidRuns(){
@@ -75,7 +89,6 @@ function areValidRuns(){
 }
 
 function initStartServer(){
-    $('#loading-gif').css('visibility', 'visible');
     startServer();
     checkServerStatus(1);
 }
@@ -100,13 +113,14 @@ function checkServerStatus(attempt_num){
                                  showCancel: true
                                 });
     }else{
-        fetch('http://127.0.0.1:8050/')
+        fetch('http://127.0.0.1:8050')
         .then(response => {
             if (!response.ok) {
                 checkServerStatus(++attempt_num);
             }else{
                 $('#loading-gif').css('visibility', 'hidden');
-                location.reload();
+                // Reload iframe
+                document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src
             }
         })
         .catch(error => {
@@ -142,7 +156,20 @@ window.sysExportData = function() {
     console.log("Export has been called");
 }
 
+function resetImportForm(){
+    // Reset previously selected values for next import
+    resetInputPaths({label: true,runs: true})
+
+    $("#analType").val('');
+    $('input:radio[name=dataFormat]')[0].checked = true;
+}
+
 window.sendImportPaths = function sendImportPaths(importFormData) {
+    $('#loading-gif').css('visibility', 'visible');
+    let route = importFormData.analType=='pca' ? 'pca/2d' : 'hca/dendrogram';
+    var iframe = document.getElementById('plotly-frame');
+    iframe.src = SERVER_ADDRESS+route;
+
     if (importPaths.label == undefined) importPaths.label = ""
     if(isDev()){
         var options = {
@@ -153,6 +180,7 @@ window.sendImportPaths = function sendImportPaths(importFormData) {
         PythonShell.run('import_data.py', options, function (err, results) {
             if (err) throw err; // TODO SHOW A SWEETALERT ERROR HERE
             console.log('results: ', results);
+            resetImportForm();
             initStartServer();
         });
     }else{

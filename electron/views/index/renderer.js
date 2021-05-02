@@ -85,7 +85,7 @@
             "analType": form.find("[name='analType']").val()
         }
         
-        if(validateInputs(formData)){
+        if(isValidForm(formData)){
             $('#importModal').modal('hide');
             window.sendImportPaths(formData)
         }
@@ -99,7 +99,7 @@
         else $("#analType").addClass("is-invalid");
     });
 
-    function validateInputs(formData){
+    function isValidForm(formData){
         isValid = true;
         if(formData.analType==""){
             $("#analType").addClass("is-invalid");
