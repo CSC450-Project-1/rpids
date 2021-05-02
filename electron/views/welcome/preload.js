@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 window.sysGetSettings = function(){
-    const settings = {};
+    var settings = {};
     ipc.invoke('getSettings').then((result) => {
         settings = result;
     })

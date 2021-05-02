@@ -49,7 +49,29 @@
           <div class="tab-content">
             <div class="plot-view mt-3">
                 <img class="loading-gif" id="loading-gif" src="../../assets/img/loading.gif">
-                <iframe id="plotly-frame" src="http://127.0.0.1:8050/" width="100%" height="100%" class="plotly-frame" frameBorder="0"></iframe>
+                <iframe id="plotly-frame" src="http://127.0.0.1:8050" width="100%" height="100%" class="plotly-frame" frameBorder="0"></iframe>
+            </div>
+            <!-- PCA Toolbar -->
+            <div class="btn-group tools hidden" id="pca-toolbar" role="group">
+              <button type="button" onclick="window.changeiFrameSrc('pca/2d')" title="PCA 2D" class="btn btn-dark" id="pca-2d">
+                <img class="tool-icon" src="../../assets/img/icons/pca-2d.png">
+                <label class="m-0" style="display: block;">2D</label>
+              </button>
+              <button type="button" onclick="window.changeiFrameSrc('pca/3d')" title="PCA 3D" class="btn btn-dark" id="pca-3d">
+                <img class="tool-icon" src="../../assets/img/icons/pca-3d.png">
+                <label class="m-0" style="display: block;">3D</label>
+              </button>
+            </div>
+            <!-- HCA Toolbar -->
+            <div class="btn-group tools hidden" id="hca-toolbar" role="group">
+              <button type="button" onclick="window.changeiFrameSrc('hca/dendrogram')" title="HCA Dendrogram" class="btn btn-dark" id="hca-dendrogram">
+                <img class="tool-icon"src="../../assets/img/icons/dendrogram.png">
+                <label class="m-0" style="display: block;">Dendrogram</label>
+              </button>
+              <button type="button" onclick="window.changeiFrameSrc('hca/heatmap')" title="HCA Heat Map" class="btn btn-dark" id="hca-heatmap">
+                <img class="tool-icon" src="../../assets/img/icons/heatmap.png">
+                <label class="m-0" style="display: block;">Heat Map</label>
+              </button>
             </div>
           </div>
           <!-- <div id= "exportDiv">
@@ -67,6 +89,7 @@
     </div>
   </body>
 
+  <!-- Import Form -->
   <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -139,19 +162,6 @@
             <button type="button" class="btn btn-primary" id="import-submit">Import</button>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-            <!-- maybe it would be cool to use a file field?
-            <div class="form-goup">
-              <h5>Please import the label file</h5>
-              <input type="file" class="form-control-file" id="labelFile" name="labelFile">
-            </div> -->
-            </form>
-            <!-- <div class="modal-footer">
-              <button type="button" class="btn btn-primary" id="export_submit" data-toggle="modal" data-target="#importModal">Export File</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            </div> -->
       </div>
     </div>
   </div>

@@ -122,12 +122,21 @@ body,html {
     visibility: hidden;
 }
 
+.hidden{
+    visibility: hidden;
+}
+
 .plot-view{
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.tool-icon{
+    height: 50px;
+    width: 50px;
 }
 
 .tools {

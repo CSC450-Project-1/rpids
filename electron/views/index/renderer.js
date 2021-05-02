@@ -129,6 +129,7 @@
 
    $(function main() {
         console.log("document loaded")
+        window.changeiFrameSrc();
         
         attachHandlers()
 

@@ -164,12 +164,65 @@ function resetImportForm(){
     $('input:radio[name=dataFormat]')[0].checked = true;
 }
 
+function getSettings(){
+    return new Promise(function(resolve, reject) {
+        ipc.invoke('getSettings').then((result) => {
+            resolve(result)
+        })
+    })
+}
+
+function updateSettings(settings){
+    ipc.send('updateSettings', {
+        settings: settings
+    })
+}
+
+window.changeiFrameSrc = function changeiFrameSrc(route=false){
+    if(!route){
+        getSettings().then((data)=>{
+            const settings = data;
+            if ("analysis_type" in settings){
+                let analysis_type = settings['analysis_type'];
+    
+                route = analysis_type=='pca' ? 'pca/2d' : 'hca/dendrogram';
+                var iframe = document.getElementById('plotly-frame');
+                iframe.src = SERVER_ADDRESS+route;
+                showToolBar(route);
+            }
+        });
+    }else{
+        var iframe = document.getElementById('plotly-frame');
+        iframe.src = SERVER_ADDRESS+route;
+        showToolBar(route)
+    }
+}
+
+// Show/hide toolbar of buttons based on analysis type
+function showToolBar(route){
+    if(route.includes('pca')){
+        document.querySelector('#pca-toolbar').classList.remove('hidden');
+        document.querySelector('#hca-toolbar').classList.add('hidden');
+    }else if(route.includes('hca')){
+        document.querySelector('#hca-toolbar').classList.remove('hidden');
+        document.querySelector('#pca-toolbar').classList.add('hidden');
+    }
+}
+
 window.sendImportPaths = function sendImportPaths(importFormData) {
     $('#loading-gif').css('visibility', 'visible');
-    let route = importFormData.analType=='pca' ? 'pca/2d' : 'hca/dendrogram';
-    var iframe = document.getElementById('plotly-frame');
-    iframe.src = SERVER_ADDRESS+route;
+    getSettings().then((data)=>{
+        // Save the analysis type to the settings
+        var settings = data;
+        settings['analysis_type'] = importFormData.analType;
+        updateSettings(settings);
+    
+        changeiFrameSrc();
+        importData(importFormData);
+    })
+}
 
+function importData(importFormData){
     if (importPaths.label == undefined) importPaths.label = ""
     if(isDev()){
         var options = {
@@ -180,9 +233,9 @@ window.sendImportPaths = function sendImportPaths(importFormData) {
         PythonShell.run('import_data.py', options, function (err, results) {
             if (err) throw err; // TODO SHOW A SWEETALERT ERROR HERE
             console.log('results: ', results);
-            resetImportForm();
-            initStartServer();
         });
+        resetImportForm();
+        initStartServer();
     }else{
         var opt = function(){
             execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)], function(err, results) {  
