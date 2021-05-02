@@ -18,6 +18,7 @@ window.sysImportLabel = function() {
     ipc.on('importLabelDone', (event, path) => {
         importPaths['label'] = path;
         document.querySelector('#import_runs').disabled = false;
+
      })
 }
 
@@ -109,10 +110,11 @@ window.sysExportData = function() {
 }
 
 function sendImportPaths(importFormData) {
+    if (importPaths.label == undefined) importPaths.label = ""
     if(isDev()){
         var options = {
             scriptPath: path.join(__dirname, ENGINE_PATH),
-            args: [importPaths.label, JSON.stringify(importPaths.runs), importFormData],
+            args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)],
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
@@ -121,7 +123,7 @@ function sendImportPaths(importFormData) {
         });
     }else{
         var opt = function(){
-            execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), importFormData], function(err, results) {  
+            execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)], function(err, results) {  
               console.log(err)
               console.log(results.toString());                       
           });  
@@ -133,7 +135,7 @@ function sendImportPaths(importFormData) {
 function showErrorMessage(title, message) {
     // Used to show a Sweet Alert error message
     ipc.send('showError', {
-        title: title,
+        title: title, 
         message: message
     })
 }
