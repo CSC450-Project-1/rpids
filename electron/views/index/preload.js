@@ -20,9 +20,7 @@ window.sysImportLabel = function() {
         importPaths.label = path;
         document.querySelector('#import-label-path').innerHTML = extractFilename(path);
 
-        // Show input field is valid
-        document.querySelector('#import-label').classList.remove('is-invalid');
-        document.querySelector('#import-label-feedback').classList.remove('d-block');
+        resetImportValidation({label: true})
      })
 }
 
@@ -30,6 +28,16 @@ function extractFilename(path){
     let path_array = path.split('\\');
     let last_index = path_array.length - 1;
     return path_array[last_index].replace(/\-/g, '_');
+}
+
+function resetImportForm(){
+    // Reset previously selected values for next import
+    resetInputPaths({label: true, runs: true})
+    resetImportValidation({analType: true, label: true, runs: true});
+
+    $("#analType").val('');
+    $('input:radio[name=dataFormat]')[0].checked = true;
+    $('input:radio[name=delimiterOption]')[0].checked = true;
 }
 
 window.sysImportRuns = function() {
@@ -48,14 +56,27 @@ window.sysImportRuns = function() {
             }else{
                 document.querySelector('#import-runs-path').innerHTML = extractFilename(paths[0]);  
             }
-            // Show input field is valid
-            document.querySelector('#import-runs').classList.remove('is-invalid');
-            document.querySelector('#import-runs-feedback').classList.remove('d-block');
+            resetImportValidation({runs: true})
         }else{
             window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
             resetInputPaths({runs: true});
         }
     })
+}
+
+function resetImportValidation({analType=false, label=false, runs=false}){
+        // Show input fields are valid
+        if(analType){
+            document.querySelector('#analType').classList.remove('is-invalid');
+        }
+        if(runs){
+            document.querySelector('#import-runs').classList.remove('is-invalid');
+            document.querySelector('#import-runs-feedback').classList.remove('d-block');
+        }
+        if(label){
+            document.querySelector('#import-label').classList.remove('is-invalid');
+            document.querySelector('#import-label-feedback').classList.remove('d-block');
+        }
 }
 
 function resetInputPaths({label=false,runs=false}){
@@ -161,14 +182,6 @@ window.sysExportData = function() {
     console.log("Export has been called");
 }
 
-function resetImportForm(){
-    // Reset previously selected values for next import
-    resetInputPaths({label: true,runs: true})
-
-    $("#analType").val('');
-    $('input:radio[name=dataFormat]')[0].checked = true;
-}
-
 function getSettings(){
     return new Promise(function(resolve, reject) {
         ipc.invoke('getSettings').then((result) => {
@@ -260,8 +273,8 @@ function importData(importFormData){
             if (err) throw err; // TODO SHOW A SWEETALERT ERROR HERE
             console.log('results: ', results);
             document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
+            resetImportForm();
         });
-        resetImportForm();
         checkServer().then(()=>{
             console.log('Server is running');
         }).catch(()=>{

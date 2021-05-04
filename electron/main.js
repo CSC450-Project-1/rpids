@@ -346,6 +346,7 @@ ipcMain.on('exportData', (event, args)=> {
     dialog.showSaveDialog({
         title: "Export Data File",
         buttonLabel: "Export",
+        defaultPath: 'rpids_export',
         filters: [
             { name: '.csv', extensions: ['csv'] }
         ],

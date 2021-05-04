@@ -5,7 +5,7 @@ import pandas as pd
 
 #load data frame that is passed in
 local_path = sys.argv[1]
-eig_path = local_path[:len(local_path) - 4] + "eigen" + local_path[len(local_path):]
+eig_path = local_path[:len(local_path) - 4] + "_eigen" + local_path[len(local_path):]
 def main():
     data_file = pd.read_json(os.path.abspath('temp/computed_data.json'))
     data_file.to_csv(local_path, index = False)

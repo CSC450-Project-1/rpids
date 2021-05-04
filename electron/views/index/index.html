@@ -105,6 +105,7 @@
               <h5 for="inlineRadio1">Import Name</h5>
               <input type="text" class="form-control" name="name" id="importName">
             </div> -->
+            <!-- Data Format Option -->
             <div class="form-group">
               <h5 for="inlineRadio1" data-toggle="tooltip" title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
               <div class="form-check">
@@ -116,6 +117,19 @@
                 <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
               </div>
             </div>
+            <!-- Delimiter Option -->
+            <div class="form-group">
+              <h5 for="delimiter-radio-1" data-toggle="tooltip" title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma" checked>
+                <label class="form-check-label" for="delimiter-radio-1">Comma</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" value="space">
+                <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
+              </div>
+            </div>
+            <!-- Analysis Type Selection -->
             <div class="form-group">
               <h5 for="inlineRadio1">Analysis Type</h5>
               <select class="custom-select" id="analType" name="analType" required>
@@ -128,6 +142,7 @@
               </div>
             </div>
             <hr>
+            <!-- Label Import -->
             <h5>Please import a label file</h5>
             <div class="input-group">
               <div class="input-group-prepend">
@@ -142,6 +157,7 @@
                 A label file is required.
               </div>
             </div>
+            <!-- Run Data Import -->
             <h5 class="mt-3">Please import file(s) containing run data</h5>
             <div class="input-group">
               <div class="input-group-prepend">
