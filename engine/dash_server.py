@@ -1,4 +1,8 @@
 # Plotly imports
+import sys
+import time
+import os
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
@@ -12,7 +16,7 @@ import dash
 from dash.dependencies import Input, Output
 
 # PCA imports
-import sklearn.utils._cython_blas
+#import sklearn.utils._cython_blas
 from sklearn.decomposition import PCA
 
 # HCA imports
@@ -22,20 +26,11 @@ from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
 
 # Misc imports
-from sklearn.decomposition import PCA
-import pandas as pd
-import os
-import time
-import sys
 
-# HCA imports
-import numpy as np
-from scipy.spatial.distance import pdist, squareform
-np.random.seed(1)
 
-external_stylesheets=['./electron/assets/css/main.css']
+external_stylesheets = ['./electron/assets/css/main.css']
 
-app = dash.Dash(external_stylesheets = external_stylesheets)
+app = dash.Dash(external_stylesheets=external_stylesheets)
 app.layout = html.Div([
     # Represents the URL bar, doesn't render anything
     dcc.Location(id='url', refresh=False),
@@ -83,22 +78,21 @@ app.layout = html.Div([
                       'filename': 'plotly_graph'  # TODO: Can customize filename
                   },
                   'responsive': True,
-                },
-                figure = {
-                    'layout' : {
-                        'autosize': True
-                    }
-                },
-                style= {'flex': '1 1 auto'}),
-                
+              },
+              figure={
+                  'layout': {
+                      'autosize': True
+                  }
+              },
+              style={'flex': '1 1 auto'}),
+
     dcc.Loading(
         id="loading-1",
         type="default",
         fullscreen=True,
         children=html.Div(id="loading-spinner")
     )
-], style = {'display': 'flex', 'flex-flow':'column', 'height':'100vh'})
-
+], style={'display': 'flex', 'flex-flow': 'column', 'height': '100vh'})
 
 
 # Show loading spinner
@@ -108,30 +102,38 @@ def show_loading(value):
     return
 
 # Show/hide orientation dropdown
+
+
 @app.callback(Output('hca-orientation', 'style'), Input('url', 'pathname'))
 def showOrientation(pathname):
-    return {'visibility': 'visible'} if (pathname=='/hca/dendrogram') else {'visibility': 'hidden'}
+    return {'visibility': 'visible'} if (pathname == '/hca/dendrogram') else {'visibility': 'hidden'}
 
 # Show/hide normalization dropdown
+
+
 @app.callback(Output('normalization-dropdown', 'style'), Input('url', 'pathname'))
 def showNormalization(pathname):
     return {'visibility': 'visible'} if (pathname == '/hca/dendrogram' or pathname == '/pca/2d' or pathname == '/pca/3d') else {'visibility': 'hidden'}
 
 # Show/hide marker sizing
+
+
 @app.callback(Output('marker-customize', 'style'), Input('url', 'pathname'))
 def showMarkerSizing(pathname):
-    return {'visibility': 'visible'} if (pathname!='/hca/dendrogram') else {'visibility': 'hidden'}
+    return {'visibility': 'visible'} if (pathname != '/hca/dendrogram') else {'visibility': 'hidden'}
 
 # Use URL routing to show different plots
+
+
 @app.callback(Output('plot', 'figure'),
               Input('url', 'pathname'), Input('normalization-dropdown', 'value'), Input('hca-dropdown', 'value'), Input('marker-slider', 'value'))
 def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
     fig = go.Figure()
-    if pathname =='/shutdown':
+    if pathname == '/shutdown':
         shutdown()
     elif(os.path.isfile("./temp/data.json")):
         layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)')
+                           plot_bgcolor='rgba(0,0,0,0)')
         dataset = pd.read_json("./temp/data.json")
 
         columns = dataset.columns.tolist()
@@ -140,19 +142,24 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
         data.drop(data.iloc[:, (dataset.columns.size - 2):dataset.columns.size], inplace=True, axis=1)
         if pathname == '/pca/2d':
             fig = initShowPCA('2D', dataset, data, normalization_type)
+            fig = updateMarkerSize(fig, marker_size, layout)
         elif pathname == '/pca/3d':
             fig = initShowPCA('3D', dataset, data, normalization_type)
+            fig = updateMarkerSize(fig, marker_size, layout)
         elif pathname == '/hca/dendrogram':
-            fig = showHCADendrogram(dataset, data, hca_orientation, normalization_type)
+            fig = showHCADendrogram(
+                dataset, data, hca_orientation, normalization_type)
+            fig = updateMarkerSize(fig, marker_size, layout)
         elif pathname == '/hca/heatmap':
             fig = showHCAHeatmap(dataset)
-        fig = updateMarkerSize(fig, marker_size, layout)
         fig.to_json('./temp/data.json')
 
     return fig
 
+
 def shutdown():
     sys.stderr.close()
+
 
 def initShowPCA(type, dataset, data, normalization_type):
     if normalization_type == 'linear_rescaling':
@@ -162,7 +169,8 @@ def initShowPCA(type, dataset, data, normalization_type):
         normalized_data = (data-data.mean())/data.std()
     else:
         normalized_data = pd.DataFrame.from_dict(data)
-    return showPCA2D(dataset, normalized_data) if (type=='2D') else showPCA3D(dataset, normalized_data)
+    return showPCA2D(dataset, normalized_data) if (type == '2D') else showPCA3D(dataset, normalized_data)
+
 
 def showPCA2D(dataset, normalized_data):
     pca = PCA(n_components=2)
@@ -176,7 +184,7 @@ def showPCA2D(dataset, normalized_data):
     eigen_values = pca.explained_variance_
     eigen_vectors = pca.components_
     fig = px.scatter(components, x=0, y=1,
-                        hover_name=dataset["run"], color=dataset["Samples"])
+                     hover_name=dataset["run"], color=dataset["Samples"])
     eigen_values = pca.explained_variance_
     eigen_vectors = pca.components_
     eigen_data = np.array([eigen_values, [eigen_vectors]])
@@ -185,11 +193,12 @@ def showPCA2D(dataset, normalized_data):
     components_df["Samples"] = dataset["Samples"].values.tolist()
     components_df["run"] = dataset["run"].values.tolist()
     components_df.to_json("./temp/computed_data.json")
-    
+
     # with open(, "w") as outfile:
     #     json_object = json.dumps(json_eig, indent = 4)
     #     outfile.write(json_object)
     return fig
+
 
 def showPCA3D(dataset, normalized_data):
     X = []
@@ -214,6 +223,7 @@ def showPCA3D(dataset, normalized_data):
     components_df["run"] = dataset["run"].values.tolist()
     components_df.to_json("./temp/computed_data.json")
     return fig
+
 
 def showHCADendrogram(dataset, data, orientation, normalization_type):
     if normalization_type == 'linear_rescaling':
@@ -242,6 +252,7 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
             fig.update_layout(width=4000, height=1750)
     return fig
 
+
 def showHCAHeatmap(dataset):
     label = []
     samples = dataset["Samples"].tolist()
@@ -250,15 +261,13 @@ def showHCAHeatmap(dataset):
         label.append(samples[i] + " " + runs[i])
     df = dataset.drop('Samples', axis=1)
     df = df.drop('run', axis=1)
-    data_array = df.values
-    data_array = data_array.transpose()
     fig = ff.create_dendrogram(
-        data_array, orientation='bottom', labels=label)
+        df, orientation='bottom', labels=label)
     for i in range(len(fig['data'])):
         fig['data'][i]['yaxis'] = 'y2'
 
     dendro_side = ff.create_dendrogram(
-        data_array, orientation='right')
+        df, orientation='right', labels=label)
     for i in range(len(dendro_side['data'])):
         dendro_side['data'][i]['xaxis'] = 'x2'
 
@@ -267,7 +276,7 @@ def showHCAHeatmap(dataset):
 
     dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
     dendro_leaves = list(map(int, dendro_leaves))
-    data_dist = pdist(data_array)
+    data_dist = pdist(df)
     heat_data = squareform(data_dist)
     heat_data = heat_data[dendro_leaves, :]
     heat_data = heat_data[:, dendro_leaves]
@@ -287,57 +296,57 @@ def showHCAHeatmap(dataset):
     for data in heatmap:
         fig.add_trace(data)
 
-    fig.update_layout({'width': 1200, 'height': 1200,
-                        'showlegend': False, 'hovermode': 'closest',
-                        })
+    fig.update_layout({'showlegend': False, 'hovermode': 'closest',
+                       })
 
     fig.update_layout(xaxis={'domain': [.15, 1],
-                                'mirror': False,
-                                'showgrid': False,
-                                'showline': False,
-                                'zeroline': False,
-                                'ticks': ""})
+                             'mirror': False,
+                             'showgrid': False,
+                             'showline': False,
+                             'zeroline': False,
+                             'ticks': ""})
 
     fig.update_layout(xaxis2={'domain': [0, .15],
-                                'mirror': False,
-                                'showgrid': False,
-                                'showline': False,
-                                'zeroline': False,
-                                'showticklabels': False,
-                                'ticks': ""})
+                              'mirror': False,
+                              'showgrid': False,
+                              'showline': False,
+                              'zeroline': False,
+                              'showticklabels': False,
+                              'ticks': ""})
 
     fig.update_layout(yaxis={'domain': [0, .85],
-                                'mirror': False,
-                                'showgrid': False,
-                                'showline': False,
-                                'zeroline': False,
-                                'showticklabels': False,
-                                'ticks': ""
-                                })
+                             'mirror': False,
+                             'showgrid': False,
+                             'showline': False,
+                             'zeroline': False,
+                             'showticklabels': False,
+                             'ticks': ""
+                             })
 
     fig.update_layout(yaxis2={'domain': [.825, .975],
-                                'mirror': False,
-                                'showgrid': False,
-                                'showline': False,
-                                'zeroline': False,
-                                'showticklabels': False,
-                                'ticks': ""})
+                              'mirror': False,
+                              'showgrid': False,
+                              'showline': False,
+                              'zeroline': False,
+                              'showticklabels': False,
+                              'ticks': ""})
     return fig
+
 
 def updateMarkerSize(fig, marker_size, layout):
     # Customize marker size
     fig.update_traces(marker=dict(
         size=marker_size
-        )
+    )
     )
 
     fig.update_layout(layout)
     fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
-                        zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+                     zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
-                        zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
+                     zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
     return fig
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False) # TODO: Turn debug off when deploying
+    app.run_server(debug=False)  # TODO: Turn debug off when deploying
