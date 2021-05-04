@@ -93,13 +93,18 @@ function initStartServer(){
     checkServerStatus(1);
 }
 
+function updateLoadingGif(visible=false){
+    let val = visible ? 'visible' : 'hidden';
+    $('#loading-gif').css('visibility', val);
+}
+
 window.restartServer = function(){
-    $('#loading-gif').css('visibility', 'visible');
+    updateLoadingGif(true);
     checkServerStatus(1);
 }
 
 window.cancelServerRequest = function(){
-    $('#loading-gif').css('visibility', 'hidden');
+    updateLoadingGif(false);
 }
 
 // Recursive method used to determine when server is done loading
@@ -118,7 +123,7 @@ function checkServerStatus(attempt_num){
             if (!response.ok) {
                 checkServerStatus(++attempt_num);
             }else{
-                $('#loading-gif').css('visibility', 'hidden');
+                updateLoadingGif(false);
                 // Reload iframe
                 document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src
             }
@@ -209,8 +214,17 @@ function showToolBar(route){
     }
 }
 
-window.sendImportPaths = function sendImportPaths(importFormData) {
-    $('#loading-gif').css('visibility', 'visible');
+window.initImport = function initImport(importFormData) {
+    checkServer().then(()=>{
+        console.log('Server is running');
+        sendImportPaths(importFormData);
+    }).catch(()=>{
+        updateLoadingGif(true);
+        sendImportPaths(importFormData);
+    })
+}
+
+function sendImportPaths(importFormData){
     getSettings().then((data)=>{
         // Save the analysis type to the settings
         var settings = data;
@@ -219,6 +233,18 @@ window.sendImportPaths = function sendImportPaths(importFormData) {
     
         changeiFrameSrc();
         importData(importFormData);
+    })
+}
+
+function checkServer(){
+    return new Promise(function (resolve, reject){
+        fetch('http://127.0.0.1:8050')
+        .then(response => {
+            resolve(response.ok);
+        })
+        .catch(error => {
+            reject(error);
+        });
     })
 }
 
@@ -235,9 +261,14 @@ function importData(importFormData){
                 window.showErrorMessage({title: 'Inconsistency Detected', message: results.toString()});
             } // TODO SHOW A SWEETALERT ERROR HERE
             console.log('results: ', results);
+            document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
         });
         resetImportForm();
-        initStartServer();
+        checkServer().then(()=>{
+            console.log('Server is running');
+        }).catch(()=>{
+            initStartServer();
+        })
     }else{
         var opt = function(){
             execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)], function(err, results) {  
