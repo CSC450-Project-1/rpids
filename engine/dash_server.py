@@ -133,7 +133,6 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
         layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)')
         dataset = pd.read_json("./temp/data.json")
-
         columns = dataset.columns.tolist()
 
         data = pd.DataFrame.from_dict(dataset)

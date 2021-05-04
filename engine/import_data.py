@@ -15,7 +15,6 @@ if sys.argv[1] is not None:
 else:
     label_file = ""
 form_data = json.loads(sys.argv[3])
-delimiter = json.loads(sys.argv[3])
 
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -63,7 +62,7 @@ def clear_json():
 #___________________________________________________________
 def read_label():
      column = []
-     if (delimiter["delimiter"] == 'comma'):
+     if (form_data["delimiter"] == 'comma'):
         with open(label_file) as label_csv:
             csvReader = csv.reader(label_csv)
             for row in csvReader:
@@ -143,7 +142,7 @@ def read_excel_file():
 #df     Dataframe object        Holds data from the read CSV file
 #_________________________________________________________________
 def read_csv_file():
-    if delimiter["delimiter"] == 'comma':
+    if form_data["delimiter"] == 'comma':
         if form_data["dataFormat"] == 'rows':
             df = pd.read_csv(data_files[0], names = range(len(read_label())))
         else:
@@ -174,36 +173,27 @@ def read_csv_file():
 def read_data():
      #find csv, excel, txt extension returns -1 if not found or the first index if found
      #if excel extension and not csv, use read_excel to import data
-     if delimiter["delimiter"] == 'comma':
-        if excel_ext > 1 and csv_ext == -1:
-            if form_data["dataFormat"] == 'rows':
-                df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
-            else:
-                df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
+    if excel_ext > 1 and csv_ext == -1 and form_data["delimiter"] == 'comma':
+        if form_data["dataFormat"] == 'rows':
+            df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
+        else:
+            df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
         #if csv or text files use read_csv to import data
-        elif excel_ext == -1:
-            if form_data["dataFormat"] == 'rows':
-                df_from_each_file = (pd.read_csv(f, names = read_label())for f in data_files)
-            else:
-                df_from_each_file = (pd.read_csv(f, names = read_label()).transpose() for f in data_files)
-        #concatenate each dataframe
-        concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
-     else:
-          if excel_ext > 1 and csv_ext == -1:
-            if form_data["dataFormat"] == 'rows':
-                df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
-            else:
-                df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
-        #if csv or text files use read_csv to import data
-          elif excel_ext == -1:
-            if form_data["dataFormat"] == 'rows':
-                df_from_each_file = (pd.read_csv(f, names = read_label(), sep = r'\s+')for f in data_files)
-            else:
-                df_from_each_file = (pd.read_csv(f, names = read_label(), sep = r'\s+').transpose() for f in data_files)
-        #concatenate each dataframe
-          concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+    elif excel_ext == -1 and form_data["delimiter"] == 'comma':
+        if form_data["dataFormat"] == 'rows':
+            df_from_each_file = (pd.read_csv(f, names = read_label())for f in data_files)
+        else:
+            df_from_each_file = (pd.read_csv(f, names = read_label()).transpose() for f in data_files)
 
-     return concatenated_df
+    elif excel_ext == -1 and form_data["delimiter"] == 'space':
+        if form_data["dataFormat"] == 'rows':
+            df_from_each_file = (pd.read_csv(f, names = read_label(), sep = r'\s+') for f in data_files)
+        else:
+            df_from_each_file = (pd.read_csv(f, names = read_label(), sep = r'\s+').transpose() for f in data_files)
+       
+    concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+
+    return concatenated_df
 
 #______________________________________________________________
 #Read All Encompassing File function:

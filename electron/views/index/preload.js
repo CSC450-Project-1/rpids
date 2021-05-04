@@ -262,7 +262,6 @@ function checkServer(){
 }
 
 function importData(importFormData){
-    var m;
     if (importPaths.label == undefined) importPaths.label = ""
     if(isDev()){
         var options = {
@@ -271,9 +270,10 @@ function importData(importFormData){
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
+            var m = "default error";
             if(results){
-                if (results[0].includes("number of passed names")){
-                    m = "value error"
+                if (results[0].includes("Oops! <class 'ValueError'>")){
+                    m = "Please select the correct format of the data and retry."
                 } // TODO SHOW A SWEETALERT ERROR HERE
             
                 window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
