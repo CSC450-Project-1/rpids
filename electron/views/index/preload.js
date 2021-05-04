@@ -275,8 +275,9 @@ function importData(importFormData){
                 if (results[0].includes("number of passed names")){
                     m = "value error"
                 } // TODO SHOW A SWEETALERT ERROR HERE
+            
+                window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
             }
-            window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
             console.log('results: ', results);
             document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
             resetImportForm();
@@ -296,6 +297,7 @@ function importData(importFormData){
     }
         opt();
     }
+    console.log(importFormData);
 }
 
 function startServer(){

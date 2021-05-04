@@ -15,6 +15,7 @@ if sys.argv[1] is not None:
 else:
     label_file = ""
 form_data = json.loads(sys.argv[3])
+delimiter = json.loads(sys.argv[3])
 
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -62,15 +63,22 @@ def clear_json():
 #___________________________________________________________
 def read_label():
      column = []
+     if (delimiter["delimiter"] == 'comma'):
+        with open(label_file) as label_csv:
+            csvReader = csv.reader(label_csv)
+            for row in csvReader:
+                column = row
+            if len(column) == 0:
+                return print("Invalid label file!")
+     else:
+        label_csv  = open(label_file)
+        file_contents = label_csv.read()
+        contents_split = file_contents.splitlines()
 
-     with open(label_file) as label_csv:
-         csvReader = csv.reader(label_csv)
-         for row in csvReader:
-             column = row
-         if len(column) == 0:
-             return print("Invalid label file!")
-
-         return column
+        if len(contents_split) == 0:
+            return print("Invalid label file!")
+        column = contents_split
+     return column
 
 #___________________________________________________________________
 #Read Excel Label function:
@@ -135,10 +143,17 @@ def read_excel_file():
 #df     Dataframe object        Holds data from the read CSV file
 #_________________________________________________________________
 def read_csv_file():
-    if form_data["dataFormat"] == 'rows':
-        df = pd.read_csv(data_files[0], names = range(len(read_label())))
+    if delimiter["delimiter"] == 'comma':
+        if form_data["dataFormat"] == 'rows':
+            df = pd.read_csv(data_files[0], names = range(len(read_label())))
+        else:
+            df = pd.read_csv(data_files[0], names = range(len(read_label()))).transpose()
     else:
-        df = pd.read_csv(data_files[0], names = range(len(read_label()))).transpose()
+        if form_data["dataFormat"] == 'rows':
+            df = pd.read_csv(data_files[0], names = range(len(read_label())), sep = r"\s+")
+        else:
+            df = pd.read_csv(data_files[0], names = range(len(read_label())), sep = r"\s+").transpose()
+
     return df
 
 
@@ -159,19 +174,35 @@ def read_csv_file():
 def read_data():
      #find csv, excel, txt extension returns -1 if not found or the first index if found
      #if excel extension and not csv, use read_excel to import data
-     if excel_ext > 1 and csv_ext == -1:
-        if form_data["dataFormat"] == 'rows':
-            df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
-        else:
-            df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
-     #if csv or text files use read_csv to import data
-     elif excel_ext == -1:
-        if form_data["dataFormat"] == 'rows':
-            df_from_each_file = (pd.read_csv(f, names = read_label())for f in data_files)
-        else:
-            df_from_each_file = (pd.read_csv(f, names = read_label()).transpose() for f in data_files)
-    #concatenate each dataframe
-     concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+     if delimiter["delimiter"] == 'comma':
+        if excel_ext > 1 and csv_ext == -1:
+            if form_data["dataFormat"] == 'rows':
+                df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
+            else:
+                df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
+        #if csv or text files use read_csv to import data
+        elif excel_ext == -1:
+            if form_data["dataFormat"] == 'rows':
+                df_from_each_file = (pd.read_csv(f, names = read_label())for f in data_files)
+            else:
+                df_from_each_file = (pd.read_csv(f, names = read_label()).transpose() for f in data_files)
+        #concatenate each dataframe
+        concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+     else:
+          if excel_ext > 1 and csv_ext == -1:
+            if form_data["dataFormat"] == 'rows':
+                df_from_each_file = (pd.read_excel(f, names = read_label()) for f in data_files)
+            else:
+                df_from_each_file = (pd.read_excel(f, names = read_label()).transpose() for f in data_files)
+        #if csv or text files use read_csv to import data
+          elif excel_ext == -1:
+            if form_data["dataFormat"] == 'rows':
+                df_from_each_file = (pd.read_csv(f, names = read_label(), sep = r'\s+')for f in data_files)
+            else:
+                df_from_each_file = (pd.read_csv(f, names = read_label(), sep = r'\s+').transpose() for f in data_files)
+        #concatenate each dataframe
+          concatenated_df = pd.concat(df_from_each_file, ignore_index=True, sort = False)
+
      return concatenated_df
 
 #______________________________________________________________
@@ -221,42 +252,43 @@ def getFileNames():
 
 def main():
     try:
-     if(len(data_files) > 1 and label_file != ""):
-         df = read_data()
-     elif label_file == "":
-         df = read_all_encompassing_file()
-     elif excel_ext > 1 and label_file != "" and len(data_files) == 1:
-         df = read_excel_file()
-     elif csv_ext > 1 and label_file != "" and len(data_files) == 1:
-         df = read_csv_file()
+        if(len(data_files) > 1 and label_file != ""):
+            df = read_data()
+        elif label_file == "":
+            df = read_all_encompassing_file()
+        elif excel_ext > 1 and label_file != "" and len(data_files) == 1:
+            df = read_excel_file()
+        elif csv_ext > 1 or txt_ext > 1 and label_file != "" and len(data_files) == 1:
+            df = read_csv_file()
 
 
          
-     if(len(label_file)> 1):
-        if (csv_ext > 1):
-            names = read_label()
-        else: 
-            names = read_excel_label()
-        for f in range(len(names)):
-            names[f] = names[f].strip()
-        file_names = getFileNames()
-        file_name_list = []
-        for j in range(len(file_names)):
-            for i in range(len(names)):
-                file_name_list.append(file_names[j])
-        names = names * len(data_files)
-        df["Samples"] = names
-        df["run"] = file_name_list
+        if(len(label_file)> 1):
+            if (csv_ext > 1 or txt_ext > 1):
+                names = read_label()
+            else: 
+                names = read_excel_label()
+            for f in range(len(names)):
+                names[f] = names[f].strip()
+            file_names = getFileNames()
+            file_name_list = []
+            for j in range(len(file_names)):
+                for i in range(len(names)):
+                    file_name_list.append(file_names[j])
+            names = names * len(data_files)
+            df["Samples"] = names
+            df["run"] = file_name_list
        
         df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
         sys.stdout.flush()
-     else: 
+    #  else: 
 
-        df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+        # df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
        
-        sys.stdout.flush()
+        # sys.stdout.flush()
     except Exception as e:
         print("Oops!", e.__class__, e, "occurred.")
+        print(names)
 
 
 
