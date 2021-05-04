@@ -82,6 +82,7 @@
         formData = {
             // "name": form.find("[name='name']").val(),
             "dataFormat": form.find("[name='dataFormat']:checked").val(),
+            "delimiter": form.find("[name='delimiterOption']:checked").val(),
             "analType": form.find("[name='analType']").val()
         }
         
