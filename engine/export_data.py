@@ -17,10 +17,6 @@ def main():
     f = open("temp/eig_data.json", "r+")
     f.seek(0)
     f.truncate()
-    f = open("temp/data.json", "r+")
-    f.seek(0)
-    f.truncate()
-    sys.stdout.flush()
-
+    
 if __name__ == "__main__":
     main()

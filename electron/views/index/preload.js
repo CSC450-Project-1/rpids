@@ -231,7 +231,9 @@ function importData(importFormData){
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
-            if (err) throw err; // TODO SHOW A SWEETALERT ERROR HERE
+            if (results[0].includes("Oops!")){
+                window.showErrorMessage({title: 'Inconsistency Detected', message: results.toString()});
+            } // TODO SHOW A SWEETALERT ERROR HERE
             console.log('results: ', results);
         });
         resetImportForm();
@@ -242,8 +244,8 @@ function importData(importFormData){
               console.log(err)
               console.log(results.toString());   
               initStartServer();                    
-          });  
-        }
+          });
+    }
         opt();
     }
 }
@@ -268,6 +270,7 @@ function startServer(){
         }
         opt();
     }
+    console.log('server started');
 
 }
 

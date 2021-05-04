@@ -104,15 +104,16 @@
         if(formData.analType==""){
             $("#analType").addClass("is-invalid");
             isValid = false;
-        }if(!window.importPaths.label || !window.importPaths.label.length){
-            $("#import-label").addClass("is-invalid");
-            $("#import-label-feedback").addClass("d-block");
-            isValid = false;
         }if(!window.importPaths.runs || !window.importPaths.runs.length){
             $("#import-runs").addClass("is-invalid");
             $("#import-runs-feedback").addClass("d-block");
             isValid = false;
         }
+        // if(!window.importPaths.label || !window.importPaths.label.length){
+        //     $("#import-label").addClass("is-invalid");
+        //     $("#import-label-feedback").addClass("d-block");
+        //     isValid = false;
+        // }
         return isValid;
     }
 
