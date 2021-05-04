@@ -31,7 +31,7 @@ function createWelcomeWindow() {
 
     welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
-    welcomeWindow.once('ready-to-show', () => {
+    welcomeWindow.webContents.on('did-finish-load', () => {
         welcomeWindow.show()
     })
 }
@@ -66,10 +66,11 @@ function createMainWindow() {
     };
 
 
-    mainWindow.once('ready-to-show', () => {
+    mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show()
         mainWindow.maximize()
     })
+  
 
     // Close app when main window is closed
     mainWindow.once('close', () => {
