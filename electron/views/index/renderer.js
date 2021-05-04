@@ -87,7 +87,7 @@
         
         if(isValidForm(formData)){
             $('#importModal').modal('hide');
-            window.sendImportPaths(formData)
+            window.initImport(formData)
         }
 
     }
