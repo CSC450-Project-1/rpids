@@ -1,190 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../assets/css/main.css">
-    <link rel="stylesheet" href="../../../node_modules/sweetalert2/dist/sweetalert2.min.css">
-  </head>
 
-  <body>
-    <div class="container-fluid p-0 "> 
-      <div class="row m-0 h-100 w-100">
-        <div class="sidebar shadow d-flex flex-column">
-          <ul class="nav flex-column my-4">
-            <li class="nav-item my-4">
-              <a data-toggle="modal" data-target="#importModal">
-                <i class="fas fa-file-upload icon"></i>
-                <div class="mx-auto" >Import</div>
-              </a>  
-            </li>
-            <li class="nav-item my-4">
-              <a id="export-btn">
-                <i class="fas fa-file-export icon"></i>
-                <div class="mx-auto" >Export</div>
-              </a>  
-            </li>
-          </ul>
-          </ul>
-          <div class="logo mt-auto">
-            <img class="img-fluid" src="../../assets/img/logo.png"/>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="stylesheet" href="../../../node_modules/sweetalert2/dist/sweetalert2.min.css">
+</head>
+
+<body>
+  <div class="container-fluid p-0 ">
+    <div class="row m-0 h-100 w-100">
+      <div class="sidebar shadow d-flex flex-column">
+        <ul class="nav flex-column my-4">
+          <li class="nav-item my-4">
+            <a data-toggle="modal" data-target="#importModal">
+              <i class="fas fa-file-upload icon"></i>
+              <div class="mx-auto">Import</div>
+            </a>
+          </li>
+          <li class="nav-item my-4">
+            <a id="export-btn">
+              <i class="fas fa-file-export icon"></i>
+              <div class="mx-auto">Export</div>
+            </a>
+          </li>
+        </ul>
+        </ul>
+        <div class="logo mt-auto">
+          <img class="img-fluid" src="../../assets/img/logo.png" />
+        </div>
+      </div>
+      <div class="drawer">
+        <h1 class="empty-drawer m-auto">
+          <span class="my-2"><i class="fas fa-file-upload icon mr-3"></i><span
+              style="font-weight: normal;">Import</span></span> to begin
+        </h1>
+        <ul class="tabs">
+          <li class="tab active" data-tab-id="">
+            <span class="tab-label">Tab 1</span>
+            <span class="tab-close"><i class="fas fa-times"></i></span>
+          </li>
+
+        </ul>
+
+
+        <div class="tab-content">
+          <div class="plot-view mt-3">
+            <img class="loading-gif" id="loading-gif" src="../../assets/img/loading.gif">
+            <iframe id="plotly-frame" src="http://127.0.0.1:8050" width="100%" height="100%" class="plotly-frame"
+              frameBorder="0"></iframe>
+          </div>
+          <!-- PCA Toolbar -->
+          <div class="btn-group tools hidden" id="pca-toolbar" role="group">
+            <button type="button" onclick="window.changeiFrameSrc('pca/2d')" title="PCA 2D" class="btn btn-dark"
+              id="pca-2d">
+              <img class="tool-icon" src="../../assets/img/icons/pca-2d.png">
+              <label class="m-0" style="display: block;">2D</label>
+            </button>
+            <button type="button" onclick="window.changeiFrameSrc('pca/3d')" title="PCA 3D" class="btn btn-dark"
+              id="pca-3d">
+              <img class="tool-icon" src="../../assets/img/icons/pca-3d.png">
+              <label class="m-0" style="display: block;">3D</label>
+            </button>
+          </div>
+          <!-- HCA Toolbar -->
+          <div class="btn-group tools hidden" id="hca-toolbar" role="group">
+            <button type="button" onclick="window.changeiFrameSrc('hca/dendrogram')" title="HCA Dendrogram"
+              class="btn btn-dark" id="hca-dendrogram">
+              <img class="tool-icon" src="../../assets/img/icons/dendrogram.png">
+              <label class="m-0" style="display: block;">Dendrogram</label>
+            </button>
+            <button type="button" onclick="window.changeiFrameSrc('hca/heatmap')" title="HCA Heat Map"
+              class="btn btn-dark" id="hca-heatmap">
+              <img class="tool-icon" src="../../assets/img/icons/heatmap.png">
+              <label class="m-0" style="display: block;">Heat Map</label>
+            </button>
           </div>
         </div>
-        <div class="drawer">
-          <h1 class="empty-drawer m-auto">
-            <span class="my-2"><i class="fas fa-file-upload icon mr-3"></i><span style="font-weight: normal;">Import</span></span> to begin
-          </h1>
-          <ul class="tabs">
-            <li class="tab active" data-tab-id="">
-              <span class="tab-label">Tab 1</span>
-              <span class="tab-close"><i class="fas fa-times"></i></span>
-            </li>
-           
-          </ul>
-  
-
-          <div class="tab-content">
-            <div class="plot-view mt-3">
-                <img class="loading-gif" id="loading-gif" src="../../assets/img/loading.gif">
-                <iframe id="plotly-frame" src="http://127.0.0.1:8050" width="100%" height="100%" class="plotly-frame" frameBorder="0"></iframe>
-            </div>
-            <!-- PCA Toolbar -->
-            <div class="btn-group tools hidden" id="pca-toolbar" role="group">
-              <button type="button" onclick="window.changeiFrameSrc('pca/2d')" title="PCA 2D" class="btn btn-dark" id="pca-2d">
-                <img class="tool-icon" src="../../assets/img/icons/pca-2d.png">
-                <label class="m-0" style="display: block;">2D</label>
-              </button>
-              <button type="button" onclick="window.changeiFrameSrc('pca/3d')" title="PCA 3D" class="btn btn-dark" id="pca-3d">
-                <img class="tool-icon" src="../../assets/img/icons/pca-3d.png">
-                <label class="m-0" style="display: block;">3D</label>
-              </button>
-            </div>
-            <!-- HCA Toolbar -->
-            <div class="btn-group tools hidden" id="hca-toolbar" role="group">
-              <button type="button" onclick="window.changeiFrameSrc('hca/dendrogram')" title="HCA Dendrogram" class="btn btn-dark" id="hca-dendrogram">
-                <img class="tool-icon"src="../../assets/img/icons/dendrogram.png">
-                <label class="m-0" style="display: block;">Dendrogram</label>
-              </button>
-              <button type="button" onclick="window.changeiFrameSrc('hca/heatmap')" title="HCA Heat Map" class="btn btn-dark" id="hca-heatmap">
-                <img class="tool-icon" src="../../assets/img/icons/heatmap.png">
-                <label class="m-0" style="display: block;">Heat Map</label>
-              </button>
-            </div>
-          </div>
-          <!-- <div id= "exportDiv">
+        <!-- <div id= "exportDiv">
             <button id= "exportBtn">
               <a data-toggle="modal" data-target="#exampleModal2">Export</a>
             </button>
           </div> -->
-          <!-- <ul class="nav nav-tabs w-100">
+        <!-- <ul class="nav nav-tabs w-100">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Import_1</a>
             </li>
           </ul> -->
-        </div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
-  <!-- Import Form -->
-  <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="importModalLabel">Import Session Data</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="import_form" enctype="multipart/form-data"> 
-            <!-- <div class="form-group">
+<!-- Import Form -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="importModalLabel">Import Session Data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="import_form" enctype="multipart/form-data">
+          <!-- <div class="form-group">
               <h5 for="inlineRadio1">Import Name</h5>
               <input type="text" class="form-control" name="name" id="importName">
             </div> -->
-            <!-- Data Format Option -->
-            <div class="form-group">
-              <h5 for="inlineRadio1" data-toggle="tooltip" title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns" checked>
-                <label class="form-check-label" for="inlineRadio1">Column</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows">
-                <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
-              </div>
+          <!-- Data Format Option -->
+          <div class="form-group">
+            <h5 for="inlineRadio1" data-toggle="tooltip"
+              title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns" checked>
+              <label class="form-check-label" for="inlineRadio1">Column</label>
             </div>
-            <!-- Delimiter Option -->
-            <div class="form-group">
-              <h5 for="delimiter-radio-1" data-toggle="tooltip" title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma" checked>
-                <label class="form-check-label" for="delimiter-radio-1">Comma</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" value="space">
-                <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
-              </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows">
+              <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
             </div>
-            <!-- Analysis Type Selection -->
-            <div class="form-group">
-              <h5 for="inlineRadio1">Analysis Type</h5>
-              <select class="custom-select" id="analType" name="analType" required>
-                <option selected value="">Please select an analysis type</option>
-                <option value="pca">Principal Component Analysis (PCA)</option>
-                <option value="hca">Hierarchical Clustering Analysis (HCA)</option>
-              </select>
-              <div class="invalid-feedback">
-                An analysis type is required.
-              </div>
-            </div>
-            <hr>
-            <!-- Label Import -->
-            <h5>Please import a label file</h5>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="import-label-prepend">Label</span>
-              </div>
-              <div class="custom-file">
-                <input type="button" class="custom-file-input" id="import-label"
-                  aria-describedby="import-label-prepend" required>
-                <label class="custom-file-label" for="import-label" id="import-label-path">Choose file</label>
-              </div>
-              <div class="invalid-feedback" id="import-label-feedback">
-                A label file is required.
-              </div>
-            </div>
-            <!-- Run Data Import -->
-            <h5 class="mt-3">Please import file(s) containing run data</h5>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="import-runs-prepend">Run(s)</span>
-              </div>
-              <div class="custom-file">
-                <input type="button" class="custom-file-input" id="import-runs"
-                  aria-describedby="import-runs-prepend">
-                <label class="custom-file-label" for="import-label" id="import-runs-path">Choose file(s)</label>
-              </div>
-              <div class="invalid-feedback" id="import-runs-feedback">
-                A run file is required.
-              </div>
-            </div>
-          </form>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" id="import-submit">Import</button>
           </div>
+          <!-- Delimiter Option -->
+          <div class="form-group">
+            <h5 for="delimiter-radio-1" data-toggle="tooltip"
+              title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma"
+                checked>
+              <label class="form-check-label" for="delimiter-radio-1">Comma</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" value="space">
+              <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
+            </div>
+          </div>
+          <!-- Analysis Type Selection -->
+          <div class="form-group">
+            <h5 for="inlineRadio1">Analysis Type</h5>
+            <select class="custom-select" id="analType" name="analType" required>
+              <option selected value="">Please select an analysis type</option>
+              <option value="pca">Principal Component Analysis (PCA)</option>
+              <option value="hca">Hierarchical Clustering Analysis (HCA)</option>
+            </select>
+            <div class="invalid-feedback">
+              An analysis type is required.
+            </div>
+          </div>
+          <hr>
+          <!-- Label Import -->
+          <h5>Please import a label file</h5>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="import-label-prepend">Label</span>
+            </div>
+            <div class="custom-file">
+              <input type="button" class="custom-file-input" id="import-label" aria-describedby="import-label-prepend"
+                required>
+              <label class="custom-file-label" for="import-label" id="import-label-path">Choose file</label>
+            </div>
+            <div class="invalid-feedback" id="import-label-feedback">
+              A label file is required.
+            </div>
+          </div>
+          <!-- Run Data Import -->
+          <h5 class="mt-3">Please import file(s) containing run data</h5>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="import-runs-prepend">Run(s)</span>
+            </div>
+            <div class="custom-file">
+              <input type="button" class="custom-file-input" id="import-runs" aria-describedby="import-runs-prepend">
+              <label class="custom-file-label" for="import-label" id="import-runs-path">Choose file(s)</label>
+            </div>
+            <div class="invalid-feedback" id="import-runs-feedback">
+              A run file is required.
+            </div>
+          </div>
+        </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="import-submit">Import</button>
         </div>
       </div>
     </div>
   </div>
-  
-  <script type="text/javascript" src="../../../node_modules/jquery/dist/jquery.min.js"></script>
-  <script type="text/javascript" src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://kit.fontawesome.com/81c2f06206.js" crossorigin="anonymous"></script>
-  <script src="../../../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
-  <script type="text/javascript" src="./renderer.js"></script>
+</div>
+
+<script type="text/javascript" src="../../../node_modules/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/81c2f06206.js" crossorigin="anonymous"></script>
+<script src="../../../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+<script type="text/javascript" src="./renderer.js"></script>
+
 </html>
