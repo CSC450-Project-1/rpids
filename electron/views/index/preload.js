@@ -249,6 +249,7 @@ function checkServer(){
 }
 
 function importData(importFormData){
+    var m;
     if (importPaths.label == undefined) importPaths.label = ""
     if(isDev()){
         var options = {
@@ -257,9 +258,12 @@ function importData(importFormData){
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
-            if (results[0].includes("Oops!")){
-                window.showErrorMessage({title: 'Inconsistency Detected', message: results.toString()});
-            } // TODO SHOW A SWEETALERT ERROR HERE
+            if(results){
+                if (results[0].includes("number of passed names")){
+                    m = "value error"
+                } // TODO SHOW A SWEETALERT ERROR HERE
+            }
+            window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
             console.log('results: ', results);
             document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
         });
