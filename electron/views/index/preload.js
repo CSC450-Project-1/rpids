@@ -6,9 +6,11 @@ const fs = require('fs');
 const execFile = require('child_process').execFile;
 
 const ENGINE_PATH = '../../../engine/';
-const IMPORT_PATH = ENGINE_PATH+'executables/import_data.exe';
-const EXPORT_PATH = ENGINE_PATH+'executables/export_data.exe';
-const DASH_PATH = ENGINE_PATH+'executables/dash_server.exe';
+const EXTRA_PATH = path.join(path.dirname(process.resourcesPath), 'resources');
+const IMPORT_PATH = path.join(EXTRA_PATH,'import_data.exe');
+const EXPORT_PATH =  path.join(EXTRA_PATH,'/export_data.exe');
+const DASH_PATH =  path.join(EXTRA_PATH,'dash_server', 'dash_server.exe');
+const TEMP_PATH = path.join(__dirname, '../../../temp/')
 const SERVER_ADDRESS = 'http://127.0.0.1:8050/';
 
 window.importPaths = [];
@@ -161,7 +163,7 @@ window.sysExportData = function() {
         if(isDev()){
             var options = {
                 scriptPath: path.join(__dirname, ENGINE_PATH),
-                args: [exportPath],
+                args: [exportPath, TEMP_PATH],
                 pythonPath: 'python'
             };
             PythonShell.run('export_data.py', options, function (err, results) {
@@ -170,7 +172,7 @@ window.sysExportData = function() {
             });
         }else{
             var opt = function(){
-                execFile(path.join(__dirname, EXPORT_PATH), [exportPath], function(err, results) {  
+                execFile(EXPORT_PATH, [exportPath, TEMP_PATH], function(err, results) {  
                   console.log(err)
                   console.log(results.toString());                       
               });  
@@ -267,7 +269,7 @@ function importData(importFormData){
     if(isDev()){
         var options = {
             scriptPath: path.join(__dirname, ENGINE_PATH),
-            args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)],
+            args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH],
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
@@ -289,7 +291,7 @@ function importData(importFormData){
         })
     }else{
         var opt = function(){
-            execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)], function(err, results) {  
+            execFile(IMPORT_PATH, [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH], function(err, results) {  
               console.log(err)
               console.log(results.toString());   
               initStartServer();                    
@@ -304,6 +306,7 @@ function startServer(){
     if(isDev()){
         var options = {
             scriptPath: path.join(__dirname, '../../../engine/'),
+            args: [TEMP_PATH],
             pythonPath: 'python'
         };
 
@@ -313,7 +316,7 @@ function startServer(){
         });
     }else{
         var opt = function(){
-            execFile(path.join(__dirname, DASH_PATH), function(err, results) {  
+            execFile(DASH_PATH, [TEMP_PATH], function(err, results) {  
               console.log(err)
               console.log(results.toString());                       
             });
@@ -331,9 +334,6 @@ function isDev(){
 
 ipc.on('shutdownInit', function (event) {
     // Make request to shutdown dash server
-    $.ajax({
-        url: "http://127.0.0.1:8050/shutdown",
-        type: 'GET',
-    })
+    changeiFrameSrc("shutdown")
     ipc.send('shutdownDone');
 });

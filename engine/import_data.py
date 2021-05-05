@@ -2,12 +2,6 @@ import csv, json, os, sys, glob, xlrd
 import numpy as np
 import pandas as pd
 
-# TODO
-# Able to change delimter
-# Throw error if the dimensions don't match
-# Throw error if numerical data in label file
-# Throw error if alpha space data in run data
-# Make sure label info num of lines == 1
 
 data_files= json.loads(sys.argv[2])
 if sys.argv[1] is not None:
@@ -16,6 +10,7 @@ else:
     label_file = ""
 form_data = json.loads(sys.argv[3])
 delimiter = json.loads(sys.argv[3])
+temp_path = sys.argv[4]
 
 # Get label information
 csv_ext = data_files[0].find("csv", len(data_files[0]) - 3, len(data_files[0]))
@@ -34,13 +29,13 @@ excel_ext = data_files[0].find("xlsx", len(data_files[0]) - 4, len(data_files[0]
 #
 #______________________________________________________
 def clear_json():
-    if (os.path.isfile("./temp/data.json")):
-        f = open("temp/data.json", "r+")
+    if (os.path.isfile(getDataPath())):
+        f = open(getDataPath(), "r+")
         f.seek(0)
         f.truncate()
         f.close()
     else:
-        f = open("./temp/data.json", "w")
+        f = open(getDataPath(), "w")
         f.close()
 
 
@@ -250,6 +245,9 @@ def getFileNames():
        file_names[i] = file_names[i].replace(" ", "")
     return file_names
 
+def getDataPath():
+    return os.path.join(temp_path,"data.json")
+
 def main():
     try:
         if(len(data_files) > 1 and label_file != ""):
@@ -279,7 +277,7 @@ def main():
             df["Samples"] = names
             df["run"] = file_name_list
        
-        df.to_json(os.path.abspath('temp/data.json')) #TODO: just for testing
+        df.to_json(getDataPath())
         sys.stdout.flush()
     #  else: 
 

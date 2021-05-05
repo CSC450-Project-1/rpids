@@ -104,26 +104,24 @@ To install the necessary Python dependencies, please run the following command i
 
 ### Packaging
 
-Run the following commands to create executables of the Python files.
+You will need the Python library Pyinstaller installed before proceeding forward. Run the following commands to create executables of the Python files.
 1. Create the Dash Server executable. NOTE: The dash_server.spec has user-specific paths to necessary Python libraries that need to be altered before running this command.
    ```sh
-   pyinstaller .\engine\dash_server.spec --distpath .\executables
+   pyinstaller --clean .\engine\dash_server.spec --distpath .\engine\executables
    ```
 2. Create the Import Data Executable
    ```sh
-   pyinstaller .\engine\export_data.py  -F --distpath .\executables
+   pyinstaller --clean --win-private-assemblies -F .\engine\import_data.py --distpath .\engine\executables
    ```
 3. Create the Export Data Executable
    ```sh
-   pyinstaller .\engine\import_data.py  -F --distpath .\executables
+   pyinstaller --clean --win-private-assemblies -F .\engine\export_data.py --distpath .\engine\executables
    ```
-4. Delete Unnecessary Build Directory
-   ```sh
-   rm -rf .\engine\build
-   ```
+4. Delete the Unnecessary Directories Created in the Build Directory
+
 5. Package App Into a Single Windows Executable
    ```sh
-   npm package
+   npm run pack
    ```
 
 <!-- USAGE EXAMPLES -->
