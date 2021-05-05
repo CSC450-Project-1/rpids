@@ -267,7 +267,7 @@ def showHCAHeatmap(dataset):
         fig['data'][i]['yaxis'] = 'y2'
 
     dendro_side = ff.create_dendrogram(
-        df, orientation='right', labels=label)
+        df, orientation='right')
     for i in range(len(dendro_side['data'])):
         dendro_side['data'][i]['xaxis'] = 'x2'
 
