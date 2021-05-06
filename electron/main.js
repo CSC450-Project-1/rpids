@@ -98,7 +98,7 @@ function getTemplate(settings){
                label: 'View',
                submenu: [
                   {
-                     role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
+                     role: 'toggleDevTools'
                   },
                   {
                      role: 'reload'
