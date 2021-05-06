@@ -1,7 +1,7 @@
-    // Show a customizable sweet alert error message
-    window.showErrorMessage = function showErrorMessage({title, message, confirmText="", confirmAction=null, cancelAction=null,showCancel=false}){
+    // Show a customizable sweet alert message
+    window.showAlertMessage = function showAlertMessage({title, message, confirmText="", confirmAction=null, cancelAction=null, showCancel=false, icon="error"}){
         Swal.fire({
-            icon: 'error',
+            icon: icon,
             title: title,
             text: message,
             showCancelButton: showCancel,
