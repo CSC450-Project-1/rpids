@@ -9,7 +9,6 @@ if sys.argv[1] is not None:
 else:
     label_file = ""
 form_data = json.loads(sys.argv[3])
-delimiter = json.loads(sys.argv[3])
 temp_path = sys.argv[4]
 
 # Get label information
