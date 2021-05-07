@@ -50,6 +50,8 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#releases">Releases</a></li>
+    <li><a href="#user-setup">User Setup</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contributors">Contributors</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
@@ -126,6 +128,16 @@ You will need the Python library Pyinstaller installed before proceeding forward
    ```sh
    npm run pack
    ```
+## Releases
+* [v1.0.1](https://drive.google.com/file/d/12Pun8AzWmK4lcmLDW0WQggfmId1WxacP/view?usp=sharing)
+* [v1.0.0](https://drive.google.com/file/d/1P01VW1CkcHmIrfhBHIsa6Vnl7TmlZMTj/view?usp=sharing)
+
+## User Setup
+1. Click the latest release link under `RELEASES`
+2. Run the setup file and go through the necessary steps
+3. Open the installed application with **admin permissions**
+4. Enjoy
+
 
 ## Usage
 
