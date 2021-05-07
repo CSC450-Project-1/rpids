@@ -113,33 +113,35 @@
               <h5 for="inlineRadio1">Import Name</h5>
               <input type="text" class="form-control" name="name" id="importName">
             </div> -->
-          <!-- Data Format Option -->
-          <div class="form-group">
-            <h5 for="inlineRadio1" data-toggle="tooltip"
-              title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns" checked>
-              <label class="form-check-label" for="inlineRadio1">Column</label>
+            <div class="row">
+              <!-- Data Format Option -->
+              <div class="form-group col">
+                <h5 for="inlineRadio1" data-toggle="tooltip"
+                  title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns" checked>
+                  <label class="form-check-label" for="inlineRadio1">Column</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows">
+                  <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
+                </div>
+              </div>
+              <!-- Delimiter Option -->
+              <div class="form-group col">
+                <h5 for="delimiter-radio-1" data-toggle="tooltip"
+                  title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma"
+                    checked>
+                  <label class="form-check-label" for="delimiter-radio-1">Comma</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" value="space">
+                  <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
+                </div>
+              </div>
             </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows">
-              <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
-            </div>
-          </div>
-          <!-- Delimiter Option -->
-          <div class="form-group">
-            <h5 for="delimiter-radio-1" data-toggle="tooltip"
-              title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma"
-                checked>
-              <label class="form-check-label" for="delimiter-radio-1">Comma</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" value="space">
-              <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
-            </div>
-          </div>
           <!-- Analysis Type Selection -->
           <div class="form-group">
             <h5 for="inlineRadio1">Analysis Type</h5>
@@ -153,6 +155,21 @@
             </div>
           </div>
           <hr>
+          <!-- <h5 for="separated-option">File Format</h5>
+          <div class="form-group">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" name="fileFormatOption" type="radio" id="separated-option" value="separated" checked>
+              <label class="form-check-label" title="Label and run data are separated by files" for="separated-option">Separated</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" name="fileFormatOption" type="radio" id="encompassing-option" value="encompassing">
+              <label class="form-check-label" title="File that contains both label and run data" for="encompassing-option">Encompassing</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" name="fileFormatOption" type="radio" id="project-option" value="project">
+              <label class="form-check-label" title="File exported by RPIDS" for="project-option">RPIDS Export</label>
+            </div>
+          </div> -->
           <!-- Label Import -->
           <h5>Please import a label file</h5>
           <div class="input-group">

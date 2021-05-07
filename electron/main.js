@@ -6,6 +6,7 @@ const path = require('path')
 const isDev = require('electron-is-dev');
 const exec = require('child_process').exec;
 
+isDialogOpened = false;
 
 function createWelcomeWindow() {
     // Create the welcome browser window
@@ -98,7 +99,7 @@ function getTemplate(settings){
                label: 'View',
                submenu: [
                   {
-                     role: 'toggleDevTools' // TODO: REMOVE ON PRODUCTION
+                     role: 'toggleDevTools'
                   },
                   {
                      role: 'reload'
@@ -275,6 +276,7 @@ app.on('window-all-closed', function() {
 
 // Show window for importing label file
 ipcMain.on('importLabel', (event, args) => {
+    isDialogOpened = true;
     dialog.showOpenDialog({
         title: "Import Label File",
         buttonLabel: "Import",
@@ -283,6 +285,7 @@ ipcMain.on('importLabel', (event, args) => {
         ],
         properties: ['openFile']
     }).then(result => {
+        isDialogOpened = false;
         if(!result.canceled){
             event.sender.send('importLabelDone', result.filePaths[0]);
         }
@@ -293,6 +296,7 @@ ipcMain.on('importLabel', (event, args) => {
 
 // Show window for importing run data files
 ipcMain.on('importRuns', (event, args) => {
+    isDialogOpened = true;
     dialog.showOpenDialog({
         title: "Import Run Data Files",
         buttonLabel: "Import",
@@ -301,6 +305,7 @@ ipcMain.on('importRuns', (event, args) => {
         ],
         properties: ['openFile', 'multiSelections']
     }).then(result => {
+        isDialogOpened = false;
         if(!result.canceled){
             event.sender.send('importRunDone', result.filePaths);
         }
@@ -322,6 +327,7 @@ ipcMain.on('createWindow', (event, args) => {
 });
 
 ipcMain.on('importProject', (event, args) => {
+    isDialogOpened = true;
     dialog.showOpenDialog({
         title: "Import Project File",
         buttonLabel: "Import",
@@ -330,6 +336,7 @@ ipcMain.on('importProject', (event, args) => {
         ],
         properties: ['openFile']
     }).then(result => {
+        isDialogOpened = false;
         if(!result.canceled){
             event.sender.send('importProjectDone', result.filePaths[0]);
         }
@@ -344,16 +351,19 @@ ipcMain.on('closeApp', (event, args) => {
 });
 
 ipcMain.on('exportData', (event, args)=> {
+    isDialogOpened = true;
     dialog.showSaveDialog({
         title: "Export Data File",
         buttonLabel: "Export",
         defaultPath: 'rpids_export',
         filters: [
             { name: '.csv', extensions: ['csv'] }
-        ],
-        // properties: ['openDirectory']
+        ]
       }).then(result => {
-            event.sender.send('exportDone', result.filePath);
+            isDialogOpened = false;
+            if(!result.canceled){
+                event.sender.send('exportDone', result.filePath);
+            }
       }).catch(err => {
         console.error("Error in exporting data: ", err);
       });
@@ -361,6 +371,10 @@ ipcMain.on('exportData', (event, args)=> {
 
 ipcMain.on('isDevRequest', (event, args) => {
     event.returnValue = isDev;
+ })
+
+ ipcMain.on('isDialogOpenedRequest', (event, args) => {
+     event.returnValue = isDialogOpened;
  })
 
 app.on('before-quit', (event, args) => {

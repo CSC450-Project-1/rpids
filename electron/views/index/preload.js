@@ -6,22 +6,28 @@ const fs = require('fs');
 const execFile = require('child_process').execFile;
 
 const ENGINE_PATH = '../../../engine/';
-const IMPORT_PATH = ENGINE_PATH+'executables/import_data.exe';
-const EXPORT_PATH = ENGINE_PATH+'executables/export_data.exe';
-const DASH_PATH = ENGINE_PATH+'executables/dash_server.exe';
+const EXTRA_PATH = path.join(path.dirname(process.resourcesPath), 'resources');
+const IMPORT_PATH = path.join(EXTRA_PATH,'import_data.exe');
+const EXPORT_PATH =  path.join(EXTRA_PATH,'/export_data.exe');
+const DASH_PATH =  path.join(EXTRA_PATH,'dash_server', 'dash_server.exe');
+const TEMP_PATH = path.join(__dirname, '../../../temp/')
 const SERVER_ADDRESS = 'http://127.0.0.1:8050/';
 
 window.importPaths = [];
-window.maxAttempts = isDev() ? 30 : 70;
+window.maxAttempts = isDev() ? 30 : 50;
 
 window.sysImportLabel = function() {
-    ipc.send('importLabel');
-    ipc.on('importLabelDone', (event, path) => {
-        importPaths.label = path;
-        document.querySelector('#import-label-path').innerHTML = extractFilename(path);
-
-        resetImportValidation({label: true})
-     })
+    if(!isDialogOpened()){
+        ipc.send('importLabel');
+        ipc.on('importLabelDone', (event, path) => {
+            importPaths.label = path;
+            document.querySelector('#import-label-path').innerHTML = extractFilename(path);
+    
+            resetImportValidation({label: true})
+         })
+    }else{
+        window.showAlertMessage({title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info'});
+    }
 }
 
 function extractFilename(path){
@@ -41,27 +47,31 @@ function resetImportForm(){
 }
 
 window.sysImportRuns = function() {
-    ipc.send('importRuns');
-    ipc.on('importRunDone', (event, paths) => { 
-        importPaths.runs = paths;
-
-        if(areValidRuns()){
-            // Update input field with selected path
-            if(paths.length>1){
-                var filenames = '';
-                for (let i = 0; i < paths.length; i++) {
-                    filenames += extractFilename(paths[i])+(i==paths.length-1?'':', ');
+    if(!isDialogOpened()){
+        ipc.send('importRuns');
+        ipc.on('importRunDone', (event, paths) => {
+            importPaths.runs = paths;
+    
+            if(areValidRuns()){
+                // Update input field with selected path
+                if(paths.length>1){
+                    var filenames = '';
+                    for (let i = 0; i < paths.length; i++) {
+                        filenames += extractFilename(paths[i])+(i==paths.length-1?'':', ');
+                    }
+                    document.querySelector('#import-runs-path').innerHTML = filenames;
+                }else{
+                    document.querySelector('#import-runs-path').innerHTML = extractFilename(paths[0]);  
                 }
-                document.querySelector('#import-runs-path').innerHTML = filenames;
+                resetImportValidation({runs: true})
             }else{
-                document.querySelector('#import-runs-path').innerHTML = extractFilename(paths[0]);  
+                window.showAlertMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
+                resetInputPaths({runs: true});
             }
-            resetImportValidation({runs: true})
-        }else{
-            window.showErrorMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
-            resetInputPaths({runs: true});
-        }
-    })
+        })
+    }else{
+        window.showAlertMessage({title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info'});
+    }
 }
 
 function resetImportValidation({analType=false, label=false, runs=false}){
@@ -131,7 +141,7 @@ window.cancelServerRequest = function(){
 // Recursive method used to determine when server is done loading
 function checkServerStatus(attempt_num){
     if(attempt_num==maxAttempts){
-        window.showErrorMessage({title: 'Failed Starting Server',
+        window.showAlertMessage({title: 'Failed Starting Server',
                                  message: 'Do you want to try again?',
                                  confirmText: 'Try Again',
                                  confirmAction: window.restartServer,
@@ -156,30 +166,45 @@ function checkServerStatus(attempt_num){
 }
 
 window.sysExportData = function() {
-    ipc.send('exportData');
-    ipc.on('exportDone', (event, exportPath) => { 
-        if(isDev()){
-            var options = {
-                scriptPath: path.join(__dirname, ENGINE_PATH),
-                args: [exportPath],
-                pythonPath: 'python'
-            };
-            PythonShell.run('export_data.py', options, function (err, results) {
-                if (err) throw err;
-                console.log('results: ', results);
-            });
-        }else{
-            var opt = function(){
-                execFile(path.join(__dirname, EXPORT_PATH), [exportPath], function(err, results) {  
-                  console.log(err)
-                  console.log(results.toString());                       
-              });  
-            }
-            opt();
-        }
-     })
-
     console.log("Export has been called");
+    if(!isDialogOpened()){
+        ipc.send('exportData');
+        ipc.on('exportDone', (event, exportPath) => { 
+            if(isDev()){
+                var options = {
+                    scriptPath: path.join(__dirname, ENGINE_PATH),
+                    args: [exportPath, TEMP_PATH],
+                    pythonPath: 'python'
+                };
+                PythonShell.run('export_data.py', options, function (err, results) {
+                    if(err){
+                        window.showAlertMessage({title: 'Export Error', message: 'There was a problem exporting session data'});
+                        console.error(err)
+                    }
+                    else {
+                        window.window.showAlertMessage({title: 'Export Successful', message: 'The session data has been exported successfully', icon: 'success'});                   
+                        if(results) console.log('Results from export: ', results);
+                    }
+                });
+            }else{
+                var opt = function(){
+                    execFile(EXPORT_PATH, [exportPath, TEMP_PATH], function(err, results) {  
+                      if(err) {
+                          window.showAlertMessage({title: 'Export Error', message: 'There was a problem exporting session data'});
+                          console.error(err)
+                      }
+                      else {
+                          window.showAlertMessage({title: 'Export Success', message: 'The session data has been exported successfully', icon: 'success'});
+                          if(results) console.log('Results from export: ', results.toString());
+                      }
+                  });  
+                }
+                opt();
+            }
+         })
+    }else{
+        window.showAlertMessage({title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info'});
+    }
 }
 
 function getSettings(){
@@ -266,7 +291,7 @@ function importData(importFormData){
     if(isDev()){
         var options = {
             scriptPath: path.join(__dirname, ENGINE_PATH),
-            args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)],
+            args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH],
             pythonPath: 'python'
         };
         PythonShell.run('import_data.py', options, function (err, results) {
@@ -274,28 +299,31 @@ function importData(importFormData){
             if(results){
                 if (results[0].includes("Oops! <class 'ValueError'>")){
                     m = "Please select the correct format of the data and retry."
-                } // TODO SHOW A SWEETALERT ERROR HERE
-            
-                window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
+                } 
+                window.showAlertMessage({title: 'Error Occured During Import Process', message: m});
             }
             document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
             resetImportForm();
         });
-        checkServer().then(()=>{
-            console.log('Server is running');
-        }).catch(()=>{
-            initStartServer();
-        })
     }else{
         var opt = function(){
-            execFile(path.join(__dirname, IMPORT_PATH), [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData)], function(err, results) {  
-              console.log(err)
-              console.log(results.toString());   
-              initStartServer();                    
+            execFile(IMPORT_PATH, [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH], function(err, results) {  
+                if(err){
+                    window.showAlertMessage({title: 'Import Process Error', message: "An error occured during the import process"});
+                    console.error(err)
+                }
+                if(results) console.log('Results from import process ',results.toString());
+                document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
+                resetImportForm();              
           });
-    }
+        }
         opt();
     }
+    checkServer().then(()=>{
+        console.log('Server is running');
+    }).catch(()=>{
+        initStartServer();
+    })
     console.log(importFormData);
 }
 
@@ -303,21 +331,25 @@ function startServer(){
     if(isDev()){
         var options = {
             scriptPath: path.join(__dirname, '../../../engine/'),
+            args: [TEMP_PATH],
             pythonPath: 'python'
         };
 
         PythonShell.run('dash_server.py', options, function (err, results) {
-            var m = "default"
-            if (err){ // TODO: Better handling of backend/Python errors
-                console.log('results: ', err);
-                m = err
-            } 
-            window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
+            if(err){
+                window.showAlertMessage({title: 'Dash Server Error', message: "An error occured while trying to start the Dash Server"});
+                console.error(err);
+            }
+            if (results) console.log('Results from dash server: ', results);
         });
     }else{
         var opt = function(){
-            execFile(path.join(__dirname, DASH_PATH), function(err, results) {  
-
+            execFile(DASH_PATH, [TEMP_PATH], function(err, results) {  
+                if(err){
+                    window.showAlertMessage({title: 'Dash Server Error', message: "An error occured while trying to start the Dash Server"});
+                    console.error(err);
+                }
+                if(results) console.log('Results from dash server: ', results.toString());                       
             });
         }
         opt();
@@ -328,14 +360,15 @@ function startServer(){
 
 // Check if the app is currently in development mode
 function isDev(){
-    return (ipc.sendSync('isDevRequest'))
+    return (ipc.sendSync('isDevRequest'));
+}
+
+function isDialogOpened(){
+    return (ipc.sendSync('isDialogOpenedRequest'));
 }
 
 ipc.on('shutdownInit', function (event) {
     // Make request to shutdown dash server
-    $.ajax({
-        url: "http://127.0.0.1:8050/shutdown",
-        type: 'GET',
-    })
+    changeiFrameSrc("shutdown");
     ipc.send('shutdownDone');
 });

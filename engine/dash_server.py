@@ -1,8 +1,5 @@
+
 # Plotly imports
-import sys
-import time
-import os
-import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
@@ -15,8 +12,9 @@ import dash_core_components as dcc
 import dash
 from dash.dependencies import Input, Output
 
-# PCA imports
-#import sklearn.utils._cython_blas
+# Imports used for Pyinstaller (DO NOT REMOVE)
+import sklearn.utils._weight_vector
+import sklearn.utils._cython_blas
 from sklearn.decomposition import PCA
 
 # HCA imports
@@ -26,8 +24,12 @@ from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
 
 # Misc imports
+import sys
+import time
+import os
+import pandas as pd
 
-
+temp_path = sys.argv[1]
 external_stylesheets = ['./electron/assets/css/main.css']
 
 app = dash.Dash(external_stylesheets=external_stylesheets)
@@ -131,10 +133,11 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
     fig = go.Figure()
     if pathname == '/shutdown':
         shutdown()
-    elif(os.path.isfile("./temp/data.json")):
+    elif(os.path.isfile(getDataPath("data.json"))):
         layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)')
-        dataset = pd.read_json("./temp/data.json")
+                           plot_bgcolor='rgba(0,0,0,0)')
+        dataset = pd.read_json(getDataPath("data.json"))
+
         columns = dataset.columns.tolist()
         data = pd.DataFrame.from_dict(dataset)
         data.drop(data.iloc[:, (dataset.columns.size - 2):dataset.columns.size], inplace=True, axis=1)
@@ -149,7 +152,8 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
                 dataset, data, hca_orientation, normalization_type)
         elif pathname == '/hca/heatmap':
             fig = showHCAHeatmap(dataset)
-    fig.to_json('./temp/data.json')
+        fig.to_json(getDataPath("data.json"))
+
     return fig
 
 
@@ -184,11 +188,11 @@ def showPCA2D(dataset, normalized_data):
     eigen_values = pca.explained_variance_
     eigen_vectors = pca.components_
     eigen_data = np.array([eigen_values, [eigen_vectors]])
-    pd.DataFrame(eigen_data).to_json("./temp/eig_data.json")
+    pd.DataFrame(eigen_data).to_json(getDataPath("eig_data.json"))
     components_df = pd.DataFrame(components)
     components_df["Samples"] = dataset["Samples"].values.tolist()
     components_df["run"] = dataset["run"].values.tolist()
-    components_df.to_json("./temp/computed_data.json")
+    components_df.to_json(getDataPath("computed_data.json"))
 
     # with open(, "w") as outfile:
     #     json_object = json.dumps(json_eig, indent = 4)
@@ -213,11 +217,11 @@ def showPCA3D(dataset, normalized_data):
     eigen_values = pca.explained_variance_
     eigen_vectors = pca.components_
     eigen_data = np.array([eigen_values, [eigen_vectors]])
-    pd.DataFrame(eigen_data).to_json("./temp/eig_data.json")
+    pd.DataFrame(eigen_data).to_json(getDataPath("eig_data.json"))
     components_df = pd.DataFrame(components)
     components_df["Samples"] = dataset["Samples"].values.tolist()
     components_df["run"] = dataset["run"].values.tolist()
-    components_df.to_json("./temp/computed_data.json")
+    components_df.to_json(getDataPath("computed_data.json"))
     return fig
 
 
@@ -364,6 +368,9 @@ def updateMarkerSize(fig, marker_size, layout):
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGray',
                      zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
     return fig
+
+def getDataPath(filename):
+    return os.path.join(temp_path, filename)
 
 
 if __name__ == '__main__':

@@ -74,3 +74,5 @@ temp/*.json
 /settings.json
 .csv
 sample_data/
+/engine/executables/*
+/release-builds/*
