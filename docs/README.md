@@ -10,7 +10,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/CSC450-Project-1/rpids">
-    <img src="../electron/assets/img/logo.png" alt="Logo" style="width:auto;height:15px;">
+    <img src="../electron/assets/img/logo.png" alt="Logo"width="auto" height="120px">
   </a>
 
   <h3 align="center">RPIDS</h3>
