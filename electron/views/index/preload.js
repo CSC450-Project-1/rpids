@@ -11,10 +11,16 @@ const IMPORT_PATH = path.join(EXTRA_PATH,'import_data.exe');
 const EXPORT_PATH =  path.join(EXTRA_PATH,'/export_data.exe');
 const DASH_PATH =  path.join(EXTRA_PATH,'dash_server', 'dash_server.exe');
 const TEMP_PATH = path.join(__dirname, '../../../temp/')
+const SETTINGS_PATH = path.join(__dirname, '../settings.json')
 const SERVER_ADDRESS = 'http://127.0.0.1:8050/';
 
 window.importPaths = [];
 window.maxAttempts = isDev() ? 30 : 50;
+
+function getAnalysisType(){
+    let settings = fs.readFileSync(path.resolve(__dirname, '../../../settings.json'));
+    return JSON.parse(settings);
+}
 
 window.sysImportLabel = function() {
     if(!isDialogOpened()){
@@ -167,13 +173,15 @@ function checkServerStatus(attempt_num){
 
 window.sysExportData = function() {
     console.log("Export has been called");
+    settings = getAnalysisType()
+    console.log(settings)
     if(!isDialogOpened()){
         ipc.send('exportData');
         ipc.on('exportDone', (event, exportPath) => { 
             if(isDev()){
                 var options = {
                     scriptPath: path.join(__dirname, ENGINE_PATH),
-                    args: [exportPath, TEMP_PATH],
+                    args: [exportPath, TEMP_PATH, JSON.stringify(settings)],
                     pythonPath: 'python'
                 };
                 PythonShell.run('export_data.py', options, function (err, results) {
@@ -188,7 +196,7 @@ window.sysExportData = function() {
                 });
             }else{
                 var opt = function(){
-                    execFile(EXPORT_PATH, [exportPath, TEMP_PATH], function(err, results) {  
+                    execFile(EXPORT_PATH, [exportPath, TEMP_PATH, JSON.stringify(settings)], function(err, results) {  
                       if(err) {
                           window.showAlertMessage({title: 'Export Error', message: 'There was a problem exporting session data'});
                           console.error(err)
