@@ -278,7 +278,6 @@ function importData(importFormData){
             
                 window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
             }
-            console.log('results: ', results);
             document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
             resetImportForm();
         });
@@ -308,14 +307,17 @@ function startServer(){
         };
 
         PythonShell.run('dash_server.py', options, function (err, results) {
-            if (err) throw err; // TODO: Better handling of backend/Python errors
-            console.log('results: ', results);
+            var m = "default"
+            if (err){ // TODO: Better handling of backend/Python errors
+                console.log('results: ', err);
+                m = err
+            } 
+            window.showErrorMessage({title: 'Error Occured During Import Process', message: m});
         });
     }else{
         var opt = function(){
             execFile(path.join(__dirname, DASH_PATH), function(err, results) {  
-              console.log(err)
-              console.log(results.toString());                       
+
             });
         }
         opt();

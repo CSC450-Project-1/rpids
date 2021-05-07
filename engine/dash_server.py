@@ -81,7 +81,7 @@ app.layout = html.Div([
               },
               figure={
                   'layout': {
-                      'autosize': True
+                      'autosize': True,
                   }
               },
               style={'flex': '1 1 auto'}),
@@ -106,21 +106,21 @@ def show_loading(value):
 
 @app.callback(Output('hca-orientation', 'style'), Input('url', 'pathname'))
 def showOrientation(pathname):
-    return {'visibility': 'visible'} if (pathname == '/hca/dendrogram') else {'visibility': 'hidden'}
+    return {'display': 'block'} if (pathname == '/hca/dendrogram') else {'display': 'none'}
 
 # Show/hide normalization dropdown
 
 
 @app.callback(Output('normalization-dropdown', 'style'), Input('url', 'pathname'))
 def showNormalization(pathname):
-    return {'visibility': 'visible'} if (pathname == '/hca/dendrogram' or pathname == '/pca/2d' or pathname == '/pca/3d') else {'visibility': 'hidden'}
+    return {'display': 'block'} if (pathname == '/hca/dendrogram' or pathname == '/pca/2d' or pathname == '/pca/3d') else {'display': 'none'}
 
 # Show/hide marker sizing
 
 
 @app.callback(Output('marker-customize', 'style'), Input('url', 'pathname'))
 def showMarkerSizing(pathname):
-    return {'visibility': 'visible'} if (pathname != '/hca/dendrogram') else {'visibility': 'hidden'}
+    return {'display': 'initial'} if (pathname == '/pca/2d' or pathname == '/pca/3d') else {'display': 'none'}
 
 # Use URL routing to show different plots
 
@@ -133,10 +133,9 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
         shutdown()
     elif(os.path.isfile("./temp/data.json")):
         layout = go.Layout(paper_bgcolor='rgba(0,0,0,0)',
-                           plot_bgcolor='rgba(0,0,0,0)')
+                        plot_bgcolor='rgba(0,0,0,0)')
         dataset = pd.read_json("./temp/data.json")
         columns = dataset.columns.tolist()
-
         data = pd.DataFrame.from_dict(dataset)
         data.drop(data.iloc[:, (dataset.columns.size - 2):dataset.columns.size], inplace=True, axis=1)
         if pathname == '/pca/2d':
@@ -148,11 +147,9 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
         elif pathname == '/hca/dendrogram':
             fig = showHCADendrogram(
                 dataset, data, hca_orientation, normalization_type)
-            fig = updateMarkerSize(fig, marker_size, layout)
         elif pathname == '/hca/heatmap':
             fig = showHCAHeatmap(dataset)
-        fig.to_json('./temp/data.json')
-
+    fig.to_json('./temp/data.json')
     return fig
 
 
@@ -239,16 +236,28 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
     samples = dataset["Samples"].tolist()
     runs = dataset["run"].tolist()
     for i in range(dataset["Samples"].size):
-        label.append(samples[i] + " " + runs[i])
+        if len(runs[i] + samples[i]) >= 25:
+            nL = samples[i] + " " + runs[i]
+            label.append(nL[:15:])
+        else:
+            label.append(samples[i] + " " + runs[i])
     if orientation == 'horizontal':
         fig = ff.create_dendrogram(
             normalized_data, orientation='left', labels=label)
-        if dataset.columns.size > 20:
-            fig.update_layout(width=1750, height=4000)
+        # if dataset.columns.size > 20:
+        #     fig.update_layout(width = 4000, height = 4000)
+        if len(dataset.index) > 20 and dataset.columns.size < 20:
+            fig.update_layout(width = 1500, height = 900)
+        elif len(dataset.index) < 20 and dataset.columns.size < 20:
+            fig.update_layout(width = 1500, height = 900)
     elif orientation == 'vertical':
         fig = ff.create_dendrogram(normalized_data, labels=label)
-        if dataset.columns.size > 20:
-            fig.update_layout(width=4000, height=1750)
+        # if dataset.columns.size > 20:
+        #     fig.update_layout(width = 4000, height = 4000)
+        if len(dataset.index) > 25 and dataset.columns.size < 20:
+            fig.update_layout(width = 1500, height = 900)
+        elif len(dataset.index) < 25 and dataset.columns.size < 20:
+            fig.update_layout(width = 1500, height = 900)
     return fig
 
 
@@ -257,7 +266,11 @@ def showHCAHeatmap(dataset):
     samples = dataset["Samples"].tolist()
     runs = dataset["run"].tolist()
     for i in range(dataset["Samples"].size):
-        label.append(samples[i] + " " + runs[i])
+        if len(runs[i] + samples[i]) >= 25:
+            nL = samples[i] + " " + runs[i]
+            label.append(nL[:15:])
+        else:
+            label.append(samples[i] + " " + runs[i])
     df = dataset.drop('Samples', axis=1)
     df = df.drop('run', axis=1)
     fig = ff.create_dendrogram(
@@ -266,12 +279,13 @@ def showHCAHeatmap(dataset):
         fig['data'][i]['yaxis'] = 'y2'
 
     dendro_side = ff.create_dendrogram(
-        df, orientation='right', labels=label)
+        df, orientation='right')
     for i in range(len(dendro_side['data'])):
         dendro_side['data'][i]['xaxis'] = 'x2'
 
     for data in dendro_side['data']:
         fig.add_trace(data)
+
 
     dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
     dendro_leaves = list(map(int, dendro_leaves))
@@ -294,9 +308,14 @@ def showHCAHeatmap(dataset):
 
     for data in heatmap:
         fig.add_trace(data)
-
-    fig.update_layout({'showlegend': False, 'hovermode': 'closest',
-                       })
+    # if dataset.columns.size > 20:
+    #     fig.update_layout(width = 1700, height = 1500)
+    if len(dataset.index) > 20 and dataset.columns.size < 20:
+        fig.update_layout(width = 1200, height = 1000)
+    elif len(dataset.index) < 20 and dataset.columns.size < 20:
+        fig.update_layout(width = 1200, height = 1000)
+    fig.update_layout({'showlegend': False, 'hovermode': 'closest'})
+    
 
     fig.update_layout(xaxis={'domain': [.15, 1],
                              'mirror': False,
@@ -348,4 +367,7 @@ def updateMarkerSize(fig, marker_size, layout):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False)  # TODO: Turn debug off when deploying
+    try:
+        app.run_server(debug=True)  # TODO: Turn debug off when deploying
+    except Exception as e:
+                print("Oops!", e.__class__, e, "occurred.")
