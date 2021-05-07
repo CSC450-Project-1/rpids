@@ -10,7 +10,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/CSC450-Project-1/rpids">
-    <img src="../electron/assets/img/logo.png" alt="Logo" style="width:auto;height:30px;">
+    <img src="../electron/assets/img/logo.png" alt="Logo" style="width:auto;height:15px;">
   </a>
 
   <h3 align="center">RPIDS</h3>
@@ -201,4 +201,4 @@ Project Link: [https://github.com/CSC450-Project-1/rpids](https://github.com/CSC
 [issues-shield]: https://img.shields.io/github/issues/CSC450-Project-1/rpids.svg?style=for-the-badge
 [issues-url]: https://github.com/CSC450-Project-1/rpids/issues
 [license-shield]: https://img.shields.io/github/license/CSC450-Project-1/rpids.svg?style=for-the-badge
-[license-url]: https://github.com/CSC450-Project-1/rpids/blob/main/docs/LICENSE
+[license-url]: https://github.com/CSC450-Project-1/rpids/blob/main/docs/LICENSE.md
