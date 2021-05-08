@@ -1,5 +1,38 @@
+# _______________________________________________________________________________________________________________________________
+
+#  Project Name:      Response Pattern-Based Identification System (RPIDS)
+#  Purpose:           A Graphical User Interface (GUI) based software to assist chemists in performing principal component
+#                     analysis (PCA) and hierarchical clustering analysis (HCA).
+#  Project Members:   Zeth Copher
+#                     Josh Kuhn
+#                     Ryan Luer
+#                     Austin Pearce
+#                     Rich Russell
+#  Course:         Missouri State University CSC450 - Intro to Software Engineering Spring 2021
+#  Instructor:     Dr. Razib Iqbal, Associate Professor of Computer Science
+#  Contact:        RIqbal@MissouriState.edu
+
+#  License:
+#  Copyright 2021 Missouri State University
+
+#  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+#  documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+#  rights to use, copy, modify, merge, publish, distribute, sub-license, and/or sell copies of the Software, and to
+#  permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+#  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+#  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#  NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+#  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# _______________________________________________________________________________________________________________________________________
 
 # Plotly imports
+import pandas as pd
+import os
+import time
+import sys
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
@@ -22,12 +55,6 @@ import plotly.figure_factory as ff
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
-
-# Misc imports
-import sys
-import time
-import os
-import pandas as pd
 
 temp_path = sys.argv[1]
 external_stylesheets = ['./electron/assets/css/main.css']
@@ -72,7 +99,6 @@ app.layout = html.Div([
     ),
     dcc.Graph(id='plot',
               config={
-                  # TODO: Need to ask Yoshimatsu what he wants
                   'modeBarButtonsToRemove': ['pan2d', 'lasso2d'],
                   'displaylogo': False,
                   'toImageButtonOptions': {
@@ -97,34 +123,111 @@ app.layout = html.Div([
 ], style={'display': 'flex', 'flex-flow': 'column', 'height': '100vh'})
 
 
-# Show loading spinner
+# ______________________________________________________________
+# show_loading function:
+# displays the loading spinner
+#
+# return value:
+# return
+#
+# reference parameters:
+# value         n/a         value is a place holder and only acts as a bug preventer
+#
+# local variables:
+# none
+# _______________________________________________________________
+
 @app.callback(Output("loading-spinner", "children"), Input('url', 'pathname'))
 def show_loading(value):
     time.sleep(1)
     return
 
-# Show/hide orientation dropdown
+# ______________________________________________________________
+# showOrientation function:
+# This function checks the pathname and passed on the pathname
+# the function will display/not display a drop down containing
+# the two options for orientation: Horizontal and Vertical.
+#
+# return value:
+# returns the display value as either 'block' or 'none' depending
+# on the pathname
+#
+# reference parameters:
+# pathname     string        name of the current path
+#
+# local variables:
+# none
+# _______________________________________________________________
 
 
 @app.callback(Output('hca-orientation', 'style'), Input('url', 'pathname'))
 def showOrientation(pathname):
     return {'display': 'block'} if (pathname == '/hca/dendrogram') else {'display': 'none'}
 
-# Show/hide normalization dropdown
+# ______________________________________________________________
+# showNormalization function:
+# This function checks the pathname and passed on the pathname
+# the function will display/not display a drop down containing
+# the three options for normalization: None, Linear Rescaling,
+# and Standardization.
+#
+# return value:
+# returns the display value as either 'block' or 'none' depending
+# on the pathname
+#
+# reference parameters:
+# pathname     string        name of the current path
+#
+# local variables:
+# none
+# _______________________________________________________________
 
 
 @app.callback(Output('normalization-dropdown', 'style'), Input('url', 'pathname'))
 def showNormalization(pathname):
     return {'display': 'block'} if (pathname == '/hca/dendrogram' or pathname == '/pca/2d' or pathname == '/pca/3d') else {'display': 'none'}
 
-# Show/hide marker sizing
+# ______________________________________________________________
+# showMarkerSizing function:
+# This function checks the pathname and passed on the pathname
+# the function will display/not display a slider to adjust marker
+# size.
+#
+# return value:
+# returns the display value as either 'block' or 'none' depending
+# on the pathname
+#
+# reference parameters:
+# pathname     string        name of the current path
+#
+# local variables:
+# none
+# _______________________________________________________________
 
 
 @app.callback(Output('marker-customize', 'style'), Input('url', 'pathname'))
 def showMarkerSizing(pathname):
     return {'display': 'initial'} if (pathname == '/pca/2d' or pathname == '/pca/3d') else {'display': 'none'}
 
-# Use URL routing to show different plots
+# ______________________________________________________________
+# updatePlot function:
+# This function takes the URL routing to display figures accordingly
+#
+# return value:
+# fig                   graph object
+#
+# reference parameters:
+# pathname              string      name of the current path
+# normalization_type    string      type of normalization
+# hca_orientation       string      orientation of dendrogram
+# marker_size           int         size of the marker on slider
+#
+# local variables:
+# fig          graph object
+# columns      list                 list of column names from the dataset
+# data         pandas dataframe     same dataframe as import but does not have last two
+#                                   columns with file names
+# _______________________________________________________________
 
 
 @app.callback(Output('plot', 'figure'),
@@ -140,7 +243,8 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
 
         columns = dataset.columns.tolist()
         data = pd.DataFrame.from_dict(dataset)
-        data.drop(data.iloc[:, (dataset.columns.size - 2):dataset.columns.size], inplace=True, axis=1)
+        data.drop(data.iloc[:, (dataset.columns.size - 2)
+                  :dataset.columns.size], inplace=True, axis=1)
         if pathname == '/pca/2d':
             fig = initShowPCA('2D', dataset, data, normalization_type)
             fig = updateMarkerSize(fig, marker_size, layout)
@@ -156,9 +260,41 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
 
     return fig
 
+# ______________________________________________________________
+# shutdown function:
+# closes down the
+#
+# return value:
+# none
+#
+# reference parameters:
+# none
+#
+# local variables:
+# none
+# _______________________________________________________________
+
 
 def shutdown():
     sys.stderr.close()
+
+# ______________________________________________________________
+# initShowPCA function:
+# This function normalizes the data before calling the corresponding
+# PCA function.
+#
+# return value:
+# showPCA2D/showPCA3D   functions
+#
+# reference parameters:
+# type                  string                specifies 2D or 3D plot
+# normalization_type    string                type of normalization
+# dataset               pandas dataframe      original dataset
+# data                  pandas dataframe      input dataset with no strings
+#
+# local variables:
+# normalized_data       pandas dataframe    dataframe of standardized input data
+# _______________________________________________________________
 
 
 def initShowPCA(type, dataset, data, normalization_type):
@@ -170,6 +306,27 @@ def initShowPCA(type, dataset, data, normalization_type):
     else:
         normalized_data = pd.DataFrame.from_dict(data)
     return showPCA2D(dataset, normalized_data) if (type == '2D') else showPCA3D(dataset, normalized_data)
+
+# ______________________________________________________________
+# showPCA2D function:
+# This function displays the 2D PCA plot.
+#
+# return value:
+# fig           graph object
+#
+# reference parameters:
+# none
+#
+# local variables:
+# fig               graph object        current plot object
+# pca               ndarray             results of pca calculation
+# X                 list                list of samples and run
+# components        ndarray             components of normalized data
+# eigen_values      list                list of float eigen_values
+# eigen_vectors     list                list of float eigen_vectors
+# eigen_data        array               array of float eigen_values and eigen_vectors
+# compnents_df      pandas dataframe    dataframe of components
+# _______________________________________________________________
 
 
 def showPCA2D(dataset, normalized_data):
@@ -194,10 +351,29 @@ def showPCA2D(dataset, normalized_data):
     components_df["run"] = dataset["run"].values.tolist()
     components_df.to_json(getDataPath("computed_data.json"))
 
-    # with open(, "w") as outfile:
-    #     json_object = json.dumps(json_eig, indent = 4)
-    #     outfile.write(json_object)
     return fig
+
+# ______________________________________________________________
+# showPCA3D function:
+# This function displays the 3D PCA plot.
+#
+# return value:
+# fig           graph object
+#
+# reference parameters:
+# none
+#
+# local variables:
+# fig               graph object        current plot object
+# pca               ndarray             results of pca calculation
+# X                 list                list of samples and run
+# components        ndarray             components of normalized data
+# total_var         int                 sum of the variances from pca
+# eigen_values      list                list of float eigen_values
+# eigen_vectors     list                list of float eigen_vectors
+# eigen_data        array               array of float eigen_values and eigen_vectors
+# compnents_df      pandas dataframe    dataframe of components
+# _______________________________________________________________
 
 
 def showPCA3D(dataset, normalized_data):
@@ -224,6 +400,29 @@ def showPCA3D(dataset, normalized_data):
     components_df.to_json(getDataPath("computed_data.json"))
     return fig
 
+# ______________________________________________________________
+# showHCADendrogram function:
+# This function displays the HCA dendrogram.
+#
+# return value:
+# fig                  graph object
+#
+# reference parameters:
+# orientation           string                specifies the orientation of the dendrogram
+# normalization_type    string                type of normalization
+# dataset               pandas dataframe      original dataset
+# data                  pandas dataframe      input dataset with no strings
+#
+# local variables:
+# linear_rescaling      pandas dataframe    dataframe of normalized data
+# standardizaiton       pandas dataframe    dataframe of normalized data
+# normalized_data       pandas dataframe    dataframe of standardized input data
+# label                 list                list of labels
+# samples               list                list of sample names
+# runs                  list                list of the runs
+# fig                   graph object        dendrogram plot
+# _______________________________________________________________
+
 
 def showHCADendrogram(dataset, data, orientation, normalization_type):
     if normalization_type == 'linear_rescaling':
@@ -248,21 +447,39 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
     if orientation == 'horizontal':
         fig = ff.create_dendrogram(
             normalized_data, orientation='left', labels=label)
-        # if dataset.columns.size > 20:
-        #     fig.update_layout(width = 4000, height = 4000)
         if len(dataset.index) > 20 and dataset.columns.size < 20:
-            fig.update_layout(width = 1500, height = 900)
+            fig.update_layout(width=1500, height=900)
         elif len(dataset.index) < 20 and dataset.columns.size < 20:
-            fig.update_layout(width = 1500, height = 900)
+            fig.update_layout(width=1500, height=900)
     elif orientation == 'vertical':
         fig = ff.create_dendrogram(normalized_data, labels=label)
-        # if dataset.columns.size > 20:
-        #     fig.update_layout(width = 4000, height = 4000)
         if len(dataset.index) > 25 and dataset.columns.size < 20:
-            fig.update_layout(width = 1500, height = 900)
+            fig.update_layout(width=1500, height=900)
         elif len(dataset.index) < 25 and dataset.columns.size < 20:
-            fig.update_layout(width = 1500, height = 900)
+            fig.update_layout(width=1500, height=900)
     return fig
+
+# ______________________________________________________________
+# showHCAHeatmap function:
+# This function displays the HCA heatmap.
+#
+# return value:
+# fig
+#
+# reference parameters:
+# dataset               pandas dataframe      original imported dataset
+#
+# local variables:
+# label                 list                list of labels
+# samples               list                list of sample names
+# runs                  list                list of the runs
+# fig                   graph object        top dendrogram for heatmap
+# df                    pandas dataframe    imported data without the run and Samples columns
+# dendro_sides          graph object        side dendrogram for heatmap
+# dendro_leaves         list                list of dendro_sides
+# heat_data             list                list of heatmap data
+# heatmap               graph object        heatmap plot
+# _______________________________________________________________
 
 
 def showHCAHeatmap(dataset):
@@ -290,7 +507,6 @@ def showHCAHeatmap(dataset):
     for data in dendro_side['data']:
         fig.add_trace(data)
 
-
     dendro_leaves = dendro_side['layout']['yaxis']['ticktext']
     dendro_leaves = list(map(int, dendro_leaves))
     data_dist = pdist(df)
@@ -312,14 +528,11 @@ def showHCAHeatmap(dataset):
 
     for data in heatmap:
         fig.add_trace(data)
-    # if dataset.columns.size > 20:
-    #     fig.update_layout(width = 1700, height = 1500)
     if len(dataset.index) > 20 and dataset.columns.size < 20:
-        fig.update_layout(width = 1200, height = 1000)
+        fig.update_layout(width=1200, height=1000)
     elif len(dataset.index) < 20 and dataset.columns.size < 20:
-        fig.update_layout(width = 1200, height = 1000)
+        fig.update_layout(width=1200, height=1000)
     fig.update_layout({'showlegend': False, 'hovermode': 'closest'})
-    
 
     fig.update_layout(xaxis={'domain': [.15, 1],
                              'mirror': False,
@@ -354,9 +567,24 @@ def showHCAHeatmap(dataset):
                               'ticks': ""})
     return fig
 
+# ______________________________________________________________
+# updateMarkerSize function:
+# This function allows for customizing the marker size
+#
+# return value:
+# fig           graph object
+#
+# reference parameters:
+# fig           graph object    current plot object
+# marker_size   int             marker size number
+# layout        string          string of the current layout
+#
+# local variables:
+# none
+# _______________________________________________________________
+
 
 def updateMarkerSize(fig, marker_size, layout):
-    # Customize marker size
     fig.update_traces(marker=dict(
         size=marker_size
     )
@@ -369,13 +597,45 @@ def updateMarkerSize(fig, marker_size, layout):
                      zeroline=True, zerolinewidth=2, zerolinecolor='LightGray')
     return fig
 
+# ______________________________________________________________
+# getDataPath function:
+# This function grabs the data path
+#
+# return value:
+# os.path.join(temp_path, filename)     operating system path join
+#
+# reference parameters:
+# filename          string      string of the filename
+#
+# local variables:
+# none
+# _______________________________________________________________
+
+
 def getDataPath(filename):
     return os.path.join(temp_path, filename)
+
+# ______________________________________________________________
+# isDev function:
+# This function grabs the data path
+#
+# return value:
+# boolean
+#
+# reference parameters:
+# none
+#
+# local variables:
+# CURR_DIR          string         name of the directory
+# folder_name       string         name of the folder
+# _______________________________________________________________
+
 
 def isDev():
     CURR_DIR = os.path.dirname(os.path.realpath(__file__))
     folder_name = os.path.basename(CURR_DIR)
-    return True if(folder_name=='engine') else False
+    return True if(folder_name == 'engine') else False
+
 
 if __name__ == '__main__':
     app.run_server(debug=isDev())
