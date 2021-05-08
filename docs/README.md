@@ -10,7 +10,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/CSC450-Project-1/rpids">
-    <img src="../electron/assets/img/logo.png" alt="Logo" style="width:auto;height:60px;">
+    <img src="../electron/assets/img/logo.png" alt="Logo"width="auto" height="150px">
   </a>
 
   <h3 align="center">RPIDS</h3>
@@ -50,7 +50,10 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#releases">Releases</a></li>
+    <li><a href="#user-setup">User Setup</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#contributors">Contributors</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -64,7 +67,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+RPIDS is a semester-long group project created in CSC450 Introduction to Software Engineering - Spring 2021. RPIDS comes with full support for principial component analysis (PCA) and hierarchical clustering analysis (HCA). The two available PCA plots are 2D and 3D views. The available HCA plots are dendrogram and heat map.
+
+![Welcome Window](./screenshots/welcome.png)
 
 ### Background
 Chemical sensor arrays are devices with the capability to detect a broad spectrum of chemicals on a single platform. The chemical sensor arrays, sometimes called “electronic tongues”, detect components that shows different response patterns to various chemicals. Dr. Yoshimatsu and his students at Missouri State University (MSU) have developed colorimetric sensing arrays for the detection of metal ions in drinking water and proteins in food or clinical samples.  
@@ -123,22 +128,48 @@ You will need the Python library Pyinstaller installed before proceeding forward
    ```sh
    npm run pack
    ```
+## Releases
+* [v1.0.1](https://drive.google.com/file/d/12Pun8AzWmK4lcmLDW0WQggfmId1WxacP/view?usp=sharing)
+* [v1.0.0](https://drive.google.com/file/d/1P01VW1CkcHmIrfhBHIsa6Vnl7TmlZMTj/view?usp=sharing)
 
-<!-- USAGE EXAMPLES -->
+## User Setup
+1. Click the latest release link under `RELEASES`
+2. Run the setup file and go through the necessary steps
+3. Open the installed application with **admin permissions**
+4. Enjoy
+
+
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+* Import process
+![Import Process](./screenshots/import.png)
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+* PCA 2D View
+![PCA 2D View](./screenshots/pca_2d.png)
 
+* PCA 3D View
+![PCA 3D View](./screenshots/pca_3d.png)
+
+* HCA Dendrogram View
+![HCA Dendrogram View](./screenshots/hca_dendrogram.png)
+
+* HCA Heat Map View
+![HCA Heat Map View](./screenshots/hca_heatmap.png)
+
+<!-- CONTRIBUTORS -->
+## Contributors
+
+* Zeth Copher
+* Josh Kuhn
+* Ryan Luer
+* Austin Pearce
+* Rich Russell
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
 See the [open issues](https://github.com/CSC450-Project-1/rpids/issues) for a list of proposed features (and known issues).
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -152,12 +183,10 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the GPL License. See `LICENSE` for more information.
-
 
 
 <!-- CONTACT -->
@@ -166,29 +195,22 @@ Distributed under the GPL License. See `LICENSE` for more information.
 Project Link: [https://github.com/CSC450-Project-1/rpids](https://github.com/CSC450-Project-1/rpids)
 
 
-
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 
-* []()
-* []()
-* []()
-
-
-
+* Dr. Razib Iqbal (MSU Computer Science Associate Professor)
+* Dr. Keiichi Yoshimatsu (MSU Chemistry Associate Professor)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/CSC450-Project-1/repo.svg?style=for-the-badge
-[contributors-url]: https://github.com/CSC450-Project-1/repo/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/CSC450-Project-1/repo.svg?style=for-the-badge
-[forks-url]: https://github.com/CSC450-Project-1/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/CSC450-Project-1/repo.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/CSC450-Project-1/rpids.svg?style=for-the-badge
+[contributors-url]: https://github.com/CSC450-Project-1/rpids/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/CSC450-Project-1/rpids.svg?style=for-the-badge
+[forks-url]: https://github.com/CSC450-Project-1/rpids/network/members
+[stars-shield]: https://img.shields.io/github/stars/CSC450-Project-1/rpids.svg?style=for-the-badge
 [stars-url]: https://github.com/CSC450-Project-1/repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/CSC450-Project-1/repo.svg?style=for-the-badge
-[issues-url]: https://github.com/CSC450-Project-1/repo/issues
-[license-shield]: https://img.shields.io/github/license/CSC450-Project-1/repo.svg?style=for-the-badge
-[license-url]: https://github.com/CSC450-Project-1/repo/blob/main/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/CSC450-Project-1
+[issues-shield]: https://img.shields.io/github/issues/CSC450-Project-1/rpids.svg?style=for-the-badge
+[issues-url]: https://github.com/CSC450-Project-1/rpids/issues
+[license-shield]: https://img.shields.io/github/license/CSC450-Project-1/rpids.svg?style=for-the-badge
+[license-url]: https://github.com/CSC450-Project-1/rpids/blob/main/docs/LICENSE.md

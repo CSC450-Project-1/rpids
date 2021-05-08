@@ -372,9 +372,10 @@ def updateMarkerSize(fig, marker_size, layout):
 def getDataPath(filename):
     return os.path.join(temp_path, filename)
 
+def isDev():
+    CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+    folder_name = os.path.basename(CURR_DIR)
+    return True if(folder_name=='engine') else False
 
 if __name__ == '__main__':
-    try:
-        app.run_server(debug=True)  # TODO: Turn debug off when deploying
-    except Exception as e:
-                print("Oops!", e.__class__, e, "occurred.")
+    app.run_server(debug=isDev())

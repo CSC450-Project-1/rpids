@@ -1,10 +1,39 @@
+/*_______________________________________________________________________________________________________________________________
+
+ Project Name:      Response Pattern-Based Identification System (RPIDS)
+ Purpose:           A Graphical User Interface (GUI) based software to assist chemists in performing principal component
+                    analysis (PCA) and hierarchical clustering analysis (HCA). 
+ Project Members:   Zeth Copher
+                    Josh Kuhn
+                    Ryan Luer
+                    Austin Pearce
+                    Rich Russell
+ Course:         Missouri State University CSC450 - Intro to Software Engineering Spring 2021
+ Instructor:     Dr. Razib Iqbal, Associate Professor of Computer Science 
+ Contact:        RIqbal@MissouriState.edu
+
+ License:
+ Copyright 2021 Missouri State University
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+ documentation files (the "Software"), to deal in the Software without restriction, including without limitation the 
+ rights to use, copy, modify, merge, publish, distribute, sub-license, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+ NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+_______________________________________________________________________________________________________________________________________*/
+
+
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain, dialog, Menu} = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Menu, shell} = require("electron");
 const fs = require('fs');
-const {PythonShell} = require('python-shell');
 const path = require('path')
 const isDev = require('electron-is-dev');
-const exec = require('child_process').exec;
 
 isDialogOpened = false;
 
@@ -27,8 +56,7 @@ function createWelcomeWindow() {
         show: false
     })
 
-    // TODO
-    welcomeWindow.setMinimumSize(920, 600);
+    welcomeWindow.setMinimumSize(920, 600); // TODO
 
     welcomeWindow.loadFile('./electron/views/welcome/welcome.html');
 
@@ -52,30 +80,25 @@ function createMainWindow() {
         title: "RPIDS"
     })
 
-    // TODO
-    mainWindow.setMinimumSize(920, 600);
+    mainWindow.setMinimumSize(920, 600); // TODO
 
-    // and load the index.html of the app.
+    // Load the index.html of the app
     mainWindow.loadFile('./electron/views/index/index.html');
 
-    // Open the DevTools.
+    // Open the DevTools if in development
     isDev && mainWindow.webContents.openDevTools();
-
-    var options = {
-        scriptPath: path.join(__dirname, '/../engine/'),
-        pythonPath: 'python'
-    };
-
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show()
         mainWindow.maximize()
     })
   
-
     // Close app when main window is closed
     mainWindow.once('close', () => {
-        app.quit();
+        mainWindow.webContents.send('shutdownInit');
+        ipcMain.on('shutdownDone', (event, args) => {
+            app.quit();
+        })
     })
 }
 
@@ -133,15 +156,6 @@ function getTemplate(settings){
                   },
                   {
                      role: 'close'
-                  }
-               ]
-            },
-            
-            {
-               role: 'help',
-               submenu: [
-                  {
-                     label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
                   }
                ]
             }
@@ -205,7 +219,10 @@ function getTemplate(settings){
                role: 'help',
                submenu: [
                   {
-                     label: 'Learn More' //TODO: OPEN UP USER DOCUMENTATION
+                     label: 'Learn More',
+                     click () {
+                        shell.openExternal("https://github.com/CSC450-Project-1/rpids");
+                     }
                   }
                ]
             }
@@ -216,10 +233,9 @@ function getTemplate(settings){
 
 //TODO: Add more to menu
 function createMenu(settings){
-    const template = getTemplate(settings);
-     
-     const menu = Menu.buildFromTemplate(template)
-     Menu.setApplicationMenu(menu)
+    const template = getTemplate(settings); 
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
 }
 
 function getSettings(){
@@ -315,7 +331,7 @@ ipcMain.on('importRuns', (event, args) => {
 });
 
 
-// TODO: Called when initiated a new project
+// Called when initiated a new project
 ipcMain.on('createWindow', (event, args) => {
     var welcomeWindow = BrowserWindow.getFocusedWindow();
     welcomeWindow.hide();
@@ -326,6 +342,7 @@ ipcMain.on('createWindow', (event, args) => {
     createMainWindow();
 });
 
+// TODO: Not fully implemented
 ipcMain.on('importProject', (event, args) => {
     isDialogOpened = true;
     dialog.showOpenDialog({
@@ -347,7 +364,7 @@ ipcMain.on('importProject', (event, args) => {
 
 // Close window
 ipcMain.on('closeApp', (event, args) => {
-    quitApp();
+    app.quit();
 });
 
 ipcMain.on('exportData', (event, args)=> {
@@ -376,21 +393,3 @@ ipcMain.on('isDevRequest', (event, args) => {
  ipcMain.on('isDialogOpenedRequest', (event, args) => {
      event.returnValue = isDialogOpened;
  })
-
-app.on('before-quit', (event, args) => {
-    event.preventDefault();
-    quitApp();
-})
-
-function quitApp(){
-    const win = BrowserWindow.getFocusedWindow();
-    if(win && win.title=="RPIDS"){
-        // Close dash server instance
-        win.webContents.send('shutdownInit');
-        ipcMain.on('shutdownDone', (event, args) => {
-            app.exit();
-        })
-    }else{
-        app.exit();
-    }
-}

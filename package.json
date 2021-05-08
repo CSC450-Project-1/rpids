@@ -1,7 +1,7 @@
 {
     "name": "rpids",
     "productName": "RPIDS",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "./electron/main.js",
     "scripts": {
         "start": "electron .",
@@ -19,5 +19,5 @@
         "python-shell": "^2.0.3",
         "sweetalert2": "^10.16.6"
     },
-    "license": "GNU"
+    "license": "GPL-3.0-only"
 }
