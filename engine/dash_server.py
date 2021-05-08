@@ -243,8 +243,7 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
 
         columns = dataset.columns.tolist()
         data = pd.DataFrame.from_dict(dataset)
-        data.drop(data.iloc[:, (dataset.columns.size - 2)
-                  :dataset.columns.size], inplace=True, axis=1)
+        data.drop(data.iloc[:, (dataset.columns.size - 2)                  :dataset.columns.size], inplace=True, axis=1)
         if pathname == '/pca/2d':
             fig = initShowPCA('2D', dataset, data, normalization_type)
             fig = updateMarkerSize(fig, marker_size, layout)
@@ -295,6 +294,12 @@ def shutdown():
 # local variables:
 # normalized_data       pandas dataframe    dataframe of standardized input data
 # _______________________________________________________________
+#
+# The code block below fulfills the requirements of:
+#
+# Software Requirement Specification (SRS):    ( functional 3.1, 3.2) - Page 4
+# Software Design Document (SDD) :                ( functional e,f) - Page 4
+# ___________________________________________________________________
 
 
 def initShowPCA(type, dataset, data, normalization_type):
@@ -327,6 +332,12 @@ def initShowPCA(type, dataset, data, normalization_type):
 # eigen_data        array               array of float eigen_values and eigen_vectors
 # compnents_df      pandas dataframe    dataframe of components
 # _______________________________________________________________
+#
+# The code block below fulfills the requirements of:
+#
+# Software Requirement Specification (SRS):    ( functional 4, 5.1) - Page 4
+# Software Design Document (SDD) :                ( functional g) - Page 4
+# ___________________________________________________________________
 
 
 def showPCA2D(dataset, normalized_data):
@@ -374,6 +385,12 @@ def showPCA2D(dataset, normalized_data):
 # eigen_data        array               array of float eigen_values and eigen_vectors
 # compnents_df      pandas dataframe    dataframe of components
 # _______________________________________________________________
+#
+# The code block below fulfills the requirements of:
+#
+# Software Requirement Specification (SRS):    ( functional 4, 5.2) - Page 4
+# Software Design Document (SDD) :                ( functional h) - Page 4
+# ___________________________________________________________________
 
 
 def showPCA3D(dataset, normalized_data):
@@ -422,6 +439,12 @@ def showPCA3D(dataset, normalized_data):
 # runs                  list                list of the runs
 # fig                   graph object        dendrogram plot
 # _______________________________________________________________
+#
+# The code block below fulfills the requirements of:
+#
+# Software Requirement Specification (SRS):    ( functional 3, 6, 7, 7.2) - Pages 4,6,7
+# Software Design Document (SDD) :                ( functional e,f,k) - Page 5
+# ___________________________________________________________________
 
 
 def showHCADendrogram(dataset, data, orientation, normalization_type):
@@ -480,6 +503,12 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
 # heat_data             list                list of heatmap data
 # heatmap               graph object        heatmap plot
 # _______________________________________________________________
+#
+# The code block below fulfills the requirements of:
+#
+# Software Requirement Specification (SRS):    ( functional 6, 7, 7.1) - Page 6,7
+# Software Design Document (SDD) :                ( functional l) - Page x
+# ___________________________________________________________________
 
 
 def showHCAHeatmap(dataset):
