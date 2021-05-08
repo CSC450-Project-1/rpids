@@ -1,3 +1,17 @@
+/*_______________________________________________________________________________________________________________________________
+
+ Project Name:      Response Pattern-Based Identification System (RPIDS)
+ Purpose:           A Graphical User Interface (GUI) based software to assist chemists in performing principal component
+                    analysis (PCA) and hierarchical clustering analysis (HCA). 
+ Project Members:   Zeth Copher
+                    Josh Kuhn
+                    Ryan Luer
+                    Austin Pearce
+                    Rich Russell
+ Course:         Missouri State University CSC450- Intro to Software Engineering
+ Instructor:     Dr. Razib Iqbal, Associate Professor of Computer Science 
+ Contact:        RIqbal@MissouriState.edu
+_________________________________________________________________________________________________________________________________*/
 const {PythonShell} = require('python-shell');
 const ipc = require('electron').ipcRenderer;
 const exec = require('child_process').exec;
@@ -16,6 +30,14 @@ const SERVER_ADDRESS = 'http://127.0.0.1:8050/';
 window.importPaths = [];
 window.maxAttempts = isDev() ? 30 : 50;
 
+// #_______________________________________________________
+// # window.sysImportLabel = function()
+// # sends importLabel event to ipcRenderer
+// # once receiving return event importLabelDone, shows in formdata the filename from extractFileName()
+// # if isDialogOpened is true, instead call showAlertMessage()
+// # Return Value
+// # bool                         True/False if Key is found
+// #___________________________________________________________
 window.sysImportLabel = function() {
     if(!isDialogOpened()){
         ipc.send('importLabel');
@@ -30,12 +52,30 @@ window.sysImportLabel = function() {
     }
 }
 
+// #_______________________________________________________
+// # extractFilename
+// # this function uses regex to return the file name from the end of a path
+// #
+// # Return Value
+// # string                         file name
+// #
+// # Value Parameters
+// # path        string        the path to extract file name from
+// #___________________________________________________________
 function extractFilename(path){
     let path_array = path.split('\\');
     let last_index = path_array.length - 1;
     return path_array[last_index].replace(/\-/g, '_');
 }
 
+// #_______________________________________________________
+// # resetImportForm
+// # this function resets the inputs in the import form in ./index.html
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function resetImportForm(){
     // Reset previously selected values for next import
     resetInputPaths({label: true, runs: true})
@@ -46,6 +86,14 @@ function resetImportForm(){
     $('input:radio[name=delimiterOption]')[0].checked = true;
 }
 
+
+// #_______________________________________________________
+// # window.sysImportRuns = function()
+// # sends importRuns event to ipcRenderer
+// # once receiving return event importRunDone, shows in formdata the filename from extractFileName()
+// # if isDialogOpened is true, instead call showAlertMessage()
+// # Return Value
+// #___________________________________________________________
 window.sysImportRuns = function() {
     if(!isDialogOpened()){
         ipc.send('importRuns');
@@ -74,6 +122,19 @@ window.sysImportRuns = function() {
     }
 }
 
+// #_______________________________________________________
+// # resetImportValidation
+// # this function resets the validation in the import form in ./index.html
+// #
+// # Value Parameters
+// # analType        bool        whether or not an analysis type exists
+// # label        bool        whether or not a label exists
+// # runs        bool        whether or not runs exists
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function resetImportValidation({analType=false, label=false, runs=false}){
         // Show input fields are valid
         if(analType){
@@ -89,6 +150,19 @@ function resetImportValidation({analType=false, label=false, runs=false}){
         }
 }
 
+
+// #_______________________________________________________
+// # resetInputPaths
+// # this function resets the input form for files in the import form in ./index.html
+// #
+// # Value Parameters
+// # label        bool        whether or not an analysis type exists
+// # runs        bool        whether or not a label exists
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function resetInputPaths({label=false,runs=false}){
     if(label){
         importPaths.label = [];
@@ -100,6 +174,15 @@ function resetInputPaths({label=false,runs=false}){
     }
 }
 
+// #_______________________________________________________
+// # areValidRuns
+// # this function checks that all the files have consistent file extensions using regex
+// #
+// #
+// # Return Value
+// # is_consistent      bool                      
+// #
+// #___________________________________________________________
 function areValidRuns(){
     // Check consistency of file types
     var re = /(?:\.([^.]+))?$/; // Regex for file type
@@ -119,26 +202,75 @@ function areValidRuns(){
     return is_consistent;
 }
 
+// #_______________________________________________________
+// # initStartServer
+// # this is an initialization function which calls startServer and checkServerStatus
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function initStartServer(){
     startServer();
     checkServerStatus(1);
 }
 
+// #_______________________________________________________
+// # initStartServer
+// # this is an initialization function which calls startServer and checkServerStatus
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function updateLoadingGif(visible=false){
     let val = visible ? 'visible' : 'hidden';
     $('#loading-gif').css('visibility', val);
 }
 
+// #_______________________________________________________
+// # restartServer
+// # calls updateLoadingGif and checks the status of the server
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 window.restartServer = function(){
     updateLoadingGif(true);
     checkServerStatus(1);
 }
 
+// #_______________________________________________________
+// # cancelServerRequest
+// # cancels the updateLoadingGif function
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 window.cancelServerRequest = function(){
     updateLoadingGif(false);
 }
 
-// Recursive method used to determine when server is done loading
+
+// #_______________________________________________________
+// # checkServerStatus
+// # continues to send requests to server to check the status of the server, calls function attempt_num times
+// #
+// #
+// # Value Parameters
+// # attempt_num      int       number of times to recurse through the function 
+//
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
+
 function checkServerStatus(attempt_num){
     if(attempt_num==maxAttempts){
         window.showAlertMessage({title: 'Failed Starting Server',
@@ -165,6 +297,16 @@ function checkServerStatus(attempt_num){
     }
 }
 
+// #_______________________________________________________
+// # sysExportData
+// # sends the exportData event to ipc, upon receiving the event exportDone, executes the export python file, and displays an alert given it's results
+// #
+// #
+//
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 window.sysExportData = function() {
     console.log("Export has been called");
     if(!isDialogOpened()){
@@ -207,6 +349,16 @@ window.sysExportData = function() {
     }
 }
 
+// #_______________________________________________________
+// # sysExportData
+// # sends the exportData event to ipc, upon receiving the event exportDone, executes the export python file, and displays an alert given it's results
+// #
+// #
+//
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function getSettings(){
     return new Promise(function(resolve, reject) {
         ipc.invoke('getSettings').then((result) => {
@@ -215,11 +367,34 @@ function getSettings(){
     })
 }
 
+// #_______________________________________________________
+// # updateSettings
+// # sends the updateSettings event to ipc, upon receiving the event exportDone, executes the export python file, and displays an alert given it's results
+// #
+// #
+//
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function updateSettings(settings){
     ipc.send('updateSettings', {
         settings: settings
     })
 }
+
+// #_______________________________________________________
+// # changeiFrameSrc
+// # changes the iframe based on the route that is passed in based on the analysis type in settings, returned from getSettings()
+// #
+// #
+// # Value Parameters
+// # route       bool       whether or not there is a route passed in
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 
 window.changeiFrameSrc = function changeiFrameSrc(route=false){
     if(!route){
@@ -241,7 +416,19 @@ window.changeiFrameSrc = function changeiFrameSrc(route=false){
     }
 }
 
-// Show/hide toolbar of buttons based on analysis type
+
+// #_______________________________________________________
+// # showToolBar
+// # changes css stylings of the toolbar based on the type of analysis shown
+// #
+// #
+// # Value Parameters
+// # route       string       type of route that is being used by the dash server
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function showToolBar(route){
     if(route.includes('pca')){
         document.querySelector('#pca-toolbar').classList.remove('hidden');
@@ -252,6 +439,19 @@ function showToolBar(route){
     }
 }
 
+// #_______________________________________________________
+// # initImport
+// # checks if the server is running, and calls sendImportPaths with importFormData, otherwise calls updateLoadingGif
+// #
+// #
+// # Value Parameters
+// # importFormData       JSON       form data from the import form
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
+
 window.initImport = function initImport(importFormData) {
     checkServer().then(()=>{
         console.log('Server is running');
@@ -261,6 +461,19 @@ window.initImport = function initImport(importFormData) {
         sendImportPaths(importFormData);
     })
 }
+
+// #_______________________________________________________
+// # initImport
+// # checks if the server is running, and calls sendImportPaths with importFormData, otherwise calls updateLoadingGif
+// #
+// #
+// # Value Parameters
+// # importFormData       JSON       form data from the import form
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 
 function sendImportPaths(importFormData){
     getSettings().then((data)=>{
@@ -274,6 +487,20 @@ function sendImportPaths(importFormData){
     })
 }
 
+
+// #_______________________________________________________
+// # initImport
+// # checks if the server is running, and calls sendImportPaths with importFormData, otherwise calls updateLoadingGif
+// #
+// #
+// # Value Parameters
+// # importFormData       JSON       form data from the import form
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
+
 function checkServer(){
     return new Promise(function (resolve, reject){
         fetch('http://127.0.0.1:8050')
@@ -285,6 +512,20 @@ function checkServer(){
         });
     })
 }
+
+
+// #_______________________________________________________
+// # importData
+// # uses the passed in importFormData to execute the import python business layer script, changed the plotly source, and resets the import form
+// #
+// #
+// # Value Parameters
+// # importFormData       JSON       form data from the import form
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 
 function importData(importFormData){
     if (importPaths.label == undefined) importPaths.label = ""
@@ -324,9 +565,18 @@ function importData(importFormData){
     }).catch(()=>{
         initStartServer();
     })
-    console.log(importFormData);
 }
 
+// #_______________________________________________________
+// # startServer
+// # attempts to start the dash server, executing the Dash Server business layer script.
+// #
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 function startServer(){
     if(isDev()){
         var options = {
@@ -354,21 +604,69 @@ function startServer(){
         }
         opt();
     }
-    console.log('server started');
 
 }
 
-// Check if the app is currently in development mode
+// #_______________________________________________________
+// # isDev
+// # Check if the app is currently in development mode
+// #
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
+
 function isDev(){
     return (ipc.sendSync('isDevRequest'));
 }
+
+// #_______________________________________________________
+// # isDialogOpened
+// # Check if the app is current displaying a dialog, like an alert
+// #
+// #
+// #
+// # Return Value
+// # bool                      
+// #
+// #___________________________________________________________
 
 function isDialogOpened(){
     return (ipc.sendSync('isDialogOpenedRequest'));
 }
 
+// #_______________________________________________________
+// # shutdownInit event handler
+// # changes the iframe source to the shutdown route, and sends the event shutdownDone to ipc.
+// #
+// #
+// #
+// # Return Value
+// # void                      
+// #
+// #___________________________________________________________
 ipc.on('shutdownInit', function (event) {
     // Make request to shutdown dash server
     changeiFrameSrc("shutdown");
     ipc.send('shutdownDone');
 });
+
+/*_______________________________________________________________________________________________________________________________
+
+ License:
+ Copyright 2021 Missouri State University
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+ documentation files (the "Software"), to deal in the Software without restriction, including without limitation the 
+ rights to use, copy, modify, merge, publish, distribute, sub-license, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+ NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+_______________________________________________________________________________________________________________________________________*/
