@@ -12,7 +12,7 @@
  Instructor:     Dr. Razib Iqbal, Associate Professor of Computer Science 
  Contact:        RIqbal@MissouriState.edu
 _________________________________________________________________________________________________________________________________*/
-const {PythonShell} = require('python-shell');
+const { PythonShell } = require('python-shell');
 const ipc = require('electron').ipcRenderer;
 const exec = require('child_process').exec;
 const path = require('path');
@@ -21,9 +21,9 @@ const execFile = require('child_process').execFile;
 
 const ENGINE_PATH = '../../../engine/';
 const EXTRA_PATH = path.join(path.dirname(process.resourcesPath), 'resources');
-const IMPORT_PATH = path.join(EXTRA_PATH,'import_data.exe');
-const EXPORT_PATH =  path.join(EXTRA_PATH,'/export_data.exe');
-const DASH_PATH =  path.join(EXTRA_PATH,'dash_server', 'dash_server.exe');
+const IMPORT_PATH = path.join(EXTRA_PATH, 'import_data.exe');
+const EXPORT_PATH = path.join(EXTRA_PATH, '/export_data.exe');
+const DASH_PATH = path.join(EXTRA_PATH, 'dash_server', 'dash_server.exe');
 const TEMP_PATH = path.join(__dirname, '../../../temp/')
 const SETTINGS_PATH = path.join(__dirname, '../settings.json')
 const SERVER_ADDRESS = 'http://127.0.0.1:8050/';
@@ -42,7 +42,7 @@ window.maxAttempts = isDev() ? 30 : 50;
 // # Value Parameters
 // # path        string        the path to extract file name from
 // #___________________________________________________________
-function getAnalysisType(){
+function getAnalysisType() {
     let settings = fs.readFileSync(path.resolve(__dirname, '../../../settings.json'));
     return JSON.parse(settings);
 }
@@ -55,17 +55,17 @@ function getAnalysisType(){
 // # Return Value
 // # bool                         True/False if Key is found
 // #___________________________________________________________
-window.sysImportLabel = function() {
-    if(!isDialogOpened()){
+window.sysImportLabel = function () {
+    if (!isDialogOpened()) {
         ipc.send('importLabel');
         ipc.on('importLabelDone', (event, path) => {
             importPaths.label = path;
             document.querySelector('#import-label-path').innerHTML = extractFilename(path);
-    
-            resetImportValidation({label: true})
-         })
-    }else{
-        window.showAlertMessage({title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info'});
+
+            resetImportValidation({ label: true })
+        })
+    } else {
+        window.showAlertMessage({ title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info' });
     }
 }
 
@@ -79,7 +79,7 @@ window.sysImportLabel = function() {
 // # Value Parameters
 // # path        string        the path to extract file name from
 // #___________________________________________________________
-function extractFilename(path){
+function extractFilename(path) {
     let path_array = path.split('\\');
     let last_index = path_array.length - 1;
     return path_array[last_index].replace(/\-/g, '_');
@@ -93,10 +93,10 @@ function extractFilename(path){
 // # void                      
 // #
 // #___________________________________________________________
-function resetImportForm(){
+function resetImportForm() {
     // Reset previously selected values for next import
-    resetInputPaths({label: true, runs: true})
-    resetImportValidation({analType: true, label: true, runs: true});
+    resetInputPaths({ label: true, runs: true })
+    resetImportValidation({ analType: true, label: true, runs: true });
 
     $("#analType").val('');
     $('input:radio[name=dataFormat]')[0].checked = true;
@@ -111,31 +111,31 @@ function resetImportForm(){
 // # if isDialogOpened is true, instead call showAlertMessage()
 // # Return Value
 // #___________________________________________________________
-window.sysImportRuns = function() {
-    if(!isDialogOpened()){
+window.sysImportRuns = function () {
+    if (!isDialogOpened()) {
         ipc.send('importRuns');
         ipc.on('importRunDone', (event, paths) => {
             importPaths.runs = paths;
-    
-            if(areValidRuns()){
+
+            if (areValidRuns()) {
                 // Update input field with selected path
-                if(paths.length>1){
+                if (paths.length > 1) {
                     var filenames = '';
                     for (let i = 0; i < paths.length; i++) {
-                        filenames += extractFilename(paths[i])+(i==paths.length-1?'':', ');
+                        filenames += extractFilename(paths[i]) + (i == paths.length - 1 ? '' : ', ');
                     }
                     document.querySelector('#import-runs-path').innerHTML = filenames;
-                }else{
-                    document.querySelector('#import-runs-path').innerHTML = extractFilename(paths[0]);  
+                } else {
+                    document.querySelector('#import-runs-path').innerHTML = extractFilename(paths[0]);
                 }
-                resetImportValidation({runs: true})
-            }else{
-                window.showAlertMessage({title: 'Inconsistency Detected', message: 'Please try again with consistent file types'});
-                resetInputPaths({runs: true});
+                resetImportValidation({ runs: true })
+            } else {
+                window.showAlertMessage({ title: 'Inconsistency Detected', message: 'Please try again with consistent file types' });
+                resetInputPaths({ runs: true });
             }
         })
-    }else{
-        window.showAlertMessage({title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info'});
+    } else {
+        window.showAlertMessage({ title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info' });
     }
 }
 
@@ -152,19 +152,19 @@ window.sysImportRuns = function() {
 // # void                      
 // #
 // #___________________________________________________________
-function resetImportValidation({analType=false, label=false, runs=false}){
-        // Show input fields are valid
-        if(analType){
-            document.querySelector('#analType').classList.remove('is-invalid');
-        }
-        if(runs){
-            document.querySelector('#import-runs').classList.remove('is-invalid');
-            document.querySelector('#import-runs-feedback').classList.remove('d-block');
-        }
-        if(label){
-            document.querySelector('#import-label').classList.remove('is-invalid');
-            document.querySelector('#import-label-feedback').classList.remove('d-block');
-        }
+function resetImportValidation({ analType = false, label = false, runs = false }) {
+    // Show input fields are valid
+    if (analType) {
+        document.querySelector('#analType').classList.remove('is-invalid');
+    }
+    if (runs) {
+        document.querySelector('#import-runs').classList.remove('is-invalid');
+        document.querySelector('#import-runs-feedback').classList.remove('d-block');
+    }
+    if (label) {
+        document.querySelector('#import-label').classList.remove('is-invalid');
+        document.querySelector('#import-label-feedback').classList.remove('d-block');
+    }
 }
 
 
@@ -180,12 +180,12 @@ function resetImportValidation({analType=false, label=false, runs=false}){
 // # void                      
 // #
 // #___________________________________________________________
-function resetInputPaths({label=false,runs=false}){
-    if(label){
+function resetInputPaths({ label = false, runs = false }) {
+    if (label) {
         importPaths.label = [];
         document.querySelector('#import-label-path').innerHTML = "Choose file"
     }
-    if(runs){
+    if (runs) {
         importPaths.runs = [];
         document.querySelector('#import-runs-path').innerHTML = "Choose file(s)";
     }
@@ -200,7 +200,7 @@ function resetInputPaths({label=false,runs=false}){
 // # is_consistent      bool                      
 // #
 // #___________________________________________________________
-function areValidRuns(){
+function areValidRuns() {
     // Check consistency of file types
     var re = /(?:\.([^.]+))?$/; // Regex for file type
     var ext = re.exec(importPaths.runs)[1];
@@ -213,7 +213,7 @@ function areValidRuns(){
                 is_consistent = false;
                 break;
             }
-            
+
         }
     }
     return is_consistent;
@@ -228,7 +228,7 @@ function areValidRuns(){
 // # void                      
 // #
 // #___________________________________________________________
-function initStartServer(){
+function initStartServer() {
     startServer();
     checkServerStatus(1);
 }
@@ -242,7 +242,7 @@ function initStartServer(){
 // # void                      
 // #
 // #___________________________________________________________
-function updateLoadingGif(visible=false){
+function updateLoadingGif(visible = false) {
     let val = visible ? 'visible' : 'hidden';
     $('#loading-gif').css('visibility', val);
 }
@@ -256,7 +256,7 @@ function updateLoadingGif(visible=false){
 // # void                      
 // #
 // #___________________________________________________________
-window.restartServer = function(){
+window.restartServer = function () {
     updateLoadingGif(true);
     checkServerStatus(1);
 }
@@ -270,7 +270,7 @@ window.restartServer = function(){
 // # void                      
 // #
 // #___________________________________________________________
-window.cancelServerRequest = function(){
+window.cancelServerRequest = function () {
     updateLoadingGif(false);
 }
 
@@ -288,29 +288,30 @@ window.cancelServerRequest = function(){
 // #
 // #___________________________________________________________
 
-function checkServerStatus(attempt_num){
-    if(attempt_num==maxAttempts){
-        window.showAlertMessage({title: 'Failed Starting Server',
-                                 message: 'Do you want to try again?',
-                                 confirmText: 'Try Again',
-                                 confirmAction: window.restartServer,
-                                 cancelAction: window.cancelServerRequest,
-                                 showCancel: true
-                                });
-    }else{
-        fetch('http://127.0.0.1:8050')
-        .then(response => {
-            if (!response.ok) {
-                checkServerStatus(++attempt_num);
-            }else{
-                updateLoadingGif(false);
-                // Reload iframe
-                document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src
-            }
-        })
-        .catch(error => {
-            checkServerStatus(++attempt_num);
+function checkServerStatus(attempt_num) {
+    if (attempt_num == maxAttempts) {
+        window.showAlertMessage({
+            title: 'Failed Starting Server',
+            message: 'Do you want to try again?',
+            confirmText: 'Try Again',
+            confirmAction: window.restartServer,
+            cancelAction: window.cancelServerRequest,
+            showCancel: true
         });
+    } else {
+        fetch('http://127.0.0.1:8050')
+            .then(response => {
+                if (!response.ok) {
+                    checkServerStatus(++attempt_num);
+                } else {
+                    updateLoadingGif(false);
+                    // Reload iframe
+                    document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src
+                }
+            })
+            .catch(error => {
+                checkServerStatus(++attempt_num);
+            });
     }
 }
 
@@ -324,47 +325,47 @@ function checkServerStatus(attempt_num){
 // # void                      
 // #
 // #___________________________________________________________
-window.sysExportData = function() {
+window.sysExportData = function () {
     console.log("Export has been called");
     settings = getAnalysisType()
     console.log(settings)
-    if(!isDialogOpened()){
+    if (!isDialogOpened()) {
         ipc.send('exportData');
-        ipc.on('exportDone', (event, exportPath) => { 
-            if(isDev()){
+        ipc.on('exportDone', (event, exportPath) => {
+            if (isDev()) {
                 var options = {
                     scriptPath: path.join(__dirname, ENGINE_PATH),
                     args: [exportPath, TEMP_PATH, JSON.stringify(settings)],
                     pythonPath: 'python'
                 };
                 PythonShell.run('export_data.py', options, function (err, results) {
-                    if(err){
-                        window.showAlertMessage({title: 'Export Error', message: 'There was a problem exporting session data'});
+                    if (err) {
+                        window.showAlertMessage({ title: 'Export Error', message: 'There was a problem exporting session data' });
                         console.error(err)
                     }
                     else {
-                        window.window.showAlertMessage({title: 'Export Successful', message: 'The session data has been exported successfully', icon: 'success'});                   
-                        if(results) console.log('Results from export: ', results);
+                        window.window.showAlertMessage({ title: 'Export Successful', message: 'The session data has been exported successfully', icon: 'success' });
+                        if (results) console.log('Results from export: ', results);
                     }
                 });
-            }else{
-                var opt = function(){
-                    execFile(EXPORT_PATH, [exportPath, TEMP_PATH, JSON.stringify(settings)], function(err, results) {  
-                      if(err) {
-                          window.showAlertMessage({title: 'Export Error', message: 'There was a problem exporting session data'});
-                          console.error(err)
-                      }
-                      else {
-                          window.showAlertMessage({title: 'Export Success', message: 'The session data has been exported successfully', icon: 'success'});
-                          if(results) console.log('Results from export: ', results.toString());
-                      }
-                  });  
+            } else {
+                var opt = function () {
+                    execFile(EXPORT_PATH, [exportPath, TEMP_PATH, JSON.stringify(settings)], function (err, results) {
+                        if (err) {
+                            window.showAlertMessage({ title: 'Export Error', message: 'There was a problem exporting session data' });
+                            console.error(err)
+                        }
+                        else {
+                            window.showAlertMessage({ title: 'Export Success', message: 'The session data has been exported successfully', icon: 'success' });
+                            if (results) console.log('Results from export: ', results.toString());
+                        }
+                    });
                 }
                 opt();
             }
-         })
-    }else{
-        window.showAlertMessage({title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info'});
+        })
+    } else {
+        window.showAlertMessage({ title: 'Opened Dialog Detected', message: 'Please close other dialog windows and try again', icon: 'info' });
     }
 }
 
@@ -378,8 +379,8 @@ window.sysExportData = function() {
 // # void                      
 // #
 // #___________________________________________________________
-function getSettings(){
-    return new Promise(function(resolve, reject) {
+window.getSettings = function getSettings() {
+    return new Promise(function (resolve, reject) {
         ipc.invoke('getSettings').then((result) => {
             resolve(result)
         })
@@ -396,7 +397,7 @@ function getSettings(){
 // # void                      
 // #
 // #___________________________________________________________
-function updateSettings(settings){
+window.updateSettings = function updateSettings(settings) {
     ipc.send('updateSettings', {
         settings: settings
     })
@@ -415,22 +416,22 @@ function updateSettings(settings){
 // #
 // #___________________________________________________________
 
-window.changeiFrameSrc = function changeiFrameSrc(route=false){
-    if(!route){
-        getSettings().then((data)=>{
+window.changeiFrameSrc = function changeiFrameSrc(route = false) {
+    if (!route) {
+        getSettings().then((data) => {
             const settings = data;
-            if ("analysis_type" in settings){
+            if ("analysis_type" in settings) {
                 let analysis_type = settings['analysis_type'];
-    
-                route = analysis_type=='pca' ? 'pca/2d' : 'hca/dendrogram';
+
+                route = analysis_type == 'pca' ? 'pca/2d' : 'hca/dendrogram';
                 var iframe = document.getElementById('plotly-frame');
-                iframe.src = SERVER_ADDRESS+route;
+                iframe.src = SERVER_ADDRESS + route;
                 showToolBar(route);
             }
         });
-    }else{
+    } else {
         var iframe = document.getElementById('plotly-frame');
-        iframe.src = SERVER_ADDRESS+route;
+        iframe.src = SERVER_ADDRESS + route;
         showToolBar(route)
     }
 }
@@ -448,11 +449,11 @@ window.changeiFrameSrc = function changeiFrameSrc(route=false){
 // # void                      
 // #
 // #___________________________________________________________
-function showToolBar(route){
-    if(route.includes('pca')){
+function showToolBar(route) {
+    if (route.includes('pca')) {
         document.querySelector('#pca-toolbar').classList.remove('hidden');
         document.querySelector('#hca-toolbar').classList.add('hidden');
-    }else if(route.includes('hca')){
+    } else if (route.includes('hca')) {
         document.querySelector('#hca-toolbar').classList.remove('hidden');
         document.querySelector('#pca-toolbar').classList.add('hidden');
     }
@@ -472,10 +473,10 @@ function showToolBar(route){
 // #___________________________________________________________
 
 window.initImport = function initImport(importFormData) {
-    checkServer().then(()=>{
+    checkServer().then(() => {
         console.log('Server is running');
         sendImportPaths(importFormData);
-    }).catch(()=>{
+    }).catch(() => {
         updateLoadingGif(true);
         sendImportPaths(importFormData);
     })
@@ -494,13 +495,13 @@ window.initImport = function initImport(importFormData) {
 // #
 // #___________________________________________________________
 
-function sendImportPaths(importFormData){
-    getSettings().then((data)=>{
+function sendImportPaths(importFormData) {
+    getSettings().then((data) => {
         // Save the analysis type to the settings
         var settings = data;
         settings['analysis_type'] = importFormData.analType;
         updateSettings(settings);
-    
+
         changeiFrameSrc();
         importData(importFormData);
     })
@@ -520,15 +521,15 @@ function sendImportPaths(importFormData){
 // #
 // #___________________________________________________________
 
-function checkServer(){
-    return new Promise(function (resolve, reject){
+function checkServer() {
+    return new Promise(function (resolve, reject) {
         fetch('http://127.0.0.1:8050')
-        .then(response => {
-            resolve(response.ok);
-        })
-        .catch(error => {
-            reject(error);
-        });
+            .then(response => {
+                resolve(response.ok);
+            })
+            .catch(error => {
+                reject(error);
+            });
     })
 }
 
@@ -546,9 +547,9 @@ function checkServer(){
 // #
 // #___________________________________________________________
 
-function importData(importFormData){
+function importData(importFormData) {
     if (importPaths.label == undefined) importPaths.label = ""
-    if(isDev()){
+    if (isDev()) {
         var options = {
             scriptPath: path.join(__dirname, ENGINE_PATH),
             args: [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH],
@@ -556,32 +557,32 @@ function importData(importFormData){
         };
         PythonShell.run('import_data.py', options, function (err, results) {
             var m = "default error";
-            if(results){
-                if (results[0].includes("Oops! <class 'ValueError'>")){
+            if (results) {
+                if (results[0].includes("Oops! <class 'ValueError'>")) {
                     m = "Please select the correct format of the data and retry."
-                } 
-                window.showAlertMessage({title: 'Error Occured During Import Process', message: m});
+                }
+                window.showAlertMessage({ title: 'Error Occured During Import Process', message: m });
             }
             document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
             resetImportForm();
         });
-    }else{
-        var opt = function(){
-            execFile(IMPORT_PATH, [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH], function(err, results) {  
-                if(err){
-                    window.showAlertMessage({title: 'Import Process Error', message: "An error occured during the import process"});
+    } else {
+        var opt = function () {
+            execFile(IMPORT_PATH, [importPaths.label, JSON.stringify(importPaths.runs), JSON.stringify(importFormData), TEMP_PATH], function (err, results) {
+                if (err) {
+                    window.showAlertMessage({ title: 'Import Process Error', message: "An error occured during the import process" });
                     console.error(err)
                 }
-                if(results) console.log('Results from import process ',results.toString());
+                if (results) console.log('Results from import process ', results.toString());
                 document.getElementById('plotly-frame').src = document.getElementById('plotly-frame').src;
-                resetImportForm();              
-          });
+                resetImportForm();
+            });
         }
         opt();
     }
-    checkServer().then(()=>{
+    checkServer().then(() => {
         console.log('Server is running');
-    }).catch(()=>{
+    }).catch(() => {
         initStartServer();
     })
 }
@@ -596,8 +597,8 @@ function importData(importFormData){
 // # void                      
 // #
 // #___________________________________________________________
-function startServer(){
-    if(isDev()){
+function startServer() {
+    if (isDev()) {
         var options = {
             scriptPath: path.join(__dirname, '../../../engine/'),
             args: [TEMP_PATH],
@@ -605,20 +606,20 @@ function startServer(){
         };
 
         PythonShell.run('dash_server.py', options, function (err, results) {
-            if(err){
-                window.showAlertMessage({title: 'Dash Server Error', message: "An error occured while trying to start the Dash Server"});
+            if (err) {
+                window.showAlertMessage({ title: 'Dash Server Error', message: "An error occured while trying to start the Dash Server" });
                 console.error(err);
             }
             if (results) console.log('Results from dash server: ', results);
         });
-    }else{
-        var opt = function(){
-            execFile(DASH_PATH, [TEMP_PATH], function(err, results) {  
-                if(err){
-                    window.showAlertMessage({title: 'Dash Server Error', message: "An error occured while trying to start the Dash Server"});
+    } else {
+        var opt = function () {
+            execFile(DASH_PATH, [TEMP_PATH], function (err, results) {
+                if (err) {
+                    window.showAlertMessage({ title: 'Dash Server Error', message: "An error occured while trying to start the Dash Server" });
                     console.error(err);
                 }
-                if(results) console.log('Results from dash server: ', results.toString());                       
+                if (results) console.log('Results from dash server: ', results.toString());
             });
         }
         opt();
@@ -637,7 +638,7 @@ function startServer(){
 // #
 // #___________________________________________________________
 
-function isDev(){
+function isDev() {
     return (ipc.sendSync('isDevRequest'));
 }
 
@@ -652,7 +653,7 @@ function isDev(){
 // #
 // #___________________________________________________________
 
-function isDialogOpened(){
+function isDialogOpened() {
     return (ipc.sendSync('isDialogOpenedRequest'));
 }
 
@@ -677,15 +678,15 @@ ipc.on('shutdownInit', function (event) {
  License:
  Copyright 2021 Missouri State University
 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
- documentation files (the "Software"), to deal in the Software without restriction, including without limitation the 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
  rights to use, copy, modify, merge, publish, distribute, sub-license, and/or sell copies of the Software, and to
  permit persons to whom the Software is furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
- BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 _______________________________________________________________________________________________________________________________________*/

@@ -57,7 +57,8 @@ from scipy.spatial.distance import pdist, squareform
 np.random.seed(1)
 
 temp_path = sys.argv[1]
-external_stylesheets = ['./electron/assets/css/main.css']
+# external_stylesheets = ['./electron/assets/css/main.css'] NOT WORKING
+external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 app = dash.Dash(external_stylesheets=external_stylesheets)
 app.layout = html.Div([
@@ -66,36 +67,47 @@ app.layout = html.Div([
 
     html.Div(
         id='normalization',
-        children=dcc.Dropdown(
-            id='normalization-dropdown',
-            options=[
-                {'label': 'None', 'value': 'none'},
-                {'label': 'Linear Rescaling', 'value': 'linear_rescaling'},
-                {'label': 'Standardization', 'value': 'standardization'},
-            ],
-            value='none',
-            clearable=False
-        )),
+        children=[
+            html.Label(['Data Preprocessing']),
+            dcc.Dropdown(
+                id='normalization-dropdown',
+                options=[
+                    {'label': 'None', 'value': 'none'},
+                    {'label': 'Linear Rescaling', 'value': 'linear_rescaling'},
+                    {'label': 'Standardization', 'value': 'standardization'},
+                ],
+                value='none',
+                clearable=False
+            )
+        ]
+    ),
     html.Div(
         id='hca-orientation',
-        children=dcc.Dropdown(
-            id='hca-dropdown',
-            options=[
-                {'label': 'Horizontal', 'value': 'horizontal'},
-                {'label': 'Vertical', 'value': 'vertical'},
-            ],
-            value='horizontal',
-            clearable=False
-        )),
+        children=[
+            html.Label(['Orientation']),
+            dcc.Dropdown(
+                id='hca-dropdown',
+                options=[
+                    {'label': 'Horizontal', 'value': 'horizontal'},
+                    {'label': 'Vertical', 'value': 'vertical'},
+                ],
+                value='horizontal',
+                clearable=False
+            )
+        ]
+    ),
     html.Div(
         id='marker-customize',
-        children=dcc.Slider(
-            id='marker-slider',
-            min=1,
-            max=10,
-            marks={i: format(i) for i in range(1, 11)},
-            value=5,
-        )
+        children=[
+            html.Label(['Marker Size']),
+            dcc.Slider(
+                id='marker-slider',
+                min=1,
+                max=10,
+                marks={i: format(i) for i in range(1, 11)},
+                value=5,
+            )
+        ]
     ),
     dcc.Graph(id='plot',
               config={
@@ -183,6 +195,7 @@ def showOrientation(pathname):
 # _______________________________________________________________
 
 
+# TODO Need to also consider label
 @app.callback(Output('normalization-dropdown', 'style'), Input('url', 'pathname'))
 def showNormalization(pathname):
     return {'display': 'block'} if (pathname == '/hca/dendrogram' or pathname == '/pca/2d' or pathname == '/pca/3d') else {'display': 'none'}
@@ -243,7 +256,7 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
 
         columns = dataset.columns.tolist()
         data = pd.DataFrame.from_dict(dataset)
-        data.drop(data.iloc[:, (dataset.columns.size - 2)                  :dataset.columns.size], inplace=True, axis=1)
+        data.drop(data.iloc[:, (dataset.columns.size - 2) :dataset.columns.size], inplace=True, axis=1)
         if pathname == '/pca/2d':
             fig = initShowPCA('2D', dataset, data, normalization_type)
             fig = updateMarkerSize(fig, marker_size, layout)
@@ -491,7 +504,7 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
 #
 # reference parameters:
 # dataset               pandas dataframe      original imported dataset
-#
+# 
 # local variables:
 # label                 list                list of labels
 # samples               list                list of sample names

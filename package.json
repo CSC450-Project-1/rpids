@@ -1,7 +1,7 @@
 {
     "name": "rpids",
     "productName": "RPIDS",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "main": "./electron/main.js",
     "scripts": {
         "start": "electron .",

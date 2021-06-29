@@ -16,17 +16,23 @@
     <div class="row m-0 h-100 w-100">
       <div class="sidebar shadow d-flex flex-column">
         <ul class="nav flex-column my-4">
-          <li class="nav-item my-4">
+          <li class="nav-item icon my-4">
             <a data-toggle="modal" data-target="#importModal">
               <i class="fas fa-file-upload icon"></i>
               <div class="mx-auto">Import</div>
             </a>
           </li>
-          <li class="nav-item my-4">
+          <li class="nav-item icon my-4">
             <a id="export-btn">
               <i class="fas fa-file-export icon"></i>
               <div class="mx-auto">Export</div>
             </a>
+          </li>
+          <li class="nav-item m-4">
+            <label class="form-check-label unselectable">
+              <input class="form-check-input" type="checkbox" checked name="showToolbar" id="show-toolbar" />Show graph
+              toolbar
+            </label>
           </li>
         </ul>
         </ul>
@@ -113,35 +119,38 @@
               <h5 for="inlineRadio1">Import Name</h5>
               <input type="text" class="form-control" name="name" id="importName">
             </div> -->
-            <div class="row">
-              <!-- Data Format Option -->
-              <div class="form-group col">
-                <h5 for="inlineRadio1" data-toggle="tooltip"
-                  title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format</h5>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns" checked>
-                  <label class="form-check-label" for="inlineRadio1">Column</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows">
-                  <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
-                </div>
+          <div class="row">
+            <!-- Data Format Option -->
+            <div class="form-group col">
+              <h5 for="inlineRadio1" data-toggle="tooltip"
+                title="This refers to the orientation of data in run files, vertically or horizontally.">Data Format
+              </h5>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio1" value="columns"
+                  checked>
+                <label class="form-check-label" for="inlineRadio1">Column</label>
               </div>
-              <!-- Delimiter Option -->
-              <div class="form-group col">
-                <h5 for="delimiter-radio-1" data-toggle="tooltip"
-                  title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma"
-                    checked>
-                  <label class="form-check-label" for="delimiter-radio-1">Comma</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" value="space">
-                  <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
-                </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="dataFormat" id="inlineRadio2" value="rows">
+                <label class="form-check-label" for="inlineRadio2" aria-label="stop looking at me">Row</label>
               </div>
             </div>
+            <!-- Delimiter Option -->
+            <div class="form-group col">
+              <h5 for="delimiter-radio-1" data-toggle="tooltip"
+                title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma"
+                  checked>
+                <label class="form-check-label" for="delimiter-radio-1">Comma</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2"
+                  value="space">
+                <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
+              </div>
+            </div>
+          </div>
           <!-- Analysis Type Selection -->
           <div class="form-group">
             <h5 for="inlineRadio1">Analysis Type</h5>
