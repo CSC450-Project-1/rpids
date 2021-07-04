@@ -12,10 +12,7 @@ body,html {
     height: 100vh;
     flex: 0 0 150px;
     background-color: rgb(29, 31, 32);
-}
-
-/* .logo {} */
-  
+} 
 
 .drawer {
     background-color:rgb(54, 58, 59);
@@ -27,76 +24,12 @@ body,html {
     flex-flow: column;
 }
 
-.tabs {
-
- flex: 0 1 60px;
- margin-bottom: 0;
- display: flex;
- margin-top: 5px;
-}
-
-.tab {
-    height: 100%;
-    max-width: 300px;
-    background-color:whitesmoke;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    flex-grow: 1;
-    flex-basis: 5%;
-    white-space: nowrap;
-    margin-right: 2px;
-}
-
-.tab.active {
-    background-color: white;
-}
-
-.tab.active .tab-close {
-    background-color:white;
-    box-shadow: -15px 2px 25px white;
-
-}
-
 .tab-content {
     flex: 1 1 auto;
     width: 100%;
     background-color: white;
     z-index: 1;
     position: relative;
-}
-
-.tab-label {
-    position: absolute;
-    top:50%;
-    left:0;
-    padding-left: 10px;
-    transform: translateY(-50%);
-    z-index: 0;
-    
-}
-
-.tab-close {
-    position: absolute;
-    right: 0;
-    padding-right: 10px;
-    padding-left: 10px;
-    z-index: 1;
-    height: 100%;
-    background-color:whitesmoke;
-    box-shadow: -15px 2px 25px whitesmoke;
-}
-
-.tab-close i {
-    position: relative;
-    top: 50%;
-    margin-top: auto;
-    transform: translateY(-50%);
-    vertical-align: top;
-}
-
-.tab-window{
-    width:100%;
 }
 
 .empty-drawer {

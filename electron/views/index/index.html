@@ -30,7 +30,9 @@
           </li>
           <li class="nav-item m-4">
             <label class="form-check-label unselectable">
-              <input class="form-check-input" type="checkbox" checked name="showToolbar" id="show-toolbar" />Show graph
+              <input class="form-check-input" type="checkbox" checked name="showToolbar" onclick="isToolbarVisible()"
+                id="is-toolbar-visible" />Show
+              graph
               toolbar
             </label>
           </li>
@@ -45,12 +47,20 @@
           <span class="my-2"><i class="fas fa-file-upload icon mr-3"></i><span
               style="font-weight: normal;">Import</span></span> to begin
         </h1>
-        <ul class="tabs">
-          <li class="tab active" data-tab-id="">
-            <span class="tab-label">Graph Representation</span>
-            <!-- <span class="tab-close"><i class="fas fa-times"></i></span> -->
-          </li>
 
+        <ul class="nav nav-tabs" id="top-nav" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pca-tab" onclick="activeTab('pca')" type="button" role="tab"
+              aria-controls="home" title="Principal Component Analysis" aria-selected="true">
+              PCA
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="hca-tab" onclick="activeTab('hca')" type="button" role="tab"
+              aria-controls="home" title="Hierarchical Clustering Analysis" aria-selected="true">
+              HCA
+            </button>
+          </li>
         </ul>
 
 
@@ -140,30 +150,17 @@
               <h5 for="delimiter-radio-1" data-toggle="tooltip"
                 title="This refers to what delimiter is being used in the run files.">Delimiter</h5>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1" value="comma"
-                  checked>
+                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-1"
+                  value="comma">
                 <label class="form-check-label" for="delimiter-radio-1">Comma</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2"
+                <input class="form-check-input" type="radio" name="delimiterOption" id="delimiter-radio-2" checked
                   value="space">
                 <label class="form-check-label" for="delimiter-radio-2" aria-label="stop looking at me">Space</label>
               </div>
             </div>
           </div>
-          <!-- Analysis Type Selection -->
-          <div class="form-group">
-            <h5 for="inlineRadio1">Analysis Type</h5>
-            <select class="custom-select" id="analType" name="analType" required>
-              <option selected value="">Please select an analysis type</option>
-              <option value="pca">Principal Component Analysis (PCA)</option>
-              <option value="hca">Hierarchical Clustering Analysis (HCA)</option>
-            </select>
-            <div class="invalid-feedback">
-              An analysis type is required.
-            </div>
-          </div>
-          <hr>
           <!-- <h5 for="separated-option">File Format</h5>
           <div class="form-group">
             <div class="form-check form-check-inline">

@@ -60,8 +60,7 @@ function importSubmit() {
     formData = {
         // "name": form.find("[name='name']").val(),
         "dataFormat": form.find("[name='dataFormat']:checked").val(),
-        "delimiter": form.find("[name='delimiterOption']:checked").val(),
-        "analType": form.find("[name='analType']").val()
+        "delimiter": form.find("[name='delimiterOption']:checked").val()
     }
 
     if (isValidForm(formData)) {
@@ -70,18 +69,6 @@ function importSubmit() {
     }
 }
 
-// #_______________________________________________________
-// # .on('change') of analType form field
-// # handles validation of the form field, add's Bootstrap is-invalid class if invalid
-// # Return Value
-// # void                       
-// #
-$('#analType').on('change', function (e) {
-    var optionSelected = $(this).find("option:selected");
-    var valueSelected = optionSelected.val();
-    if (valueSelected != '') $("#analType").removeClass("is-invalid");
-    else $("#analType").addClass("is-invalid");
-});
 // #_______________________________________________________
 // # isValidForm function
 // # handles validation of form data, and adds is-invalid bootstrap class if field is invalid 
@@ -95,10 +82,12 @@ $('#analType').on('change', function (e) {
 // #___________________________________________________________
 function isValidForm(formData) {
     isValid = true;
-    if (formData.analType == "") {
-        $("#analType").addClass("is-invalid");
+    if (!window.importPaths.label || !window.importPaths.label.length) {
+        $("#import-label").addClass("is-invalid");
+        $("#import-label-feedback").addClass("d-block");
         isValid = false;
-    } if (!window.importPaths.runs || !window.importPaths.runs.length) {
+    }
+    if (!window.importPaths.runs || !window.importPaths.runs.length) {
         $("#import-runs").addClass("is-invalid");
         $("#import-runs-feedback").addClass("d-block");
         isValid = false;
@@ -106,8 +95,15 @@ function isValidForm(formData) {
     return isValid;
 }
 
-$("#show-toolbar").on('click', function () {
-    let checked = document.getElementById("show-toolbar").checked;
+// #_______________________________________________________
+// # isToolbarVisible function
+// # handles the checkbox for conditionally showing the graph toolbar
+// #
+// # Return Value
+// # void
+// #___________________________________________________________
+function isToolbarVisible() {
+    let checked = document.getElementById("is-toolbar-visible").checked;
     var pca_toolbar = document.querySelector('#pca-toolbar');
     var hca_toolbar = document.querySelector('#hca-toolbar');
 
@@ -121,7 +117,7 @@ $("#show-toolbar").on('click', function () {
         if (analysis_type == 'pca') pca_toolbar.classList.remove('hidden');
         else if (analysis_type == 'hca') hca_toolbar.classList.remove('hidden');
     }
-})
+}
 
 // #_______________________________________________________
 // # various handlers
@@ -133,15 +129,40 @@ $("#import-runs").on('click', window.sysImportRuns)
 $("#import-submit").on('click', importSubmit)
 $("#export-btn").on('click', window.sysExportData)
 
+// #_______________________________________________________
+// # activeTab function
+// # handles switching between the analysis tabs
+// #
+// # Return Value
+// # void
+// #
+// # Value Parameters
+// # analysis_type       string      analysis string associated to selected tab
+// #
+// #___________________________________________________________
+function activeTab(analysis_type) {
+    var pca_tab = document.querySelector('#pca-tab');
+    var hca_tab = document.querySelector('#hca-tab');
+
+    if (analysis_type == 'pca') {
+        hca_tab.classList.remove('active');
+        pca_tab.classList.add('active');
+        window.changeiFrameSrc('pca/2d');
+    }
+    else if (analysis_type == 'hca') {
+        pca_tab.classList.remove('active');
+        hca_tab.classList.add('active');
+        window.changeiFrameSrc('hca/dendrogram');
+    }
+}
 
 // #_______________________________________________________
 // # main()
-// # called when page loads, sets iframe to nothing
+// # called when page loads, sets iframe to default pca 2d
 // # 
 // #_______________________________________________________
 $(function main() {
-    window.changeiFrameSrc();
-
+    window.changeiFrameSrc('pca/2d');
 })
 
 /*_______________________________________________________________________________________________________________________________

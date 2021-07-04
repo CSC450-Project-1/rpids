@@ -361,11 +361,13 @@ def showPCA2D(dataset, normalized_data):
             X.append(col)
 
     components = pca.fit_transform(normalized_data[X])
+    total_var = pca.explained_variance_ratio_.sum() * 100
 
     eigen_values = pca.explained_variance_
     eigen_vectors = pca.components_
     fig = px.scatter(components, x=0, y=1,
-                     hover_name=dataset["run"], color=dataset["Samples"])
+                     hover_name=dataset["run"], color=dataset["Samples"],
+                     title=f'Total Explained Variance: {total_var:.2f}%')
     eigen_values = pca.explained_variance_
     eigen_vectors = pca.components_
     eigen_data = np.array([eigen_values, [eigen_vectors]])
@@ -374,6 +376,11 @@ def showPCA2D(dataset, normalized_data):
     components_df["Samples"] = dataset["Samples"].values.tolist()
     components_df["run"] = dataset["run"].values.tolist()
     components_df.to_json(getDataPath("computed_data.json"))
+
+    fig.update_layout(
+        xaxis_title="PCA 1",
+        yaxis_title="PCA 2",
+    )
 
     return fig
 
@@ -561,7 +568,7 @@ def showHCAHeatmap(dataset):
             x=dendro_leaves,
             y=dendro_leaves,
             z=heat_data,
-            colorscale='Blues'
+            colorscale='rdylgn'
         )
     ]
 

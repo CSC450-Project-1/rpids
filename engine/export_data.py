@@ -99,11 +99,9 @@ def clear_output_files():
     f.truncate()
 
 def main():
-    if settings["analysis_type"] == 'pca':
-        export_pca_to_csv()
-        clear_output_files()
-    elif settings["analysis_type"] == 'hca':
-        export_hca_to_csv()
+    export_pca_to_csv()
+    export_hca_to_csv()
+    clear_output_files()
 
     
 if __name__ == "__main__":

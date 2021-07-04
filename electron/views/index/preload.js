@@ -96,11 +96,10 @@ function extractFilename(path) {
 function resetImportForm() {
     // Reset previously selected values for next import
     resetInputPaths({ label: true, runs: true })
-    resetImportValidation({ analType: true, label: true, runs: true });
+    resetImportValidation({ label: true, runs: true });
 
-    $("#analType").val('');
     $('input:radio[name=dataFormat]')[0].checked = true;
-    $('input:radio[name=delimiterOption]')[0].checked = true;
+    $('input:radio[name=delimiterOption]')[1].checked = true;
 }
 
 
@@ -144,7 +143,6 @@ window.sysImportRuns = function () {
 // # this function resets the validation in the import form in ./index.html
 // #
 // # Value Parameters
-// # analType        bool        whether or not an analysis type exists
 // # label        bool        whether or not a label exists
 // # runs        bool        whether or not runs exists
 // #
@@ -152,11 +150,8 @@ window.sysImportRuns = function () {
 // # void                      
 // #
 // #___________________________________________________________
-function resetImportValidation({ analType = false, label = false, runs = false }) {
+function resetImportValidation({ label = false, runs = false }) {
     // Show input fields are valid
-    if (analType) {
-        document.querySelector('#analType').classList.remove('is-invalid');
-    }
     if (runs) {
         document.querySelector('#import-runs').classList.remove('is-invalid');
         document.querySelector('#import-runs-feedback').classList.remove('d-block');
@@ -417,6 +412,7 @@ window.updateSettings = function updateSettings(settings) {
 // #___________________________________________________________
 
 window.changeiFrameSrc = function changeiFrameSrc(route = false) {
+    const isToolbarVisible = document.getElementById("is-toolbar-visible").checked;
     if (!route) {
         getSettings().then((data) => {
             const settings = data;
@@ -426,13 +422,13 @@ window.changeiFrameSrc = function changeiFrameSrc(route = false) {
                 route = analysis_type == 'pca' ? 'pca/2d' : 'hca/dendrogram';
                 var iframe = document.getElementById('plotly-frame');
                 iframe.src = SERVER_ADDRESS + route;
-                showToolBar(route);
+                if (isToolbarVisible) showToolBar(route)
             }
         });
     } else {
         var iframe = document.getElementById('plotly-frame');
         iframe.src = SERVER_ADDRESS + route;
-        showToolBar(route)
+        if (isToolbarVisible) showToolBar(route)
     }
 }
 
@@ -499,7 +495,6 @@ function sendImportPaths(importFormData) {
     getSettings().then((data) => {
         // Save the analysis type to the settings
         var settings = data;
-        settings['analysis_type'] = importFormData.analType;
         updateSettings(settings);
 
         changeiFrameSrc();
