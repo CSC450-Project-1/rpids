@@ -196,7 +196,7 @@ def showOrientation(pathname):
 
 
 # TODO Need to also consider label
-@app.callback(Output('normalization-dropdown', 'style'), Input('url', 'pathname'))
+@app.callback(Output('normalization', 'style'), Input('url', 'pathname'))
 def showNormalization(pathname):
     return {'display': 'block'} if (pathname == '/hca/dendrogram' or pathname == '/pca/2d' or pathname == '/pca/3d') else {'display': 'none'}
 
