@@ -72,7 +72,7 @@ app.layout = html.Div([
             dcc.Dropdown(
                 id='normalization-dropdown',
                 options=[
-                    {'label': 'None', 'value': 'none'},
+                    {'label': 'Centering Only', 'value': 'none'},
                     {'label': 'Linear Rescaling', 'value': 'linear_rescaling'},
                     {'label': 'Standardization', 'value': 'standardization'},
                 ],
@@ -256,7 +256,7 @@ def updatePlot(pathname, normalization_type, hca_orientation, marker_size):
 
         columns = dataset.columns.tolist()
         data = pd.DataFrame.from_dict(dataset)
-        data.drop(data.iloc[:, (dataset.columns.size - 2) :dataset.columns.size], inplace=True, axis=1)
+        data.drop(data.iloc[:, (dataset.columns.size - 2):dataset.columns.size], inplace=True, axis=1)
         if pathname == '/pca/2d':
             fig = initShowPCA('2D', dataset, data, normalization_type)
             fig = updateMarkerSize(fig, marker_size, layout)
@@ -375,7 +375,7 @@ def showPCA2D(dataset, normalized_data):
     components_df = pd.DataFrame(components)
     components_df["Samples"] = dataset["Samples"].values.tolist()
     components_df["run"] = dataset["run"].values.tolist()
-    components_df.to_json(getDataPath("computed_data.json"))
+    components_df.to_json(getDataPath("pca_2d.json"))
 
     fig.update_layout(
         xaxis_title="PCA 1",
@@ -434,7 +434,7 @@ def showPCA3D(dataset, normalized_data):
     components_df = pd.DataFrame(components)
     components_df["Samples"] = dataset["Samples"].values.tolist()
     components_df["run"] = dataset["run"].values.tolist()
-    components_df.to_json(getDataPath("computed_data.json"))
+    components_df.to_json(getDataPath("pca_3d.json"))
     return fig
 
 # ______________________________________________________________
@@ -490,16 +490,8 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
     if orientation == 'horizontal':
         fig = ff.create_dendrogram(
             normalized_data, orientation='left', labels=label)
-        if len(dataset.index) > 20 and dataset.columns.size < 20:
-            fig.update_layout(width=1500, height=900)
-        elif len(dataset.index) < 20 and dataset.columns.size < 20:
-            fig.update_layout(width=1500, height=900)
     elif orientation == 'vertical':
         fig = ff.create_dendrogram(normalized_data, labels=label)
-        if len(dataset.index) > 25 and dataset.columns.size < 20:
-            fig.update_layout(width=1500, height=900)
-        elif len(dataset.index) < 25 and dataset.columns.size < 20:
-            fig.update_layout(width=1500, height=900)
     return fig
 
 # ______________________________________________________________
@@ -511,7 +503,7 @@ def showHCADendrogram(dataset, data, orientation, normalization_type):
 #
 # reference parameters:
 # dataset               pandas dataframe      original imported dataset
-# 
+#
 # local variables:
 # label                 list                list of labels
 # samples               list                list of sample names
